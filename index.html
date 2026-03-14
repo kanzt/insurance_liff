@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แจ้งงาน / เช็คเบี้ยประกัน</title>
+    <title>ส่งเอกสารเช็คเบี้ย</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -12,61 +12,50 @@
 <body class="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
 
     <div class="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">ฟอร์มแจ้งงานประกัน 📝</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">ส่งเอกสารเช็คเบี้ย 📄</h2>
 
         <div id="profileBox"
             class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-6 text-center shadow-inner">
-            กำลังเชื่อมต่อระบบ LINE...
+            กำลังเชื่อมต่อระบบ...
         </div>
 
         <form id="policyForm" class="space-y-4">
+
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อลูกค้า <span
+                <label class="block text-sm font-medium text-gray-700 mb-1">ประเภทงาน <span
                         class="text-red-500">*</span></label>
-                <input type="text" id="customer_name" required placeholder="เช่น สมชาย ใจดี"
-                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ทะเบียนรถ <span
-                        class="text-red-500">*</span></label>
-                <input type="text" id="plate_number" required placeholder="เช่น 1กข-1234 กทม"
-                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">บริษัทประกัน (ถ้าทราบ)</label>
-                <input type="text" id="insurance_company" placeholder="เช่น วิริยะ, สินมั่นคง"
-                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">เบี้ยประกันรวม (บาท)</label>
-                <input type="number" step="0.01" id="premium_amount" placeholder="เช่น 15000"
-                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ช่องทางแจ้งงาน <span
-                        class="text-red-500">*</span></label>
-                <select id="inform_channel"
-                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition">
-                    <option value="ศรีกรุง">ศรีกรุง</option>
-                    <option value="724">724</option>
-                    <option value="พินนาเคิลโบรคเกอร์">พินนาเคิลโบรคเกอร์</option>
+                <select id="category"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 bg-white">
+                    <option value="ประกันรถยนต์">ประกันรถยนต์ (Motor)</option>
+                    <option value="ประกันอื่นๆ">ประกันอื่นๆ (Non-Motor)</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">แนบไฟล์เอกสาร (เลือกได้หลายไฟล์)</label>
-                <input type="file" id="document_file" accept=".pdf,image/*" multiple
+                <label id="reference_label" class="block text-sm font-medium text-gray-700 mb-1">ทะเบียนรถ <span
+                        class="text-red-500">*</span></label>
+                <input type="text" id="reference_input" required placeholder="เช่น 1กข-1234 กทม"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+                <input type="date" id="end_date"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500">
+                <p class="text-xs text-gray-400 mt-1">ใช้สำหรับระบบแจ้งเตือนติดตามงานในปีถัดไป</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">แนบไฟล์เอกสาร <span
+                        class="text-red-500">*</span></label>
+                <input type="file" id="document_file" accept=".pdf,image/*" multiple required
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition">
-                <p class="text-xs text-gray-400 mt-1">สำเนารถ, กรมธรรม์เดิม, บัตรประชาชน ฯลฯ</p>
+                <p class="text-xs text-gray-400 mt-1">สำเนารถ, กรมธรรม์เดิม ฯลฯ (เลือกได้หลายไฟล์)</p>
             </div>
 
             <button type="submit" id="submitBtn"
                 class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 mt-4 shadow-sm">
-                บันทึกข้อมูลเข้าสู่ระบบ
+                ส่งข้อมูลเช็คเบี้ย
             </button>
         </form>
     </div>
@@ -82,15 +71,28 @@
                 await liff.init({ liffId: myLiffId });
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
-                    document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบโดยตัวแทน: <b>${profile.displayName}</b>`;
+                    document.getElementById('profileBox').innerHTML = `👤 ตัวแทน: <b>${profile.displayName}</b>`;
                 } else {
                     liff.login();
                 }
             } catch (err) {
-                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เกิดข้อผิดพลาดในการเชื่อมต่อ LINE</span>';
+                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เชื่อมต่อ LINE ไม่สำเร็จ</span>';
             }
         }
         initializeLiff();
+
+        // ลอจิกเปลี่ยน Label และ Placeholder ตามประเภทงาน
+        document.getElementById('category').addEventListener('change', function (e) {
+            const label = document.getElementById('reference_label');
+            const input = document.getElementById('reference_input');
+            if (e.target.value === 'ประกันรถยนต์') {
+                label.innerHTML = 'ทะเบียนรถ <span class="text-red-500">*</span>';
+                input.placeholder = 'เช่น 1กข-1234 กทม';
+            } else {
+                label.innerHTML = 'ชื่อผู้เอาประกัน <span class="text-red-500">*</span>';
+                input.placeholder = 'เช่น สมชาย ใจดี';
+            }
+        });
 
         function getBase64(file) {
             return new Promise((resolve, reject) => {
@@ -107,44 +109,43 @@
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerText;
 
-            // ต้องเข้าสู่ระบบ LINE และมีสิทธิ์เท่านั้นถึงใช้งานระบบได้
             const idToken = liff.getIDToken();
-            if (!idToken) {
-                alert('❌ ไม่พบข้อมูลยืนยันตัวตน กรุณาเปิดผ่านแอป LINE หรือเข้าสู่ระบบใหม่');
-                return;
-            }
+            if (!idToken) return alert('❌ กรุณาเข้าสู่ระบบผ่านแอป LINE');
 
             submitBtn.disabled = true;
-            submitBtn.innerText = '⏳ กำลังประมวลผล...';
+            submitBtn.innerText = '⏳ กำลังส่งข้อมูล...';
             submitBtn.classList.replace('bg-blue-600', 'bg-gray-400');
 
             try {
                 const fileInput = document.getElementById('document_file');
                 let uploadedFiles = [];
-
-                // ถ้ามีการแนบไฟล์ ให้วนลูปแปลงทุกไฟล์เป็น Base64
                 if (fileInput.files.length > 0) {
                     const filePromises = Array.from(fileInput.files).map(async (file) => {
                         const base64Data = await getBase64(file);
-                        return {
-                            base64: base64Data,
-                            fileName: file.name,
-                            mimeType: file.type
-                        };
+                        return { base64: base64Data, fileName: file.name, mimeType: file.type };
                     });
                     uploadedFiles = await Promise.all(filePromises);
                 }
 
-                submitBtn.innerText = '⏳ กำลังบันทึกข้อมูล...';
+                // จัดการแยกข้อมูล ทะเบียนรถ / ชื่อลูกค้า
+                const category = document.getElementById('category').value;
+                const refValue = document.getElementById('reference_input').value;
+                let plateNumber = null;
+                let customerName = null;
+
+                if (category === 'ประกันรถยนต์') {
+                    plateNumber = refValue;
+                } else {
+                    customerName = refValue;
+                }
 
                 const payload = {
                     idToken: idToken,
-                    customer_name: document.getElementById('customer_name').value,
-                    plate_number: document.getElementById('plate_number').value,
-                    insurance_company: document.getElementById('insurance_company').value,
-                    premium_amount: document.getElementById('premium_amount').value,
-                    inform_channel: document.getElementById('inform_channel').value,
-                    files: uploadedFiles // ส่ง Array ของไฟล์ไปหา Edge Function
+                    category: category,
+                    plate_number: plateNumber,
+                    customer_name: customerName,
+                    end_date: document.getElementById('end_date').value || null,
+                    files: uploadedFiles
                 };
 
                 const response = await fetch(apiUrl, {
@@ -154,17 +155,15 @@
                 });
 
                 const result = await response.json();
-
                 if (response.ok) {
                     alert('✅ ' + result.message);
                     if (liff.isInClient()) liff.closeWindow();
                     else document.getElementById('policyForm').reset();
                 } else {
-                    alert('❌ แจ้งเตือน: ' + (result.error || 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
+                    alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+                alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;

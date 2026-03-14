@@ -57,6 +57,13 @@
                 </select>
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">แนบไฟล์เอกสาร (เลือกได้หลายไฟล์)</label>
+                <input type="file" id="document_file" accept=".pdf,image/*" multiple
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition">
+                <p class="text-xs text-gray-400 mt-1">สำเนารถ, กรมธรรม์เดิม, บัตรประชาชน ฯลฯ</p>
+            </div>
+
             <button type="submit" id="submitBtn"
                 class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 mt-4 shadow-sm">
                 บันทึกข้อมูลเข้าสู่ระบบ
@@ -66,64 +73,80 @@
 
     <script>
         // ==========================================
-        // ⚙️ ส่วนตั้งค่าตัวแปร (อย่าลืมแก้ก่อนเอาขึ้น GitHub)
-        // ==========================================
         const myLiffId = "2009445757-eTSIMGmL";
         const apiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy";
         // ==========================================
 
-        // ฟังก์ชันเริ่มต้นการทำงานของ LIFF
         async function initializeLiff() {
             try {
                 await liff.init({ liffId: myLiffId });
-
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
-                    // แสดงแค่ชื่อให้ผู้ใช้เห็น แต่ไม่เอา Token ไปแปะใน HTML
                     document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบโดยตัวแทน: <b>${profile.displayName}</b>`;
                 } else {
                     liff.login();
                 }
             } catch (err) {
-                console.error('LIFF Initialization failed', err);
-                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เกิดข้อผิดพลาดในการเชื่อมต่อ LINE ระบบอาจทำงานไม่สมบูรณ์</span>';
+                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เกิดข้อผิดพลาดในการเชื่อมต่อ LINE</span>';
             }
         }
-
         initializeLiff();
 
-        // จัดการ Event ตอนกดปุ่ม Submit
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         document.getElementById('policyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerText;
 
-            // ดึง ID Token สดๆ ณ วินาทีที่กดปุ่ม (ปลอดภัยจาก XSS)
+            // ต้องเข้าสู่ระบบ LINE และมีสิทธิ์เท่านั้นถึงใช้งานระบบได้
             const idToken = liff.getIDToken();
-
             if (!idToken) {
                 alert('❌ ไม่พบข้อมูลยืนยันตัวตน กรุณาเปิดผ่านแอป LINE หรือเข้าสู่ระบบใหม่');
                 return;
             }
 
-            // เปลี่ยนปุ่มเป็นสถานะโหลด
             submitBtn.disabled = true;
             submitBtn.innerText = '⏳ กำลังประมวลผล...';
             submitBtn.classList.replace('bg-blue-600', 'bg-gray-400');
-            submitBtn.classList.replace('hover:bg-blue-700', 'hover:bg-gray-400');
-
-            // เตรียมข้อมูลยิงไปหา API
-            const payload = {
-                idToken: idToken, // แนบ Token ไปให้ Backend ตรวจสอบ
-                customer_name: document.getElementById('customer_name').value,
-                plate_number: document.getElementById('plate_number').value,
-                insurance_company: document.getElementById('insurance_company').value,
-                premium_amount: document.getElementById('premium_amount').value,
-                inform_channel: document.getElementById('inform_channel').value
-            };
 
             try {
+                const fileInput = document.getElementById('document_file');
+                let uploadedFiles = [];
+
+                // ถ้ามีการแนบไฟล์ ให้วนลูปแปลงทุกไฟล์เป็น Base64
+                if (fileInput.files.length > 0) {
+                    const filePromises = Array.from(fileInput.files).map(async (file) => {
+                        const base64Data = await getBase64(file);
+                        return {
+                            base64: base64Data,
+                            fileName: file.name,
+                            mimeType: file.type
+                        };
+                    });
+                    uploadedFiles = await Promise.all(filePromises);
+                }
+
+                submitBtn.innerText = '⏳ กำลังบันทึกข้อมูล...';
+
+                const payload = {
+                    idToken: idToken,
+                    customer_name: document.getElementById('customer_name').value,
+                    plate_number: document.getElementById('plate_number').value,
+                    insurance_company: document.getElementById('insurance_company').value,
+                    premium_amount: document.getElementById('premium_amount').value,
+                    inform_channel: document.getElementById('inform_channel').value,
+                    files: uploadedFiles // ส่ง Array ของไฟล์ไปหา Edge Function
+                };
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -134,24 +157,18 @@
 
                 if (response.ok) {
                     alert('✅ ' + result.message);
-
-                    if (liff.isInClient()) {
-                        liff.closeWindow(); // ปิดหน้าต่างถ้าเปิดจากแอป LINE มือถือ
-                    } else {
-                        document.getElementById('policyForm').reset(); // เคลียร์ฟอร์มถ้าเปิดบน PC
-                    }
+                    if (liff.isInClient()) liff.closeWindow();
+                    else document.getElementById('policyForm').reset();
                 } else {
                     alert('❌ แจ้งเตือน: ' + (result.error || 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
                 }
             } catch (error) {
-                console.error('Network Error:', error);
-                alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+                console.error('Error:', error);
+                alert('❌ เกิดข้อผิดพลาด: ' + error.message);
             } finally {
-                // คืนสถานะปุ่มกลับมา
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
                 submitBtn.classList.replace('bg-gray-400', 'bg-blue-600');
-                submitBtn.classList.replace('hover:bg-gray-400', 'hover:bg-blue-700');
             }
         });
     </script>

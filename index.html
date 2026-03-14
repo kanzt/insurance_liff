@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แจ้งงาน / เช็คเบี้ยประกัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body class="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">ฟอร์มแจ้งงานประกัน 📝</h2>
+
+        <div id="profileBox"
+            class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-6 text-center">
+            กำลังเชื่อมต่อระบบ LINE...
+        </div>
+
+        <form id="policyForm" class="space-y-4">
+            <input type="hidden" id="lineIdToken" name="lineIdToken">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อลูกค้า <span
+                        class="text-red-500">*</span></label>
+                <input type="text" id="customer_name" required placeholder="เช่น สมชาย ใจดี"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ทะเบียนรถ <span
+                        class="text-red-500">*</span></label>
+                <input type="text" id="plate_number" required placeholder="เช่น 1กข-1234 กทม"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">บริษัทประกัน (ถ้าทราบ)</label>
+                <input type="text" id="insurance_company" placeholder="เช่น วิริยะ, สินมั่นคง"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">เบี้ยประกันรวม (บาท)</label>
+                <input type="number" step="0.01" id="premium_amount" placeholder="เช่น 15000"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ช่องทางแจ้งงาน <span
+                        class="text-red-500">*</span></label>
+                <select id="inform_channel"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition">
+                    <option value="ศรีกรุง">ศรีกรุง</option>
+                    <option value="724">724</option>
+                    <option value="พินนาเคิลโบรคเกอร์">พินนาเคิลโบรคเกอร์</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 mt-4 shadow-sm">
+                บันทึกข้อมูลเข้าสู่ระบบ
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // ==========================================
+        // ⚙️ ส่วนตั้งค่าตัวแปรที่ต้องแก้ไข
+        // ==========================================
+
+        // 1. นำ LIFF ID จาก LINE Developers มาใส่ที่นี่ (ตัวอย่าง: 1234567890-AbcdEfgh)
+        const myLiffId = "2009445757-uPhBSvmQ";
+
+        // 2. นำ URL ของ Supabase Edge Function มาใส่ที่นี่
+        // ตัวอย่าง: https://xxxxxxxxxxxxxx.supabase.co/functions/v1/submit-policy
+        const apiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy";
+
+        // ==========================================
+
+        // ฟังก์ชันเริ่มต้นการทำงานของ LIFF
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: myLiffId });
+
+                if (liff.isLoggedIn()) {
+                    // ดึงข้อมูลโปรไฟล์เพื่อแสดงชื่อบนหน้าเว็บ
+                    const profile = await liff.getProfile();
+
+                    // ดึง ID Token ที่ปลอดภัย เพื่อส่งไปให้ Backend ตรวจสอบ
+                    const idToken = liff.getIDToken();
+
+                    document.getElementById('lineIdToken').value = idToken;
+                    document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบโดยตัวแทน: <b>${profile.displayName}</b>`;
+                } else {
+                    // บังคับล็อกอินถ้าเปิดบนเบราว์เซอร์ PC ธรรมดา
+                    liff.login();
+                }
+            } catch (err) {
+                console.error('LIFF Initialization failed', err);
+                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เกิดข้อผิดพลาดในการเชื่อมต่อ LINE ระบบอาจทำงานไม่สมบูรณ์</span>';
+            }
+        }
+
+        // เรียกใช้งานตอนเปิดหน้าเว็บ
+        initializeLiff();
+
+        // จัดการ Event ตอนกดปุ่ม Submit ฟอร์ม
+        document.getElementById('policyForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // ป้องกันไม่ให้หน้าเว็บ Refresh
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerText;
+
+            // เปลี่ยนปุ่มเป็นสถานะโหลด
+            submitBtn.disabled = true;
+            submitBtn.innerText = '⏳ กำลังประมวลผล...';
+            submitBtn.classList.replace('bg-blue-600', 'bg-gray-400');
+            submitBtn.classList.replace('hover:bg-blue-700', 'hover:bg-gray-400');
+
+            // เตรียมข้อมูล (Payload) ให้ตรงกับที่ Backend ต้องการ
+            const payload = {
+                idToken: document.getElementById('lineIdToken').value,
+                customer_name: document.getElementById('customer_name').value,
+                plate_number: document.getElementById('plate_number').value,
+                insurance_company: document.getElementById('insurance_company').value,
+                inform_channel: document.getElementById('inform_channel').value,
+                premium_amount: document.getElementById('premium_amount').value
+            };
+
+            try {
+                // ยิงข้อมูลไปหา Supabase Edge Function
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // ถ้าสำเร็จ
+                    alert('✅ ' + result.message);
+
+                    // ปิดหน้าต่าง LIFF อัตโนมัติ (จะทำงานเมื่อเปิดในแอป LINE มือถือ)
+                    if (liff.isInClient()) {
+                        liff.closeWindow();
+                    } else {
+                        // ถ้าเปิดในคอม ให้เคลียร์ฟอร์ม
+                        document.getElementById('policyForm').reset();
+                    }
+                } else {
+                    // ถ้า Backend ตอบกลับมาเป็น Error (เช่น ไม่มีสิทธิ์, Token หมดอายุ)
+                    alert('❌ แจ้งเตือน: ' + (result.error || 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            } finally {
+                // คืนสถานะปุ่มกลับมาเหมือนเดิม
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+                submitBtn.classList.replace('bg-gray-400', 'bg-blue-600');
+                submitBtn.classList.replace('hover:bg-gray-400', 'hover:bg-blue-700');
+            }
+        });
+    </script>
+</body>
+
+</html>

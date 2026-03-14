@@ -15,13 +15,11 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">ฟอร์มแจ้งงานประกัน 📝</h2>
 
         <div id="profileBox"
-            class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-6 text-center">
+            class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-6 text-center shadow-inner">
             กำลังเชื่อมต่อระบบ LINE...
         </div>
 
         <form id="policyForm" class="space-y-4">
-            <input type="hidden" id="lineIdToken" name="lineIdToken">
-
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อลูกค้า <span
                         class="text-red-500">*</span></label>
@@ -68,16 +66,10 @@
 
     <script>
         // ==========================================
-        // ⚙️ ส่วนตั้งค่าตัวแปรที่ต้องแก้ไข
+        // ⚙️ ส่วนตั้งค่าตัวแปร (อย่าลืมแก้ก่อนเอาขึ้น GitHub)
         // ==========================================
-
-        // 1. นำ LIFF ID จาก LINE Developers มาใส่ที่นี่ (ตัวอย่าง: 1234567890-AbcdEfgh)
         const myLiffId = "2009445757-eTSIMGmL";
-
-        // 2. นำ URL ของ Supabase Edge Function มาใส่ที่นี่
-        // ตัวอย่าง: https://xxxxxxxxxxxxxx.supabase.co/functions/v1/submit-policy
         const apiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy";
-
         // ==========================================
 
         // ฟังก์ชันเริ่มต้นการทำงานของ LIFF
@@ -86,16 +78,10 @@
                 await liff.init({ liffId: myLiffId });
 
                 if (liff.isLoggedIn()) {
-                    // ดึงข้อมูลโปรไฟล์เพื่อแสดงชื่อบนหน้าเว็บ
                     const profile = await liff.getProfile();
-
-                    // ดึง ID Token ที่ปลอดภัย เพื่อส่งไปให้ Backend ตรวจสอบ
-                    const idToken = liff.getIDToken();
-
-                    document.getElementById('lineIdToken').value = idToken;
+                    // แสดงแค่ชื่อให้ผู้ใช้เห็น แต่ไม่เอา Token ไปแปะใน HTML
                     document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบโดยตัวแทน: <b>${profile.displayName}</b>`;
                 } else {
-                    // บังคับล็อกอินถ้าเปิดบนเบราว์เซอร์ PC ธรรมดา
                     liff.login();
                 }
             } catch (err) {
@@ -104,15 +90,22 @@
             }
         }
 
-        // เรียกใช้งานตอนเปิดหน้าเว็บ
         initializeLiff();
 
-        // จัดการ Event ตอนกดปุ่ม Submit ฟอร์ม
+        // จัดการ Event ตอนกดปุ่ม Submit
         document.getElementById('policyForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); // ป้องกันไม่ให้หน้าเว็บ Refresh
+            e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerText;
+
+            // ดึง ID Token สดๆ ณ วินาทีที่กดปุ่ม (ปลอดภัยจาก XSS)
+            const idToken = liff.getIDToken();
+
+            if (!idToken) {
+                alert('❌ ไม่พบข้อมูลยืนยันตัวตน กรุณาเปิดผ่านแอป LINE หรือเข้าสู่ระบบใหม่');
+                return;
+            }
 
             // เปลี่ยนปุ่มเป็นสถานะโหลด
             submitBtn.disabled = true;
@@ -120,48 +113,41 @@
             submitBtn.classList.replace('bg-blue-600', 'bg-gray-400');
             submitBtn.classList.replace('hover:bg-blue-700', 'hover:bg-gray-400');
 
-            // เตรียมข้อมูล (Payload) ให้ตรงกับที่ Backend ต้องการ
+            // เตรียมข้อมูลยิงไปหา API
             const payload = {
-                idToken: document.getElementById('lineIdToken').value,
+                idToken: idToken, // แนบ Token ไปให้ Backend ตรวจสอบ
                 customer_name: document.getElementById('customer_name').value,
                 plate_number: document.getElementById('plate_number').value,
                 insurance_company: document.getElementById('insurance_company').value,
-                inform_channel: document.getElementById('inform_channel').value,
-                premium_amount: document.getElementById('premium_amount').value
+                premium_amount: document.getElementById('premium_amount').value,
+                inform_channel: document.getElementById('inform_channel').value
             };
 
             try {
-                // ยิงข้อมูลไปหา Supabase Edge Function
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    // ถ้าสำเร็จ
                     alert('✅ ' + result.message);
 
-                    // ปิดหน้าต่าง LIFF อัตโนมัติ (จะทำงานเมื่อเปิดในแอป LINE มือถือ)
                     if (liff.isInClient()) {
-                        liff.closeWindow();
+                        liff.closeWindow(); // ปิดหน้าต่างถ้าเปิดจากแอป LINE มือถือ
                     } else {
-                        // ถ้าเปิดในคอม ให้เคลียร์ฟอร์ม
-                        document.getElementById('policyForm').reset();
+                        document.getElementById('policyForm').reset(); // เคลียร์ฟอร์มถ้าเปิดบน PC
                     }
                 } else {
-                    // ถ้า Backend ตอบกลับมาเป็น Error (เช่น ไม่มีสิทธิ์, Token หมดอายุ)
                     alert('❌ แจ้งเตือน: ' + (result.error || 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
                 }
             } catch (error) {
                 console.error('Network Error:', error);
                 alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
             } finally {
-                // คืนสถานะปุ่มกลับมาเหมือนเดิม
+                // คืนสถานะปุ่มกลับมา
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
                 submitBtn.classList.replace('bg-gray-400', 'bg-blue-600');

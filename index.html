@@ -22,12 +22,21 @@
         <form id="policyForm" class="space-y-4">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ประเภทงาน <span
+                <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span
                         class="text-red-500">*</span></label>
-                <select id="category"
+                <select id="informer_id" required
                     class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 bg-white">
-                    <option value="ประกันรถยนต์">ประกันรถยนต์ (Motor)</option>
-                    <option value="ประกันอื่นๆ">ประกันอื่นๆ (Non-Motor)</option>
+                    <option value="" disabled selected>⏳ กำลังโหลดรายชื่อตัวแทน...</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span
+                        class="text-red-500">*</span></label>
+                <select id="category_id"
+                    class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500 bg-white">
+                    <option value="1">ประกันรถยนต์ (Motor)</option>
+                    <option value="2">ประกันอื่นๆ (Non-Motor)</option>
                 </select>
             </div>
 
@@ -42,7 +51,6 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
                 <input type="date" id="end_date"
                     class="block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-400 mt-1">ใช้สำหรับระบบแจ้งเตือนติดตามงานในปีถัดไป</p>
             </div>
 
             <div>
@@ -50,7 +58,7 @@
                         class="text-red-500">*</span></label>
                 <input type="file" id="document_file" accept=".pdf,image/*" multiple required
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition">
-                <p class="text-xs text-gray-400 mt-1">สำเนารถ, กรมธรรม์เดิม ฯลฯ (เลือกได้หลายไฟล์)</p>
+                <p class="text-xs text-gray-400 mt-1">สำเนารถ, กรมธรรม์เดิม (เลือกได้หลายไฟล์)</p>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -61,17 +69,43 @@
     </div>
 
     <script>
-        // ==========================================
         const myLiffId = "2009445757-eTSIMGmL";
         const apiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy";
-        // ==========================================
+
+        // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown
+        async function loadAgents() {
+            try {
+                const response = await fetch(apiUrl, { method: 'GET' });
+                const result = await response.json();
+                const select = document.getElementById('informer_id');
+
+                if (result.success && result.agents) {
+                    select.innerHTML = '<option value="" disabled selected>-- เลือกตัวแทนผู้แจ้งงาน --</option>';
+                    result.agents.forEach(agent => {
+                        const option = document.createElement('option');
+                        option.value = agent.agent_id;
+                        // สร้างรูปแบบ "ชื่อ นามสกุล (AM001)"
+                        option.textContent = `${agent.full_name} (${agent.agent_id})`;
+                        select.appendChild(option);
+                    });
+                } else {
+                    select.innerHTML = '<option value="" disabled>โหลดรายชื่อไม่สำเร็จ</option>';
+                }
+            } catch (error) {
+                console.error("Error loading agents:", error);
+            }
+        }
 
         async function initializeLiff() {
             try {
                 await liff.init({ liffId: myLiffId });
+
+                // ให้โหลดรายชื่อตัวแทนทันทีที่หน้าเว็บเปิดขึ้นมา
+                loadAgents();
+
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
-                    document.getElementById('profileBox').innerHTML = `👤 ตัวแทน: <b>${profile.displayName}</b>`;
+                    document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${profile.displayName}</b>`;
                 } else {
                     liff.login();
                 }
@@ -79,18 +113,18 @@
                 document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เชื่อมต่อ LINE ไม่สำเร็จ</span>';
             }
         }
-        initializeLiff();
+        // initializeLiff();
 
-        // ลอจิกเปลี่ยน Label และ Placeholder ตามประเภทงาน
-        document.getElementById('category').addEventListener('change', function (e) {
-            const label = document.getElementById('reference_label');
-            const input = document.getElementById('reference_input');
-            if (e.target.value === 'ประกันรถยนต์') {
-                label.innerHTML = 'ทะเบียนรถ <span class="text-red-500">*</span>';
-                input.placeholder = 'เช่น 1กข-1234 กทม';
+        // ลอจิกเปลี่ยน UI
+        document.getElementById('category_id').addEventListener('change', function (e) {
+            const refLabel = document.getElementById('reference_label');
+            const refInput = document.getElementById('reference_input');
+            if (e.target.value === '1') {
+                refLabel.innerHTML = 'ทะเบียนรถ <span class="text-red-500">*</span>';
+                refInput.placeholder = 'เช่น 1กข-1234 กทม';
             } else {
-                label.innerHTML = 'ชื่อผู้เอาประกัน <span class="text-red-500">*</span>';
-                input.placeholder = 'เช่น สมชาย ใจดี';
+                refLabel.innerHTML = 'ชื่อผู้เอาประกัน <span class="text-red-500">*</span>';
+                refInput.placeholder = 'เช่น สมชาย ใจดี';
             }
         });
 
@@ -105,7 +139,6 @@
 
         document.getElementById('policyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerText;
 
@@ -113,7 +146,7 @@
             if (!idToken) return alert('❌ กรุณาเข้าสู่ระบบผ่านแอป LINE');
 
             submitBtn.disabled = true;
-            submitBtn.innerText = '⏳ กำลังส่งข้อมูล...';
+            submitBtn.innerText = '⏳ กำลังเตรียมไฟล์...';
             submitBtn.classList.replace('bg-blue-600', 'bg-gray-400');
 
             try {
@@ -127,26 +160,29 @@
                     uploadedFiles = await Promise.all(filePromises);
                 }
 
-                // จัดการแยกข้อมูล ทะเบียนรถ / ชื่อลูกค้า
-                const category = document.getElementById('category').value;
+                const categoryId = parseInt(document.getElementById('category_id').value);
                 const refValue = document.getElementById('reference_input').value;
                 let plateNumber = null;
                 let customerName = null;
 
-                if (category === 'ประกันรถยนต์') {
+                if (categoryId === 1) {
                     plateNumber = refValue;
                 } else {
                     customerName = refValue;
                 }
 
+                // 🟢 เพิ่ม informer_id ลงไปใน Payload
                 const payload = {
                     idToken: idToken,
-                    category: category,
+                    informer_id: document.getElementById('informer_id').value,
+                    category_id: categoryId,
                     plate_number: plateNumber,
                     customer_name: customerName,
                     end_date: document.getElementById('end_date').value || null,
                     files: uploadedFiles
                 };
+
+                submitBtn.innerText = '⏳ กำลังบันทึกข้อมูล...';
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',

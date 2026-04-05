@@ -1,47 +1,51 @@
-# AI Handoff: Quotation Reminder Feature
+# AI Handoff: Insurance LIFF Project Status
 
-## 📌 Context
-ในหน้าแอปพลิเคชันรูปแบบ LIFF ได้มีการเพิ่ม UI สำหรับให้ผู้ใช้ (ตัวแทน) "ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า" ในกรณีที่เช็คเบี้ยเร็วเกินไป (มากกว่า 60-90 วันก่อนกรมธรรม์หมดอายุ) ซึ่งยังไม่สามารถออกเสนอราคาได้ ณ วันที่กดส่ง
+## 📌 Project Overview
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App (สำหรับตัวแทน) ได้รับการอัปเกรดทั้งในด้านฟังก์ชันการใช้งาน (Features) และประสบการณ์ผู้ใช้ (UX/UI) อย่างสมบูรณ์ในฝั่ง Frontend เพื่อเพิ่มประสิทธิภาพการทำงานและรองรับการแสดงผลข้ามอุปกรณ์ (Cross-device)
 
-*   **สิ่งที่พัฒนาแล้วใน Frontend:**
-    1. เพิ่ม Checkbox ขอรับการแจ้งเตือน
-    2. เพิ่ม Date Picker เพื่อรับค่า `reminder_date` (และถ้ากรอก `end_date` ไว้แล้ว จะคำนวณหักลบ 60 วันเป็น Default ให้)
-    3. ปรับ Logic การ Build JSON Payload ใน method `POST` โดยส่งไปหา Edge Function พร้อม key ใหม่คือ `reminder_date`
+## 🟢 Current Status (สิ่งที่พัฒนาเรียบร้อยแล้วใน Frontend)
+1. **Modern UX/UI Overhaul**: 
+   - ปรับโฉมแอปพลิเคชันด้วยสไตล์ Glassmorphism ให้ความรู้สึกโปร่งสบายและทันสมัย
+   - บูรณาการระบบสีประจำองค์กร (Brand Color: `#178F46`) ตลอดทั้งแอปพลิเคชัน
+   - นำ CSS Tailwind Forms plugin มาใช้เพื่อให้ Native UI elements สวยงาม รวมถึงใส่ Responsive Logic ซ่อนคำแนะนำ `(Ctrl+V)` เมื่อเปิดอ่านจากสมาร์ทโฟน
+2. **Quotation Reminder & Native Datepickers**: 
+   - เพิ่มฟังก์ชันแจ้งเตือนการออกใบเสนอราคาย้อนหลัง หากเช็คเบี้ยเร็วเกินกำหนด
+   - คืนชีพ Native Datepicker (`<input type="date">`) ทำให้การเลือกวันใช้งานจริงบน iOS / Android ทำได้อย่างเป็นธรรมชาติสูงสุด พร้อมแปลงโฉมไอคอนปฏิทินให้กลมกลืนกับหน้าเว็บ
+3. **Categorized File Uploads (Drag, Drop & Paste)**:
+   - เพิ่มหมวดหมู่การจัดเก็บรูปภาพ 6 โซนแยกประเภท (พร้อมหมวดใหม่: "เบี้ยต่ออายุ / ใบเตือนต่ออายุ") เสริมความน่าใช้งานด้วยสัญลักษณ์อีโมจิ
+   - บนฝั่ง Desktop ผู้ใช้งานสามารถแคปเจอร์รูปแล้วกดวาง (`Ctrl+V`) ลงในกล่อง (Dropzone) ได้อย่างอิสระ
+4. **Enhanced Object Payload Schema**:
+   - เพิ่มช่องทาง "แจ้งเช็คเบี้ยต่ออายุ" ในแบบฟอร์มการเลือกประเภท  `submission_type` อย่างชัดเจน
+   - ปรับปรุง Data Payload ที่ถูกแพ็คและส่งไป Webhook / Edge Function ให้คลุมฟิลด์ใหม่ทั้งหมด
 
-## 🛠 Backend Implementation Plan (Future Work / สำหรับ AI ตัวต่อไปที่จะมาทำแพทช์หน้า)
-สำหรับการพัฒนาระบบหลังบ้านมารองรับฟีเจอร์นี้ ขอแนะนำให้ดำเนินการดังต่อไปนี้:
+---
 
-### 1. Database Schema (Supabase)
-ในตารางที่เก็บข้อมูลการขอเช็คเบี้ย (เช่นตาราง `policy_submissions`) จะต้องเพิ่มโครงสร้างเพื่อจัดเก็บรายละเอียดการแจ้งเตือน:
-*   `reminder_date` (Date / Timestamp): เก็บวันที่ที่ระบบจะต้องทำการแจ้งเตือนผู้ใช้งาน (ส่งมาจาก Payload Frontend)
-*   `reminder_status` (String/Enum): สถานะของการเตือน สร้างค่า Default เป็น `pending` (รอแจ้งเตือน), และมีสถานะ `sent` (แจ้งเตือนแล้ว), หรือ `cancelled` (ปิดคิว)
-*   `line_user_id` (String): [IMPORTANT] จำเป็นต้องใช้ verify method เพื่อ decode ค่า `idToken` ใน Edge Function เพื่อดึงหา `User ID` ของบัญชี LINE คนนั้นๆ มาเก็บไว้ เพื่อใช้โยงผูกสำหรับสิทธิ์ในการรับข้อความส่วนตัว (Push Message) กลับไปหา
+## 🛠 Backend Implementation Plan (Future Work / สำหรับ AI ผู้รับช่วงต่อ)
+เพื่อรองรับฟอร์มใหม่ของฝั่ง Frontend ควรเตรียมการในฝั่ง Backend (Supabase + LINE API) ดังนี้:
+
+### 1. Database Schema
+ในตารางฐานข้อมูลหลักที่เก็บการส่งแบบฟอร์ม (เช่นตาราง `policy_submissions`) จะต้องมีคอลัมน์เพิ่ม:
+*   `reminder_date` (Date / Timestamp): วันที่ที่ระบบจะต้องทำการแจ้งเตือนผู้ใช้งาน (ส่งมาจาก Payload Frontend)
+*   `reminder_status` (String/Enum): เช่น Default คือ `pending`, เมื่อแจ้งแล้วเป็น `sent`, หรือ `cancelled`
+*   `line_user_id` (String): **[IMPORTANT]** ควร verify/decode ค่า `idToken` ใน Edge Function เพื่อดึงข้อมูล `User ID` ของบัญชี LINE มาเก็บไว้ใช้ติดต่อยืนยันสิทธ์การรับข้อความส่วนตัว (Push Message) กลับไปหาผู้ส่งต้นทาง
 
 ### 2. Notification Engine (Cron Job)
-รันเป็น scheduled service เพื่อส่งข้อความได้อัตโนมัติ โดยไม่ต้องอาศัย Make.com ใช้ Supabase ให้จบในตัวเลย
-*   **ใช้ `pg_cron`**: ติดตั้ง extension `pg_cron` บันทึกใน PostgreSQL สั่งสคริปต์รายวัน (เช่น รันทุกเวลา 08:00 น.)
-    ```sql
-    -- ตัวอย่างการดึงคิวประจำวัน (Concept)
-    SELECT * FROM policy_submissions 
-    WHERE reminder_date = CURRENT_DATE 
-    AND reminder_status = 'pending';
-    ```
+ดำเนินการตั้งค่า Action รายวันเพื่อให้ระบบส่งข้อความอัตโนมัติภายใน Supabase:
+*   **ใช้ `pg_cron`**: จัดเก็บ Extension ไว้ลุยสคริปต์รายวัน (เช่น รันเวลา 08:00 น. เพื่อ Query หาแถวที่ `reminder_date = CURRENT_DATE` และ status = pending)
 *   **Supabase Edge Function (Notification Action)**:
-    สร้าง Endpoint ฟังก์ชันใหม่ที่โดน Trigger จาก cron-job ด้านบน 
-    เมื่อดึงข้อมูลรายชื่อคิวได้ ให้ยิง Message ไปยัง **LINE Messaging API (Push Message)**
+    จับ Event การ Query ส่งไปหา Endpoint ของ **LINE Messaging API (Push Message)**
     ```json
     {
-       "to": "[line_user_id จาก policy_submissions]",
+       "to": "[line_user_id จากโควตาที่ต้องส่งวันนี้]",
        "messages": [
            {
                "type": "text",
-               "text": "📢 ถึงเวลาออกใบเสนอราคาสำหรับรถ ทะเบียน [plate_number] แล้วครับ! เตรียมประสานงานได้เลย"
+               "text": "📢 ถึงเวลาออกใบเสนอราคาสำหรับรถ ทะเบียน [plate_number] แล้วครับ! สามารถเช็คเบี้ยได้เลย"
            }
        ]
     }
     ```
-    หลังยิง API เสร็จ อย่าลืม update `reminder_status = 'sent'` ให้กับแถวที่ยิงสำเร็จด้วย
+    หลังยิงข้อความด้วย API บังคับให้ update `reminder_status = 'sent'` ด้วยทุกครั้งเพื่อกันการส่งข้อความซ้ำลูป
 
 ### 3. Edge Function (Receiving API Update)
-*   แก้ไข Payload schema ในไฟล์ Edge Function ปัจจุบัน (`/submit-policy`) ให้รองรับการ map key ชื่อ `reminder_date` ไปลง Database อย่างปลอดภัย 
-*   อย่าลืม Decode `idToken` ด้วย lib ของ LINE หรือ Supabase Auth เสมอ
+*   รื้อฟื้น Endpoint ฟังก์ชันอัปเดตปัจจุบัน (`/submit-policy`) ให้ทำการ Map array ข้อมูลที่ปรับปรุงใหม่ (อย่างเช่น `reminder_date`, การเลือก `submission_type` ฝั่งต่ออายุ) กระจายลงไปยัง Object ในฐานข้อมูลให้ครบทุก Fields และปลอดภัยอย่างเคร่งครัด

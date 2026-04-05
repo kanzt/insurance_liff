@@ -1,46 +1,47 @@
-# Insurance LIFF App 📄
+# AI Handoff: Quotation Reminder Feature
 
-โปรเจกต์นี้เป็น Web Application แบบหน้าเดียว (Single Page Application) ที่พัฒนาเพื่อใช้เป็น **LINE LIFF App** สำหรับให้ผู้ใช้งาน (ลูกค้า หรือตัวแทน) ส่งข้อมูลและเอกสารเพื่อ "เช็คเบี้ยประกัน" 
+## 📌 Context
+ในหน้าแอปพลิเคชันรูปแบบ LIFF ได้มีการเพิ่ม UI สำหรับให้ผู้ใช้ (ตัวแทน) "ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า" ในกรณีที่เช็คเบี้ยเร็วเกินไป (มากกว่า 60-90 วันก่อนกรมธรรม์หมดอายุ) ซึ่งยังไม่สามารถออกเสนอราคาได้ ณ วันที่กดส่ง
 
-## 🛠 เทคโนโลยีที่ใช้
-- **HTML/JS (Vanilla)** 
-- **Tailwind CSS** (ผ่าน CDN) สำหรับจัดการ UI
-- **LINE LIFF SDK** (`liff.init`) ควบคุมการเข้าสู่ระบบผ่าน LINE และดึงข้อมูล Profile
-- **Supabase Edge Functions** เป็น Backend API สำหรับดึงข้อมูลตัวแทนและรับข้อมูลฟอร์ม
+*   **สิ่งที่พัฒนาแล้วใน Frontend:**
+    1. เพิ่ม Checkbox ขอรับการแจ้งเตือน
+    2. เพิ่ม Date Picker เพื่อรับค่า `reminder_date` (และถ้ากรอก `end_date` ไว้แล้ว จะคำนวณหักลบ 60 วันเป็น Default ให้)
+    3. ปรับ Logic การ Build JSON Payload ใน method `POST` โดยส่งไปหา Edge Function พร้อม key ใหม่คือ `reminder_date`
 
-## ✅ สิ่งที่ทำไปแล้ว (Current State)
-1. **การเชื่อมต่อ LINE LIFF**: 
-   - ตั้งค่า `myLiffId` เรียบร้อย (`2009445757-eTSIMGmL`)
-   - ระบบเช็คสถานะล็อกอิน, เรียกใช้ `liff.login()` หากยังไม่เข้าระบบ และแสดงชื่อผู้ใช้ LINE หลังจากล็อกอินสำเร็จ
-2. **ดึงข้อมูลตัวแทนผู้แจ้งงาน (Agent Dropdown)**:
-   - ตอนเปิดหน้าเว็บ จะมีการยิง `GET` ไปที่ Supabase API (`/submit-policy`) เพื่อดึงรายชื่อ Agent มาแสดงใน Dropdown (`<select id="informer_id">`) แบบอัตโนมัติ
-3. **การปรับฟอร์มตามหมวดหมู่ (Dynamic Form)**:
-   - หากเลือก **ประกันรถยนต์** (Motor) ➡️ ช่องให้กรอกจะเป็น "ทะเบียนรถ"
-   - หากเลือก **ประกันอื่นๆ** (Non-Motor) ➡️ ช่องให้กรอกจะเปลี่ยนเป็น "ชื่อผู้เอาประกัน"
-4. **จัดการอัปโหลดไฟล์ (File Upload to Base64)**:
-   - ผู้ใช้แนบไฟล์ได้หลายไฟล์ และระบบจะแปลงไฟล์ (Pdf, Image) เป็น `Base64` พร้อมระบุ `fileName` และ `mimeType` เพื่อส่งไปพร้อมกับ Payload
-5. **การส่งข้อมูล (Form Submission)**:
-   - เมื่อกดส่งฟอร์ม ระบบจะจัดเตรียม Payload ข้อมูล (รวม `idToken` ของผู้ใช้จาก LIFF) และยิง `POST` ไปยัง Supabase API (`/submit-policy`)
-   - มีระบบล็อกปุ่ม ลดการซ้ำซ้อนขณะโหลด
-   - หากส่งสำเร็จ (บนเบราว์เซอร์ LINE) หน้าต่าง LIFF จะปิดเองอัตโนมัติ 
+## 🛠 Backend Implementation Plan (Future Work / สำหรับ AI ตัวต่อไปที่จะมาทำแพทช์หน้า)
+สำหรับการพัฒนาระบบหลังบ้านมารองรับฟีเจอร์นี้ ขอแนะนำให้ดำเนินการดังต่อไปนี้:
 
-## 🚀 แนวทางต่อยอดและสิ่งที่สามารถทำต่อไปได้ (Next Steps)
-หากต้องการให้ AI นำไปพัฒนาต่อ สามารถหยิบหัวข้อต่อไปนี้ไปดำเนินการได้เลย:
+### 1. Database Schema (Supabase)
+ในตารางที่เก็บข้อมูลการขอเช็คเบี้ย (เช่นตาราง `policy_submissions`) จะต้องเพิ่มโครงสร้างเพื่อจัดเก็บรายละเอียดการแจ้งเตือน:
+*   `reminder_date` (Date / Timestamp): เก็บวันที่ที่ระบบจะต้องทำการแจ้งเตือนผู้ใช้งาน (ส่งมาจาก Payload Frontend)
+*   `reminder_status` (String/Enum): สถานะของการเตือน สร้างค่า Default เป็น `pending` (รอแจ้งเตือน), และมีสถานะ `sent` (แจ้งเตือนแล้ว), หรือ `cancelled` (ปิดคิว)
+*   `line_user_id` (String): [IMPORTANT] จำเป็นต้องใช้ verify method เพื่อ decode ค่า `idToken` ใน Edge Function เพื่อดึงหา `User ID` ของบัญชี LINE คนนั้นๆ มาเก็บไว้ เพื่อใช้โยงผูกสำหรับสิทธิ์ในการรับข้อความส่วนตัว (Push Message) กลับไปหา
 
-1. **ปรับปรุง Backend / Supabase Integration**:
-   - การจัดการไฟล์แบบตรงเข้า Storage (Direct Upload) แทนการส่ง Base64 ผ่าน JSON (เนื่องจากการส่ง Base64 อาจจะเจอปัญหา Payload size limit ของ API ถ้าไฟล์ใหญ่เกินไป)
-2. **การพัฒนา UI/UX และ Validation**:
-   - เพิ่ม Loading Skeleton ขณะที่กำลังโหลดรายชื่อ Agent
-   - เพิ่มการตรวจสอบขนาดไฟล์จำกัด (File Size Limit Validation) และรูปแบบข้อความแสดงข้อผิดพลาด (Error Handling) ให้แจ้งเตือนผู้ใช้ชัดเจนขึ้นก่อนยิง API Request
-   - เพิ่มการ Preview หรือแสดงชื่อไฟล์ที่ผู้ใช้เลือก เพื่อยืนยันเอกสารที่อัปโหลดก่อนกดปุ่มส่ง
-3. **Refactor Code (หากสเกลโปรเจกต์จะใหญ่ขึ้น)**:
-   - แยกไฟล์ Script (JS) และ สไตล์ (CSS) ออกเป็นไฟล์แยก
-   - หากมีแบบฟอร์มซับซ้อนขึ้น อาจจะพิจารณาใช้ Framework แต่ถ้าโปรเจกต์ยังใช้เพียงสำหรับรับข้อมูลธรรมดา รูปแบบ Vanilla HTML+JS ก็เพียงพอและโหลดเร็ว
-4. **Environment Variables Configs**:
-   - ปัจจุบันตัวแปร `myLiffId` และ `apiUrl` ถูกระบุไว้ในไฟล์เดียวเลย (Hardcoded) ควรพิจารณาหาวิธีจัดการแยก Config นี้ออกไปเพื่อให้สลับระหว่าง Development / Production ได้ง่ายขึ้นในอนาคต
+### 2. Notification Engine (Cron Job)
+รันเป็น scheduled service เพื่อส่งข้อความได้อัตโนมัติ โดยไม่ต้องอาศัย Make.com ใช้ Supabase ให้จบในตัวเลย
+*   **ใช้ `pg_cron`**: ติดตั้ง extension `pg_cron` บันทึกใน PostgreSQL สั่งสคริปต์รายวัน (เช่น รันทุกเวลา 08:00 น.)
+    ```sql
+    -- ตัวอย่างการดึงคิวประจำวัน (Concept)
+    SELECT * FROM policy_submissions 
+    WHERE reminder_date = CURRENT_DATE 
+    AND reminder_status = 'pending';
+    ```
+*   **Supabase Edge Function (Notification Action)**:
+    สร้าง Endpoint ฟังก์ชันใหม่ที่โดน Trigger จาก cron-job ด้านบน 
+    เมื่อดึงข้อมูลรายชื่อคิวได้ ให้ยิง Message ไปยัง **LINE Messaging API (Push Message)**
+    ```json
+    {
+       "to": "[line_user_id จาก policy_submissions]",
+       "messages": [
+           {
+               "type": "text",
+               "text": "📢 ถึงเวลาออกใบเสนอราคาสำหรับรถ ทะเบียน [plate_number] แล้วครับ! เตรียมประสานงานได้เลย"
+           }
+       ]
+    }
+    ```
+    หลังยิง API เสร็จ อย่าลืม update `reminder_status = 'sent'` ให้กับแถวที่ยิงสำเร็จด้วย
 
----
-> 🤖 **Note for AI Agent**: 
-> This is a straightforward HTML+JS LIFF App. 
-> To test or debug, focus on `index.html`. API endpoint is `https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy`.
-> Payload schema for form submission requires `idToken`, `informer_id`, `category_id`, properties mapped from inputs (`plate_number` or `customer_name`), `end_date`, and `files` array encoded in Base64 `[{base64, fileName, mimeType}]`. Ensure these are aligned with the Supabase Edge function logic if making changes.
+### 3. Edge Function (Receiving API Update)
+*   แก้ไข Payload schema ในไฟล์ Edge Function ปัจจุบัน (`/submit-policy`) ให้รองรับการ map key ชื่อ `reminder_date` ไปลง Database อย่างปลอดภัย 
+*   อย่าลืม Decode `idToken` ด้วย lib ของ LINE หรือ Supabase Auth เสมอ

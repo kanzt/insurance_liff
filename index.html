@@ -211,22 +211,23 @@
 
     <script>
         const myLiffId = "2009445757-eTSIMGmL";
-        const apiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1/submit-policy";
+        const baseApiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1";
+        const apiUrl = `${baseApiUrl}/submit-policy`;
 
-        // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown
+        // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown (เรียกต่อเมื่อ Verify ผ่าน)
         async function loadAgents() {
             try {
-                const response = await fetch(apiUrl, { method: 'GET' });
+                const response = await fetch(`${baseApiUrl}/loadAgents`, { method: 'GET' });
                 const result = await response.json();
                 const select = document.getElementById('informer_id');
 
-                if (result.success && result.agents) {
+                if (result.results && Array.isArray(result.results)) {
                     select.innerHTML = '<option value="" disabled selected>-- เลือกตัวแทนผู้แจ้งงาน --</option>';
-                    result.agents.forEach(agent => {
+                    result.results.forEach(agent => {
                         const option = document.createElement('option');
-                        option.value = agent.agent_id;
+                        option.value = agent.agentId;
                         // สร้างรูปแบบ "ชื่อ นามสกุล (AM001)"
-                        option.textContent = `${agent.full_name} (${agent.agent_id})`;
+                        option.textContent = `${agent.fullName} (${agent.agentId})`;
                         select.appendChild(option);
                     });
                 } else {
@@ -237,21 +238,57 @@
             }
         }
 
+        // 🟢 ฟังก์ชันตรวจสอบสิทธิ์ตัวแทนใหม่ (ตามแผน Endpoint /verifyAgent)
+        async function verifyAgentAccess(idToken, displayName) {
+            const profileBox = document.getElementById('profileBox');
+            const formObj = document.getElementById('policyForm');
+            
+            try {
+                profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-xs text-brand-600 mt-1 block">กำลังตรวจสอบสิทธิ์การใช้งาน...</span>`;
+                formObj.style.display = 'none'; // ซ่อนฟอร์มระหว่งตรวจ
+
+                const response = await fetch(`${baseApiUrl}/verifyAgent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken: idToken })
+                });
+                
+                const data = await response.json();
+                const status = data.result ? data.result.liff_status : null;
+
+                if (status === 1) {
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>`;
+                } else if (status === 3) {
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ หรือยังไม่เคยลงทะเบียน</span>`;
+                } else if (status === 2) {
+                    // อนุญาตให้ใช้งานได้
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b>`;
+                    await loadAgents(); // โหลดรายชื่อตัวแทนมาใส่ Dropdown
+                    formObj.style.display = 'block'; // แสดงแบบฟอร์ม
+                } else {
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่ทราบสถานะการอนุญาตจากระบบ (${status})</span>`;
+                }
+            } catch (error) {
+                console.error("Error verifying agent:", error);
+                profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ เชื่อมต่อระบบตรวจสอบสิทธิ์ขัดข้อง</span>`;
+            }
+        }
+
         async function initializeLiff() {
             try {
                 await liff.init({ liffId: myLiffId });
 
-                // ให้โหลดรายชื่อตัวแทนทันทีที่หน้าเว็บเปิดขึ้นมา
-                loadAgents();
-
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
-                    document.getElementById('profileBox').innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${profile.displayName}</b>`;
+                    const idToken = liff.getIDToken();
+                    
+                    // ทำการ Verify สิทธิ์ก่อนเปิดให้กรอกฟอร์ม
+                    await verifyAgentAccess(idToken, profile.displayName);
                 } else {
                     liff.login();
                 }
             } catch (err) {
-                document.getElementById('profileBox').innerHTML = '<span class="text-red-500">❌ เชื่อมต่อ LINE ไม่สำเร็จ</span>';
+                document.getElementById('profileBox').innerHTML = '<span class="text-red-500 font-semibold">❌ เชื่อมต่อ LINE ไม่สำเร็จ</span>';
             }
         }
 

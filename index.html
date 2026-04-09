@@ -217,7 +217,11 @@
         // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown (เรียกต่อเมื่อ Verify ผ่าน)
         async function loadAgents() {
             try {
-                const response = await fetch(`${baseApiUrl}/loadAgents`, { method: 'GET' });
+                const idToken = liff.getIDToken();
+                const response = await fetch(`${baseApiUrl}/load-agents`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
                 const result = await response.json();
                 const select = document.getElementById('informer_id');
 
@@ -247,10 +251,13 @@
                 profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-xs text-brand-600 mt-1 block">กำลังตรวจสอบสิทธิ์การใช้งาน...</span>`;
                 formObj.style.display = 'none'; // ซ่อนฟอร์มระหว่งตรวจ
 
-                const response = await fetch(`${baseApiUrl}/verifyAgent`, {
+                const response = await fetch(`${baseApiUrl}/verify-agent`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idToken: idToken })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: JSON.stringify({})
                 });
                 
                 const data = await response.json();
@@ -583,7 +590,6 @@
 
                 // 🟢 เพิ่ม informer_id และข้อมูลการแจ้งเตือนลงไปใน Payload
                 const payload = {
-                    idToken: idToken,
                     informer_id: document.getElementById('informer_id').value,
                     category_id: categoryId,
                     submission_type: document.getElementById('submission_type').value,
@@ -598,7 +604,10 @@
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
                     body: JSON.stringify(payload)
                 });
 

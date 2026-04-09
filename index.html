@@ -212,7 +212,6 @@
     <script>
         const myLiffId = "2009445757-eTSIMGmL";
         const baseApiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1";
-        const apiUrl = `${baseApiUrl}/submit-policy`;
 
         // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown (เรียกต่อเมื่อ Verify ผ่าน)
         async function loadAgents() {
@@ -246,7 +245,7 @@
         async function verifyAgentAccess(idToken, displayName) {
             const profileBox = document.getElementById('profileBox');
             const formObj = document.getElementById('policyForm');
-            
+
             try {
                 profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-xs text-brand-600 mt-1 block">กำลังตรวจสอบสิทธิ์การใช้งาน...</span>`;
                 formObj.style.display = 'none'; // ซ่อนฟอร์มระหว่งตรวจ
@@ -259,7 +258,7 @@
                     },
                     body: JSON.stringify({})
                 });
-                
+
                 const data = await response.json();
                 const status = data.result ? data.result.liff_status : null;
 
@@ -288,7 +287,7 @@
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
                     const idToken = liff.getIDToken();
-                    
+
                     // ทำการ Verify สิทธิ์ก่อนเปิดให้กรอกฟอร์ม
                     await verifyAgentAccess(idToken, profile.displayName);
                 } else {
@@ -602,7 +601,7 @@
 
                 submitBtn.innerText = '⏳ กำลังบันทึกข้อมูล...';
 
-                const response = await fetch(apiUrl, {
+                const response = await fetch(`${baseApiUrl}/submit-policy`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

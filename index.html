@@ -272,7 +272,7 @@
                     await loadAgents(); // โหลดรายชื่อตัวแทนมาใส่ Dropdown
                     formObj.style.display = 'block'; // แสดงแบบฟอร์ม
                 } else {
-                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่ทราบสถานะการอนุญาตจากระบบ (${status})</span>`;
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่สามารถใช้งานระบบได้ กรุณาติดต่อแอดมิน</span>`;
                 }
             } catch (error) {
                 console.error("Error verifying agent:", error);

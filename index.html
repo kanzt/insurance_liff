@@ -212,7 +212,6 @@
     <script>
         const myLiffId = "2009445757-eTSIMGmL";
         const baseApiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1";
-        const isDebugMode = new URLSearchParams(window.location.search).has('debug');
 
         // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown (เรียกต่อเมื่อ Verify ผ่าน)
         async function loadAgents() {
@@ -263,19 +262,17 @@
                 const data = await response.json();
                 const status = data.result ? data.result.liffStatus : null;
 
-                const debugBtn = isDebugMode ? `<button onclick="copyToken()" class="text-[10px] text-gray-400 underline mt-2 block mx-auto">Copy ID Token for Debug</button>` : '';
-
                 if (status === 1) {
-                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>${debugBtn}`;
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>`;
                 } else if (status === 3) {
-                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ หรือยังไม่เคยลงทะเบียน</span>${debugBtn}`;
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ หรือยังไม่เคยลงทะเบียน</span>`;
                 } else if (status === 2) {
                     // อนุญาตให้ใช้งานได้
-                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b>${isDebugMode ? '<br>' + debugBtn : ''}`;
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b>`;
                     await loadAgents(); // โหลดรายชื่อตัวแทนมาใส่ Dropdown
                     formObj.style.display = 'block'; // แสดงแบบฟอร์ม
                 } else {
-                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่สามารถใช้งานระบบได้ กรุณาติดต่อแอดมิน</span>${debugBtn}`;
+                    profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-red-500 mt-1 block font-semibold">❌ ไม่สามารถใช้งานระบบได้ กรุณาติดต่อแอดมิน</span>`;
                 }
             } catch (error) {
                 console.error("Error verifying agent:", error);
@@ -291,13 +288,6 @@
                     const profile = await liff.getProfile();
                     const idToken = liff.getIDToken();
 
-                    // 🔍 Log for Debugging (Only in Debug Mode)
-                    if (isDebugMode) {
-                        console.log("--- LINE ID TOKEN ---");
-                        console.log(idToken);
-                        console.log("-------------------");
-                    }
-
                     // ทำการ Verify สิทธิ์ก่อนเปิดให้กรอกฟอร์ม
                     await verifyAgentAccess(idToken, profile.displayName);
                 } else {
@@ -309,27 +299,6 @@
         }
 
         initializeLiff();
-
-        // 🔍 ฟังก์ชันช่วย Copy Token ไปใช้ใน Postman
-        function copyToken() {
-            const token = liff.getIDToken();
-            if (token) {
-                navigator.clipboard.writeText(token).then(() => {
-                    alert('Copied ID Token to clipboard!');
-                }).catch(err => {
-                    // Fallback สำหรับเคสที่ clipboard API ไม่ทำงาน
-                    const el = document.createElement('textarea');
-                    el.value = token;
-                    document.body.appendChild(el);
-                    el.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(el);
-                    alert('Copied ID Token (Fallback)!');
-                });
-            } else {
-                alert('Token not found!');
-            }
-        }
 
         // 🟢 ฟังก์ชันจัดกล่อง Dropzone ให้รองรับการลากไฟล์มาใส่
         function setupDropzones() {

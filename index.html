@@ -260,7 +260,7 @@
                 });
 
                 const data = await response.json();
-                const status = data.result ? data.result.liffStatus : null;
+                const status = data.result ? data.result.liffStatusId : null;
 
                 if (status === 1) {
                     profileBox.innerHTML = `👤 เข้าสู่ระบบด้วย LINE: <b>${displayName}</b> <br><span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>`;

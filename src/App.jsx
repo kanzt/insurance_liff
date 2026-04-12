@@ -18,7 +18,7 @@ export function App() {
   // Handle keyboard navigation for the gallery
   useEffect(() => {
     if (!galleryData) return;
-    
+
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') nextImage();
       if (e.key === 'ArrowLeft') prevImage();
@@ -59,14 +59,14 @@ export function App() {
     async function init() {
       try {
         await liff.init({ liffId });
-        
+
         if (liff.isLoggedIn()) {
           const userProfile = await liff.getProfile();
           setProfile(userProfile);
-          
+
           const token = liff.getIDToken();
           setIdToken(token);
-          
+
           await verifyAgentAccess(token, userProfile.displayName);
         } else {
           liff.login();
@@ -78,7 +78,7 @@ export function App() {
         setIsLoading(false);
       }
     }
-    
+
     init();
   }, []);
 
@@ -111,55 +111,48 @@ export function App() {
     }
 
     if (error) {
-       return (
-         <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6 shadow-inner">
-           <div class="flex items-center gap-2 text-red-600 mb-2">
-             <span class="text-xl">⚠️</span>
-             <span class="font-bold">เกิดข้อผิดพลาด</span>
-           </div>
-           <p class="text-sm text-red-500 mb-4">{error}</p>
-           {loginRequired && (
-             <button 
-               onClick={() => {
-                 if (!liff.isInClient()) liff.logout();
-                 liff.login();
-               }}
-               class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg"
-             >
-               🔑 ล็อกอินเข้าสู่ระบบใหม่
-             </button>
-           )}
-           {profile && !loginRequired && <div class="text-xs text-red-400 mt-2">👤 LINE: {profile.displayName}</div>}
-         </div>
-       );
+      return (
+        <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6 shadow-inner">
+          <div class="flex items-center gap-2 text-red-600 mb-2">
+            <span class="text-xl">⚠️</span>
+            <span class="font-bold">เกิดข้อผิดพลาด</span>
+          </div>
+          <p class="text-sm text-red-500 mb-4">{error}</p>
+          {loginRequired && (
+            <button
+              onClick={() => {
+                if (!liff.isInClient()) liff.logout();
+                liff.login();
+              }}
+              class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg"
+            >
+              🔑 ล็อกอินเข้าสู่ระบบใหม่
+            </button>
+          )}
+          {profile && !loginRequired && <div class="text-xs text-red-400 mt-2">👤 LINE: {profile.displayName}</div>}
+        </div>
+      );
     }
-    
+
     if (profile) {
       if (liffStatus === 1) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br/>
+            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br />
             <span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>
-          </div>
-        );
-      } else if (liffStatus === 3) {
-        return (
-          <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br/>
-            <span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ หรือยังไม่เคยลงทะเบียน</span>
           </div>
         );
       } else if (liffStatus === 2) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-             👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b>
+            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b>
           </div>
         );
-      } else if (liffStatus !== null) {
+      } else {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br/>
-            <span class="text-red-500 mt-1 block font-semibold">❌ ไม่สามารถใช้งานระบบได้ กรุณาติดต่อแอดมิน</span>
+            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br />
+            <span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ กรุณาติดต่อแอดมิน</span>
           </div>
         );
       }
@@ -200,14 +193,14 @@ export function App() {
           {/* Navigation Arrows */}
           {galleryData.urls.length > 1 && (
             <>
-              <button 
+              <button
                 type="button"
                 class="absolute left-0 top-0 bottom-0 w-20 flex items-center justify-center text-white/50 hover:text-white transition-all z-[1010] bg-gradient-to-r from-black/50 to-transparent group"
                 onClick={(e) => { e.stopPropagation(); prevImage(); }}
               >
                 <span class="text-6xl font-light transform group-active:scale-90 transition-transform">‹</span>
               </button>
-              <button 
+              <button
                 type="button"
                 class="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center text-white/50 hover:text-white transition-all z-[1010] bg-gradient-to-l from-black/50 to-transparent group"
                 onClick={(e) => { e.stopPropagation(); nextImage(); }}

@@ -9,7 +9,6 @@ export function App() {
   const [idToken, setIdToken] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [loginRequired, setLoginRequired] = useState(false);
   const [galleryData, setGalleryData] = useState(null); // { urls: [], index: 0 }
 
   const liffId = import.meta.env.VITE_LIFF_ID;
@@ -89,12 +88,10 @@ export function App() {
         body: JSON.stringify({})
       });
 
-      if (response.status === 401 || response.status === 403) {
-        setLoginRequired(true);
-        setError("เซสชั่นหมดอายุหรือการยืนยันตัวตนล้มเหลว");
-        return;
+      if (!response.ok) {
+        throw new Error(`ยืนยันตัวตนล้มเหลว (${response.status})`);
       }
-
+      
       const data = await response.json();
       const status = data.result ? data.result.liffStatusId : null;
       setLiffStatus(status);
@@ -118,18 +115,7 @@ export function App() {
             <span class="font-bold">&nbsp;เกิดข้อผิดพลาด</span>
           </div>
           <p class="text-sm text-red-500 mb-4">{error}</p>
-          {loginRequired && (
-            <button
-              onClick={() => {
-                if (!liff.isInClient()) liff.logout();
-                liff.login();
-              }}
-              class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg"
-            >
-              🔑 ล็อกอินเข้าสู่ระบบใหม่
-            </button>
-          )}
-          {profile && !loginRequired && <div class="text-xs text-red-400 mt-2">👤 LINE: {profile.displayName}</div>}
+          {profile && <div class="text-xs text-red-400 mt-2">👤 LINE: {profile.displayName}</div>}
         </div>
       );
     }

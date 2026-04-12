@@ -16,7 +16,12 @@
 - **Agent Search Combobox**: เปลี่ยนจาก Dropdown ธรรมดาเป็น **Searchable Combobox** ที่ค้นหาได้ทั้งชื่อและรหัสตัวแทน พร้อมระบบ Highlight ข้อความที่ค้นหา
 - **Dropzone Component**: รวมศูนย์ Logic การอัปโหลดไฟล์ไว้ที่ Component เดียวกัน รองรับการ Drag & Drop และการกด Ctrl+V เพื่อวางรูปภาพ
 
-### 3. Automated CI/CD (New!)
+### 3. Resilience & Persistence (New! V3)
+- **Session Recovery**: ระบบกู้คืนเซสชั่นอัจฉริยะที่จะทำการ `logout` และ `login` ให้อัตโนมัติหากพบว่า Token หมดอายุระหว่างการใช้งาน
+- **Form State Persistence**: ใช้ `localStorage` เพื่อบันทึกข้อมูลที่ผู้ใช้พิมพ์ไว้ทั้งหมด (รวมถึงไฟล์ที่เลือกและเอเย่นต์ที่เลือก) เพื่อให้มั่นใจว่าข้อมูลไม่หายแม้แอปจะโหลดใหม่
+- **Loop Breaker UI**: หากระบบกู้คืนอัตโนมัติไม่สำเร็จ จะแสดงหน้าจอ Error ที่ชัดเจนพร้อมปุ่ม **Manual Login** เพื่อป้องกันปัญหา Infinite Redirect Loop
+
+### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
 - **Base Path**: ตั้งค่า `base: '/insurance_liff/'` ใน `vite.config.js` เพื่อให้รองรับการรันใน Subdirectory ของ GitHub Pages
 
@@ -47,4 +52,4 @@
 - **PDF Preview**: หากมีการอัปโหลดไฟล์ PDF อาจพิจารณาเพิ่มตัว Preview เล็กๆ ใน Dropzone (ปัจจุบันพรีวิวเฉพาะรูปภาพ)
 
 ---
-*Last Updated: 2026-04-12*
+*Last Updated: 2026-04-12 (V3: Persistence & Recovery)*

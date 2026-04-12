@@ -1,16 +1,55 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import liff from '@line/liff';
 import { AgentSearch } from './AgentSearch';
 import { Dropzone } from './Dropzone';
+import { authenticatedFetch } from '../utils/api';
+
+const STORAGE_KEY = 'insurance_liff_form_draft';
 
 export function PolicyForm({ idToken, baseApiUrl }) {
   const [informerId, setInformerId] = useState(null);
+  const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
   const [enableReminder, setEnableReminder] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
+
+  // Restore form state from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        if (data.informerId) setInformerId(data.informerId);
+        if (data.informerName) setInformerName(data.informerName);
+        if (data.categoryId) setCategoryId(data.categoryId);
+        if (data.submissionType) setSubmissionType(data.submissionType);
+        if (data.referenceInput) setReferenceInput(data.referenceInput);
+        if (data.endDate) setEndDate(data.endDate);
+        if (data.enableReminder) setEnableReminder(data.enableReminder);
+        if (data.reminderDate) setReminderDate(data.reminderDate);
+      } catch (e) {
+        console.error("Failed to restore form state:", e);
+      }
+    }
+  }, []);
+
+  // Save form state to localStorage on any change
+  useEffect(() => {
+    const stateToSave = {
+      informerId,
+      informerName,
+      categoryId,
+      submissionType,
+      referenceInput,
+      endDate,
+      enableReminder,
+      reminderDate
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate]);
   
   const [filesData, setFilesData] = useState({
     registration: [],
@@ -111,17 +150,14 @@ export function PolicyForm({ idToken, baseApiUrl }) {
         files: uploadedFiles
       };
 
-      const response = await fetch(`${baseApiUrl}/submit-policy`, {
+      const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
         body: JSON.stringify(payload)
       });
 
       const result = await response.json();
       if (response.ok) {
+        localStorage.removeItem(STORAGE_KEY); // Clear draft on success
         alert('✅ ' + result.message);
         if (liff.isInClient()) liff.closeWindow();
         else window.location.reload();
@@ -140,7 +176,12 @@ export function PolicyForm({ idToken, baseApiUrl }) {
     <form class="space-y-4" onSubmit={handleSubmit}>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
-        <AgentSearch baseApiUrl={baseApiUrl} idToken={idToken} onSelectAgent={setInformerId} />
+        <AgentSearch 
+          baseApiUrl={baseApiUrl} 
+          idToken={idToken} 
+          onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }} 
+          initialQuery={informerName}
+        />
       </div>
 
       <div>

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 
-export function AgentSearch({ baseApiUrl, idToken, onSelectAgent }) {
+export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery = '' }) {
   const [agents, setAgents] = useState([]);
   const [filteredAgents, setFilteredAgents] = useState([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,16 +59,17 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent }) {
   };
 
   const handleSelect = (agent) => {
-    setQuery(`${agent.fullName} (${agent.agentId})`);
+    const formattedName = `${agent.fullName} (${agent.agentId})`;
+    setQuery(formattedName);
     setSelectedAgent(agent);
-    onSelectAgent(agent.agentId);
+    onSelectAgent(agent.agentId, formattedName);
     setShowDropdown(false);
   };
 
   const handleClear = () => {
     setQuery('');
     setSelectedAgent(null);
-    onSelectAgent(null);
+    onSelectAgent(null, '');
     setFilteredAgents(agents);
     setShowDropdown(false);
   };

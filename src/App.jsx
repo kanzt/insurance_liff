@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import liff from '@line/liff';
 import { PolicyForm } from './components/PolicyForm';
+import { authenticatedFetch } from './utils/api';
 
 export function App() {
   const [profile, setProfile] = useState(null);
@@ -8,6 +9,7 @@ export function App() {
   const [idToken, setIdToken] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loginRequired, setLoginRequired] = useState(false);
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -41,14 +43,16 @@ export function App() {
 
   async function verifyAgentAccess(token, displayName) {
     try {
-      const response = await fetch(`${baseApiUrl}/verify-agent`, {
+      const response = await authenticatedFetch(`${baseApiUrl}/verify-agent`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({})
       });
+
+      if (response.status === 401 || response.status === 403) {
+        setLoginRequired(true);
+        setError("เซสชั่นหมดอายุหรือการยืนยันตัวตนล้มเหลว");
+        return;
+      }
 
       const data = await response.json();
       const status = data.result ? data.result.liffStatusId : null;
@@ -67,9 +71,24 @@ export function App() {
 
     if (error) {
        return (
-         <div class="text-sm bg-red-50 p-3 rounded-lg border border-red-100 mb-6 text-center shadow-inner text-red-600">
-           {profile && `👤 เข้าสู่ระบบด้วย LINE: ${profile.displayName} `}<br/>
-           <span class="font-semibold">❌ {error}</span>
+         <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6 shadow-inner">
+           <div class="flex items-center gap-2 text-red-600 mb-2">
+             <span class="text-xl">⚠️</span>
+             <span class="font-bold">เกิดข้อผิดพลาด</span>
+           </div>
+           <p class="text-sm text-red-500 mb-4">{error}</p>
+           {loginRequired && (
+             <button 
+               onClick={() => {
+                 if (!liff.isInClient()) liff.logout();
+                 liff.login();
+               }}
+               class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg"
+             >
+               🔑 ล็อกอินเข้าสู่ระบบใหม่
+             </button>
+           )}
+           {profile && !loginRequired && <div class="text-xs text-red-400 mt-2">👤 LINE: {profile.displayName}</div>}
          </div>
        );
     }

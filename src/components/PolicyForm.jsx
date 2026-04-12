@@ -1,0 +1,246 @@
+import { useState } from 'preact/hooks';
+import liff from '@line/liff';
+import { AgentSearch } from './AgentSearch';
+import { Dropzone } from './Dropzone';
+
+export function PolicyForm({ idToken, baseApiUrl }) {
+  const [informerId, setInformerId] = useState(null);
+  const [categoryId, setCategoryId] = useState('1');
+  const [submissionType, setSubmissionType] = useState('new');
+  const [referenceInput, setReferenceInput] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [enableReminder, setEnableReminder] = useState(false);
+  const [reminderDate, setReminderDate] = useState('');
+  
+  const [filesData, setFilesData] = useState({
+    registration: [],
+    oldPolicy: [],
+    quotation: [],
+    compQuotation: [],
+    renewalNotice: [],
+    others: []
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = error => reject(error);
+  });
+
+  const handleReminderToggle = (e) => {
+    setEnableReminder(e.target.checked);
+    if (e.target.checked && endDate && !reminderDate) {
+      const d = new Date(endDate);
+      d.setDate(d.getDate() - 60);
+      setReminderDate(d.toISOString().split('T')[0]);
+    } else if (!e.target.checked) {
+      setReminderDate('');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!informerId) {
+      alert('❌ กรุณาเลือกตัวแทนผู้แจ้งงานจากรายชื่อที่ปรากฏ');
+      return;
+    }
+
+    const hasFiles = Object.values(filesData).some(arr => arr.length > 0);
+    if (!hasFiles) {
+      alert('❌ กรุณาแนบเอกสารอย่างน้อย 1 รายการ');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      let plateNumber = null;
+      let customerName = null;
+
+      if (categoryId === '1') {
+        plateNumber = referenceInput;
+      } else {
+        customerName = referenceInput;
+      }
+
+      const safeRef = referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
+      let uploadedFiles = [];
+
+      const fileMappings = [
+        { key: 'registration', docType: 'หน้ารายการจดทะเบียน' },
+        { key: 'oldPolicy', docType: 'กรมธรรม์เดิม' },
+        { key: 'quotation', docType: 'ใบเสนอราคา' },
+        { key: 'compQuotation', docType: 'ใบเสนอราคาคู่แข่ง' },
+        { key: 'renewalNotice', docType: 'เบี้ยต่ออายุ' },
+        { key: 'others', docType: 'เอกสารอื่นๆ' }
+      ];
+
+      for (const map of fileMappings) {
+        const fileArr = filesData[map.key];
+        if (fileArr.length > 0) {
+          const promises = fileArr.map(async (file, index) => {
+            const base64Data = await getBase64(file);
+            const ext = file.name.split('.').pop() || 'pdf';
+            let newFileName = `${safeRef}_${map.docType}`;
+            
+            if (submissionType === 'additional') {
+              newFileName += `_เพิ่มเติม_${Date.now()}`;
+            }
+            if (fileArr.length > 1) {
+              newFileName += `_${index + 1}`;
+            }
+            newFileName += `.${ext}`;
+
+            return { base64: base64Data, fileName: newFileName, mimeType: file.type };
+          });
+          uploadedFiles = uploadedFiles.concat(await Promise.all(promises));
+        }
+      }
+
+      const payload = {
+        informer_id: informerId,
+        category_id: parseInt(categoryId),
+        submission_type: submissionType,
+        plate_number: plateNumber,
+        customer_name: customerName,
+        end_date: endDate || null,
+        reminder_date: enableReminder ? reminderDate : null,
+        files: uploadedFiles
+      };
+
+      const response = await fetch(`${baseApiUrl}/submit-policy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('✅ ' + result.message);
+        if (liff.isInClient()) liff.closeWindow();
+        else window.location.reload();
+      } else {
+        alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
+      }
+    } catch (error) {
+      console.error(error);
+      alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form class="space-y-4" onSubmit={handleSubmit}>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
+        <AgentSearch baseApiUrl={baseApiUrl} idToken={idToken} onSelectAgent={setInformerId} />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+        <select 
+          value={categoryId} 
+          onChange={(e) => setCategoryId(e.target.value)}
+          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+        >
+          <option value="1">ประกันรถยนต์ (Motor)</option>
+          <option value="2">ประกันอื่นๆ (Non-Motor)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
+        <select 
+          value={submissionType}
+          onChange={(e) => setSubmissionType(e.target.value)}
+          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+        >
+          <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
+          <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
+          <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {categoryId === '1' ? 'ทะเบียนรถ' : 'ชื่อผู้เอาประกัน'} <span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          value={referenceInput}
+          onInput={(e) => setReferenceInput(e.target.value)}
+          required 
+          placeholder={categoryId === '1' ? 'เช่น 1กข-1234 กทม' : 'เช่น สมชาย ใจดี'}
+          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+        <input 
+          type="date" 
+          value={endDate}
+          onInput={(e) => setEndDate(e.target.value)}
+          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
+        />
+
+        <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
+          <label class="flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={enableReminder}
+              onChange={handleReminderToggle}
+              class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+            />
+            <span class="ml-2 text-sm font-medium text-brand-800">ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า</span>
+          </label>
+
+          {enableReminder && (
+            <div class="mt-3">
+              <label class="block text-xs font-semibold text-gray-600 mb-1">วันที่ต้องการให้ระบบแจ้งเตือนกลับ</label>
+              <input 
+                type="date" 
+                value={reminderDate}
+                onInput={(e) => setReminderDate(e.target.value)}
+                required
+                class="block w-full rounded-md border-gray-300 shadow-sm p-2 text-sm border focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
+              />
+              <p class="text-[11px] text-gray-500 mt-1">* ระบบจะส่งข้อความแจ้งเตือนผ่าน LINE ไปหาคุณในวันที่กำหนด</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          แนบเอกสารตามประเภท <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(แนบอย่างน้อย 1 ช่อง)</span>
+        </label>
+        
+        <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
+          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} />
+          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} />
+          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} />
+          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} />
+          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} />
+          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} />
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        disabled={isSubmitting}
+        class={`w-full text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all duration-200 mt-6 active:scale-[0.98] 
+          ${isSubmitting ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
+      >
+        {isSubmitting ? '⏳ กำลังเตรียมไฟล์...' : 'ส่งข้อมูลเช็คเบี้ย'}
+      </button>
+    </form>
+  );
+}

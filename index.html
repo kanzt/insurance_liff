@@ -45,6 +45,29 @@
             width: 1.25rem;
             height: 1.25rem;
         }
+
+        /* Searchable Dropdown Animation */
+        #agent_list.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .agent-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .agent-item:hover {
+            background-color: #f0fdf4;
+            color: #178F46;
+        }
+
+        .agent-item.selected {
+            background-color: #dcfce7;
+            color: #127238;
+            font-weight: 500;
+        }
     </style>
 </head>
 
@@ -69,10 +92,24 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span
                         class="text-red-500">*</span></label>
-                <select id="informer_id" required
-                    class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white">
-                    <option value="" disabled selected>⏳ กำลังโหลดรายชื่อตัวแทน...</option>
-                </select>
+                <div class="relative" id="agent_search_container">
+                    <input type="text" id="agent_search" placeholder="🔍 ค้นหาชื่อหรือรหัสตัวแทน..."
+                        class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white pr-10"
+                        autocomplete="off" required>
+                    <button type="button" id="clear_agent"
+                        class="absolute right-3 top-3 text-gray-400 hover:text-brand-600 hidden transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <input type="hidden" id="informer_id" required>
+                    <div id="agent_list"
+                        class="absolute z-50 mt-1 w-full bg-white/95 backdrop-blur-md border border-gray-100 rounded-xl shadow-2xl max-h-60 overflow-y-auto hidden transition-all duration-200 opacity-0 transform translate-y-2">
+                        <div class="p-3 text-center text-gray-500 text-sm italic">⏳ กำลังโหลดรายชื่อตัวแทน...</div>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -213,6 +250,8 @@
         const myLiffId = "2009445757-eTSIMGmL";
         const baseApiUrl = "https://bgmmrxczsikxcgwayomc.supabase.co/functions/v1";
 
+        let allAgents = [];
+
         // 🟢 ฟังก์ชันสำหรับดึงรายชื่อตัวแทนมาใส่ใน Dropdown (เรียกต่อเมื่อ Verify ผ่าน)
         async function loadAgents() {
             try {
@@ -222,24 +261,107 @@
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
                 const result = await response.json();
-                const select = document.getElementById('informer_id');
+                const listContainer = document.getElementById('agent_list');
 
                 if (result.results && Array.isArray(result.results)) {
-                    select.innerHTML = '<option value="" disabled selected>-- เลือกตัวแทนผู้แจ้งงาน --</option>';
-                    result.results.forEach(agent => {
-                        const option = document.createElement('option');
-                        option.value = agent.agentId;
-                        // สร้างรูปแบบ "ชื่อ นามสกุล (AM001)"
-                        option.textContent = `${agent.fullName} (${agent.agentId})`;
-                        select.appendChild(option);
-                    });
+                    allAgents = result.results;
+                    renderAgentList(allAgents);
                 } else {
-                    select.innerHTML = '<option value="" disabled>โหลดรายชื่อไม่สำเร็จ</option>';
+                    listContainer.innerHTML = '<div class="p-3 text-center text-red-500 text-sm">โหลดรายชื่อไม่สำเร็จ</div>';
                 }
             } catch (error) {
                 console.error("Error loading agents:", error);
             }
         }
+
+        function renderAgentList(agents, query = '') {
+            const listContainer = document.getElementById('agent_list');
+            if (agents.length === 0) {
+                listContainer.innerHTML = '<div class="p-3 text-center text-gray-500 text-sm">❌ ไม่พบรายชื่อที่ค้นหา</div>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            agents.forEach(agent => {
+                const item = document.createElement('div');
+                item.className = 'agent-item p-3 text-sm border-b border-gray-50 last:border-0 flex justify-between items-center';
+
+                // ฟังก์ชัน Hilight ข้อความที่ตรงกับคำค้นหา
+                const highlightText = (text, q) => {
+                    if (!q) return text;
+                    const regex = new RegExp(`(${q})`, 'gi');
+                    return text.replace(regex, '<span class="text-brand-600 font-bold underline">$1</span>');
+                };
+
+                item.innerHTML = `
+                    <span class="truncate">${highlightText(agent.fullName, query)}</span>
+                    <span class="text-xs text-gray-400 font-mono ml-2">${highlightText(agent.agentId, query)}</span>
+                `;
+                item.onclick = () => selectAgent(agent);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function selectAgent(agent) {
+            document.getElementById('agent_search').value = `${agent.fullName} (${agent.agentId})`;
+            document.getElementById('informer_id').value = agent.agentId;
+            document.getElementById('agent_list').classList.remove('show');
+            document.getElementById('clear_agent').classList.remove('hidden');
+
+            // ล้างสถานะ Error ของ input
+            document.getElementById('agent_search').setCustomValidity('');
+        }
+
+        // ตั้งค่า Event Listeners สำหรับการค้นหา
+        function setupAgentSearch() {
+            const agentSearchInput = document.getElementById('agent_search');
+            const agentList = document.getElementById('agent_list');
+            const clearBtn = document.getElementById('clear_agent');
+
+            agentSearchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = allAgents.filter(a =>
+                    a.fullName.toLowerCase().includes(query) ||
+                    a.agentId.toLowerCase().includes(query)
+                );
+                renderAgentList(filtered, query);
+                agentList.classList.add('show');
+
+                if (e.target.value) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                    document.getElementById('informer_id').value = '';
+                }
+            });
+
+            clearBtn.onclick = () => {
+                agentSearchInput.value = '';
+                document.getElementById('informer_id').value = '';
+                clearBtn.classList.add('hidden');
+                renderAgentList(allAgents);
+                agentSearchInput.focus();
+            };
+
+            agentSearchInput.addEventListener('focus', () => {
+                if (allAgents.length > 0) agentList.classList.add('show');
+            });
+
+            // รองรับปุ่ม ESC เพื่อปิด Dropdown
+            agentSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    agentList.classList.remove('show');
+                }
+            });
+
+            // ปิด Dropdown เมื่อคลิกข้างนอก
+            document.addEventListener('click', (e) => {
+                if (!document.getElementById('agent_search_container').contains(e.target)) {
+                    agentList.classList.remove('show');
+                }
+            });
+        }
+        setupAgentSearch();
 
         // 🟢 ฟังก์ชันตรวจสอบสิทธิ์ตัวแทนใหม่ (ตามแผน Endpoint /verifyAgent)
         async function verifyAgentAccess(idToken, displayName) {
@@ -588,8 +710,15 @@
                 }
 
                 // 🟢 เพิ่ม informer_id และข้อมูลการแจ้งเตือนลงไปใน Payload
+                const informerId = document.getElementById('informer_id').value;
+                if (!informerId) {
+                    alert('❌ กรุณาเลือกตัวแทนผู้แจ้งงานจากรายชื่อที่ปรากฏ');
+                    document.getElementById('agent_search').focus();
+                    return;
+                }
+
                 const payload = {
-                    informer_id: document.getElementById('informer_id').value,
+                    informer_id: informerId,
                     category_id: categoryId,
                     submission_type: document.getElementById('submission_type').value,
                     plate_number: plateNumber,

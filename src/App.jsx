@@ -113,9 +113,9 @@ export function App() {
     if (error) {
       return (
         <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6 shadow-inner">
-          <div class="flex items-center gap-2 text-red-600 mb-2">
+          <div class="flex items-center gap-1.5 text-red-600 mb-2">
             <span class="text-xl">⚠️</span>
-            <span class="font-bold">เกิดข้อผิดพลาด</span>
+            <span class="font-bold">&nbsp;เกิดข้อผิดพลาด</span>
           </div>
           <p class="text-sm text-red-500 mb-4">{error}</p>
           {loginRequired && (
@@ -138,21 +138,21 @@ export function App() {
       if (liffStatus === 1) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br />
-            <span class="text-orange-600 mt-1 block font-semibold">⏳ บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>
+            👤&nbsp;เข้าสู่ระบบด้วย LINE:&nbsp;<b>{profile.displayName}</b> <br />
+            <span class="text-orange-600 mt-1 block font-semibold">⏳&nbsp;บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>
           </div>
         );
       } else if (liffStatus === 2) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b>
+            👤&nbsp;เข้าสู่ระบบด้วย LINE:&nbsp;<b>{profile.displayName}</b>
           </div>
         );
       } else {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
-            👤 เข้าสู่ระบบด้วย LINE: <b>{profile.displayName}</b> <br />
-            <span class="text-red-500 mt-1 block font-semibold">❌ ไม่มีสิทธิ์ใช้งานระบบ กรุณาติดต่อแอดมิน</span>
+            👤&nbsp;เข้าสู่ระบบด้วย LINE:&nbsp;<b>{profile.displayName}</b> <br />
+            <span class="text-red-500 mt-1 block font-semibold">❌&nbsp;ไม่มีสิทธิ์ใช้งานระบบ กรุณาติดต่อแอดมิน</span>
           </div>
         );
       }
@@ -164,9 +164,8 @@ export function App() {
   return (
     <>
       <div class="bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8">
-        <h2 class="text-2xl font-bold mb-6 text-center">
-          <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-green-500">ส่งเอกสารเช็คเบี้ย</span>
-          📄
+        <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">
+          ส่งเอกสารเช็คเบี้ย&nbsp;📄
         </h2>
 
         {renderProfileBox()}

@@ -1,52 +1,50 @@
-# AI Handoff: Insurance LIFF Project Status
+# AI Handoff: Insurance LIFF Project Status (V2: Modernized)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App (สำหรับตัวแทน) ได้รับการอัปเกรดทั้งในด้านฟังก์ชันการใช้งาน (Features) และประสบการณ์ผู้ใช้ (UX/UI) อย่างสมบูรณ์ในฝั่ง Frontend เพื่อเพิ่มประสิทธิภาพการทำงานความปลอดภัยของระบบ และรองรับการแสดงผลข้ามอุปกรณ์ (Cross-device)
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App ได้รับการอัปเกรดครั้งใหญ่จากระบบ HTML ไฟล์เดียว ไปสู่โครงสร้าง **Modern Frontend Architecture** โดยใช้ **Vite + Preact** เพื่อความปลอดภัย ความเร็วในการโหลด และการดูแลรักษาโค้ดในระยะยาว
 
-## 🟢 Current Status (สิ่งที่พัฒนาเรียบร้อยแล้วใน Frontend)
-1. **Modern UX/UI Overhaul**: 
-   - ปรับโฉมแอปพลิเคชันด้วยสไตล์ Glassmorphism ให้ความรู้สึกโปร่งสบายและทันสมัย บูรณาการระบบสีประจำองค์กร (Brand Color: `#178F46`) ตลอดทั้งแอปพลิเคชัน
-   - นำ CSS Tailwind Forms plugin มาใช้เพื่อให้ Native UI elements สวยงาม รวมถึงใส่ Responsive Logic ซ่อนคำแนะนำ `(Ctrl+V)` เมื่อเปิดอ่านจากสมาร์ทโฟน
-2. **Explicit Agent Verification Flow (สำคัญ)**:
-   - ฟอร์มหน้าแรกจะถูกเริ่มต้นด้วยสถานะ `display: none;` ทั้งหมด ไม่ให้กดกรอกขอมูลได้กราบได้ที่ยังไม่ถูกอนุญาต
-   - เมื่อ Login ผ่าน LIFF แล้ว โค้ดจะนำ `idToken` ไปยิงตรวจที่ `/verifyAgent` ก่อน
-   - แสดงสถานะตาม Backend: รออนุมัติ (1) และ ไม่มีสิทธิ์ (3) จะทำการ Block หน้าจอไว้ทันที อนุมัติ (2) จึงค่อยปลดล็อคให้แบบฟอร์มแสดง
-3. **Dynamic Agent Dropdown**:
-   - เมื่อผู้ใช้งานได้รับการ `verifyAgent` สำเร็จ (Status = 2) ระบบจะยิงต่อไปที่ Endpoint `/loadAgents` เพื่อนำข้อมูล `{ results: [{ fullName: "...", agentId: "..." }] }` มาเติมเป็น Dropdown 
-4. **Quotation Reminder & Native Datepickers**: 
-   - เพิ่มฟังก์ชันแจ้งเตือนการออกใบเสนอราคาย้อนหลัง หากเช็คเบี้ยเร็วเกินกำหนด
-   - คืนชีพ Native Datepicker (`<input type="date">`) ทำให้การเลือกวันทำได้อย่างเป็นธรรมชาติสูงสุดบนมือถือ
-5. **Categorized File Uploads (Drag, Drop & Paste)**:
-   - เพิ่มหมวดหมู่ย่อย 6 โซนแยกประเภท (พร้อมหมวดใหม่: "เบี้ยต่ออายุ / ใบเตือนต่ออายุ") เสริมความน่าใช้งาน
-   - บนฝั่ง Desktop ผู้ใช้งานสามารถแคปเจอร์รูปแล้วกดวาง (`Ctrl+V`) ลงในกล่อง (Dropzone) ได้อย่างอิสระ
-6. **Enhanced Object Payload Schema**:
-   - เพิ่มช่องทาง "แจ้งเช็คเบี้ยต่ออายุ" ในแบบฟอร์มการเลือกประเภท `submission_type`
-   - ปรับปรุง Data Payload ที่ถูกแพ็คและส่งไป Webhook / Edge Function ให้คลุมฟิลด์เตือนล่วงหน้าทั้งหมด
+## 🟢 Current Status (อัปเดตสถานะปัจจุบัน)
+
+### 1. Architecture & Security (New!)
+- **Framework**: เปลี่ยนมาใช้ [Preact](https://preactjs.com/) (ขนาดจิ๋วแต่ทรงพลัง) ร่วมกับ [Vite](https://vitejs.dev/)
+- **Environment Variables**: ย้ายค่าคอนฟิกสำคัญ (`LIFF_ID`, `API_URL`) ออกจากโค้ดไปไว้ในไฟล์ **`.env`** โดยใช้ `VITE_` Prefix
+- **Security Check**: อัปเดต `.gitignore` เพื่อป้องกันการเผลอ Push ไฟล์ `.env` ขึ้น Git และสร้าง `.env.example` ไว้ให้แล้ว
+
+### 2. UI/UX Enhancements
+- **Tailwind CSS v4**: อัปเกรดเป็นเวอร์ชันล่าสุด โดยทำการ Build ทรัพยากรทั้งหมดให้เล็กลง (Bundle size < 6KB zipped)
+- **Glassmorphism Design**: คงสไตล์ที่หรูหราด้วย `backdrop-blur` และสีแบรนด์ `#178F46`
+- **Agent Search Combobox**: เปลี่ยนจาก Dropdown ธรรมดาเป็น **Searchable Combobox** ที่ค้นหาได้ทั้งชื่อและรหัสตัวแทน พร้อมระบบ Highlight ข้อความที่ค้นหา
+- **Dropzone Component**: รวมศูนย์ Logic การอัปโหลดไฟล์ไว้ที่ Component เดียวกัน รองรับการ Drag & Drop และการกด Ctrl+V เพื่อวางรูปภาพ
+
+### 3. Automated CI/CD (New!)
+- **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
+- **Base Path**: ตั้งค่า `base: '/insurance_liff/'` ใน `vite.config.js` เพื่อให้รองรับการรันใน Subdirectory ของ GitHub Pages
 
 ---
 
-## 🛠 Backend Implementation Plan (Future Work / สำหรับ AI ผู้รับช่วงต่อ)
-เพื่อรองรับฟอร์มใหม่ของฝั่ง Frontend ควรเตรียมการในฝั่ง Backend (Supabase + LINE API) ดังนี้:
+## 🛠 Backend Status (ความคืบหน้าฝั่งเซิร์ฟเวอร์)
 
-### 1. Verification & Agent Load Endpoints (ด่วน)
-*   **Endpoint:** `/verifyAgent` (POST)
-    - ต้องรับ `idToken` แล้ว Decode ด้วยเครื่องมือที่ปลอดภัย จากนั้นค้นหาฐานข้อมูลเพื่อ Return `{ result: { liff_status: x } }` 
-    - `1` = รอดำเนินการ, `2` = อนุมัติ, `3` = ไม่มีสิทธิ์/ตกรอบ
-*   **Endpoint:** `/loadAgents` (GET)
-    - สร้าง API ใหม่ส่งข้อมูลตัวแทนกลับเป็น Array ภายใต้ Key: `results` เพื่อเอามาวนลูปใส่ Select Element
+โปรเจกต์นี้ทำงานร่วมกับ Supabase Edge Functions:
+1. **Endpoint: `/verify-agent` (POST)**: ตรวจสอบสิทธิ์โดยใช้ `Authorization: Bearer <idToken>`
+2. **Endpoint: `/load-agents` (GET)**: คืนค่ารายชื่อตัวแทนในรูปแบบ `{ results: [...] }`
+3. **Endpoint: `/submit-policy` (POST)**: รับ Payload สำหรับบันทึกข้อมูลและไฟล์รูปภาพ
 
-### 2. Database Schema
-ในตารางฐานข้อมูลหลักที่เก็บการส่งแบบฟอร์ม (เช่นตาราง `policy_submissions`) จะต้องมีคอลัมน์เพิ่ม:
-*   `reminder_date` (Date / Timestamp): วันที่ที่ระบบจะต้องทำการแจ้งเตือนผู้ใช้งาน (ส่งมาจาก Payload Frontend)
-*   `reminder_status` (String/Enum): เช่น Default คือ `pending`, เมื่อแจ้งแล้วเป็น `sent`, หรือ `cancelled`
-*   `line_user_id` (String): **[IMPORTANT]** ควรชี้ให้ตรงกับ `idToken` ใน Edge Function เพื่อติดต่อยืนยันสิทธ์ Push Message ได้
+---
 
-### 3. Notification Engine (Cron Job)
-ดำเนินการตั้งค่า Action รายวันเพื่อให้ระบบส่งข้อความอัตโนมัติภายใน Supabase:
-*   **ใช้ `pg_cron`**: จัดเก็บ Extension ไว้ลุยสคริปต์รายวัน (เช่น รันเวลา 08:00 น. เพื่อ Query หาแถวที่ `reminder_date = CURRENT_DATE` และ status = pending)
-*   **Supabase Edge Function (Notification Action)**:
-    จับ Event การ Query ส่งไปหา Endpoint ของ **LINE Messaging API (Push Message)**
-    - หลังยิงข้อความ Update `reminder_status = 'sent'` เสมอ
+## 🚀 Workflow สำหรับผู้รับช่วงต่อ
 
-### 4. Edge Function (Receiving API Update)
-*   ปรับปรุง Endpoint ของ `/submit-policy` ให้ทำการ Map array ข้อมูลที่ปรับปรุงใหม่ (เช่น `reminder_date`, `submission_type`) กระจายลงไปยัง Object ในฐานข้อมูลให้ครบทุก Fields และปลอดภัยอย่างเคร่งครัด
+### การรันโปรเจกต์ (Local Development)
+1. `npm install`
+2. สร้างไฟล์ `.env` ตามตัวอย่างใน `.env.example`
+3. `npm run dev`
+
+### การ Deploy (Production)
+1. **GitHub Secrets**: อย่าลืมเพิ่มตัวแปร `VITE_LIFF_ID` และ `VITE_API_BASE_URL` ใน Repository Secrets บน GitHub
+2. **GitHub Pages settings**: ตั้งค่า Build Source ให้เป็น **GitHub Actions**
+
+## 📝 งานที่ยังค้างอยู่ (Future Work)
+- **Notification Engine**: การตั้งค่า `pg_cron` ใน Supabase เพื่อส่ง LINE Push Message แจ้งเตือนในวันที่ `reminder_date` (ตามแผนเดิมใน V1)
+- **PDF Preview**: หากมีการอัปโหลดไฟล์ PDF อาจพิจารณาเพิ่มตัว Preview เล็กๆ ใน Dropzone (ปัจจุบันพรีวิวเฉพาะรูปภาพ)
+
+---
+*Last Updated: 2026-04-12*

@@ -16,6 +16,9 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
   const [enableReminder, setEnableReminder] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
 
+  const [isRedPlate, setIsRedPlate] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Restore form state from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
@@ -30,6 +33,7 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
         if (data.endDate) setEndDate(data.endDate);
         if (data.enableReminder) setEnableReminder(data.enableReminder);
         if (data.reminderDate) setReminderDate(data.reminderDate);
+        if (data.isRedPlate !== undefined) setIsRedPlate(data.isRedPlate);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -46,21 +50,11 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       referenceInput,
       endDate,
       enableReminder,
-      reminderDate
+      reminderDate,
+      isRedPlate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate]);
-  
-  const [filesData, setFilesData] = useState({
-    registration: [],
-    oldPolicy: [],
-    quotation: [],
-    compQuotation: [],
-    renewalNotice: [],
-    others: []
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, isRedPlate]);
 
   const getBase64 = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -86,7 +80,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
     }
 
     localStorage.removeItem(STORAGE_KEY);
-    setCategoryId('1'); // Reset to Motor Insurance
+    setCategoryId('1');
+    setIsRedPlate(false);
     setReferenceInput('');
     setEndDate('');
     setEnableReminder(false);
@@ -123,7 +118,12 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       let customerName = null;
 
       if (categoryId === '1') {
-        plateNumber = referenceInput;
+        if (isRedPlate) {
+          plateNumber = 'ป้ายแดง';
+          customerName = referenceInput;
+        } else {
+          plateNumber = referenceInput;
+        }
       } else {
         customerName = referenceInput;
       }
@@ -235,16 +235,34 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {categoryId === '1' ? 'ทะเบียนรถ' : 'ชื่อผู้เอาประกัน'} <span class="text-red-500">*</span>
+            {categoryId === '1' 
+              ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ') 
+              : 'ชื่อผู้เอาประกัน'} 
+            <span class="text-red-500">*</span>
           </label>
           <input 
             type="text" 
             value={referenceInput}
             onInput={(e) => setReferenceInput(e.target.value)}
             required 
-            placeholder={categoryId === '1' ? 'เช่น 1กข-1234 กทม' : 'เช่น สมชาย ใจดี'}
+            placeholder={categoryId === '1' 
+              ? (isRedPlate ? 'ระบุชื่อลูกค้า หรือ เลขตัวถัง 7 หลักสุดท้าย' : 'เช่น 1กข-1234 กทม') 
+              : 'เช่น สมชาย ใจดี'}
             class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
           />
+          {categoryId === '1' && (
+            <div class="mt-2 pl-1">
+              <label class="flex items-center cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={isRedPlate}
+                  onChange={(e) => setIsRedPlate(e.target.checked)}
+                  class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+                />
+                <span class="ml-2 text-xs font-medium text-gray-500 group-hover:text-brand-600 transition-colors">รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
+              </label>
+            </div>
+          )}
         </div>
       </div>
 

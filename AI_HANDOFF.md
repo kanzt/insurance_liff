@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V3.7.1: Batch Flow)
+# AI Handoff: Insurance LIFF Project Status (V3.8.0: Red Plate Support)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App ได้รับการอัปเกรดครั้งใหญ่จากระบบ HTML ไฟล์เดียว ไปสู่โครงสร้าง **Modern Frontend Architecture** โดยใช้ **Vite + Preact** เพื่อความปลอดภัย ความเร็วในการโหลด และการดูแลรักษาโค้ดในระยะยาว
@@ -16,9 +16,10 @@
 - **Agent Search Combobox**: เปลี่ยนจาก Dropdown ธรรมดาเป็น **Searchable Combobox** ที่ค้นหาได้ทั้งชื่อและรหัสตัวแทน พร้อมระบบ Highlight ข้อความที่ค้นหา
 - **Dropzone Component**: รวมศูนย์ Logic การอัปโหลดไฟล์ไว้ที่ Component เดียวกัน รองรับการ Drag & Drop และการกด Ctrl+V เพื่อวางรูปภาพ
 
-### 3. Power Gallery & Batch Flow (New! V3.7.1)
+### 3. Power Gallery & Batch Flow (New! V3.8.0)
 - **Document Gallery Architecture**: ย้ายการจัดการ Modal ขึ้นไปที่ระดับ Root (`App.jsx`) เพื่อแก้ปัญหา Stacking Context และ Backdrop-blur รองรับการแสดงผลแบบ Gallery เต็มหน้าจอ (Solid Black Background) พร้อมระบบนำทาง (Next/Prev)
 - **State-based Reset Flow**: เมื่อส่งงานสำเร็จ ระบบจะเรียก `handleReset(false)` เพื่อเคลียร์ข้อมูลเฉพาะ Job-specific data แต่ยังคง Agent context ไว้เพื่อช่วยให้ตัวแทนส่งงานชุด (Batch) ได้รวดเร็วขึ้น
+- **Smart Red-Plate Logic**: เพิ่มฟีเจอร์ "รถป้ายแดง" เพื่อรักษา Data Integrity โดยระบบจะส่ง `plate_number = "ป้ายแดง"` (Const) และนำค่าที่ผู้ใช้กรอก (ชื่อ/เลขตัวถัง) ไปเก็บไว้ที่คอลัมน์ `customer_name` แทน เพื่อป้องกันข้อมูลปนกันในฐานข้อมูล
 - **Form Resilience**: ย้ายการบันทึก Draft ไปที่ `useEffect` ชุดเดียวที่เฝ้าสังเกต State หลักทั้งหมด และเพิ่มระบบ Confirmation ก่อนล้างข้อมูลด้วยปุ่ม Reset
 - **UI Optimization**: ปรับโทนสีจาก Gradient เป็น Elegant Slate และจัดการช่องว่าง (JSX Whitespace) ด้วย `&nbsp;` เพื่อความเป๊ะของการแสดงผลบนทุก Device
 
@@ -53,4 +54,4 @@
 - **PDF Preview**: หากมีการอัปโหลดไฟล์ PDF อาจพิจารณาเพิ่มตัว Preview เล็กๆ ใน Dropzone (ปัจจุบันพรีวิวเฉพาะรูปภาพ)
 
 ---
-*Last Updated: 2026-04-12 (V3.7.1: Power Gallery & Batch Flow)*
+*Last Updated: 2026-04-12 (V3.8.0: Batch Flow & Red Plate Support)*

@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-04-12 (V3.7.1: Power Gallery & Batch Flow)*
+*Last Updated: 2026-04-12 (V3.8.0: Batch Flow & Red Plate Support)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -18,6 +18,7 @@
 - **Form State Persistence**: บันทึกข้อมูลร่าง (Draft) อัตโนมัติ ป้องกันข้อมูลหายแม้แอปโหลดใหม่
 - **Immersive Document Gallery**: ระบบดูรูปภาพเต็มหน้าจอระดับโปร พร้อมปุ่มเลื่อนดูภาพถัดไป/ย้อนกลับ และตัวเลขบอกลำดับภาพ (1/3)
 - **Continuous Submission Flow**: รองรับการส่งงานหลายรายการต่อเนื่องโดยไม่ต้องโหลดหน้าเว็บใหม่
+- **Smart Red-Plate Handling**: ระบบแยกแยะ "รถป้ายแดง" อัตโนมัติ เพื่อบันทึกข้อมูลชื่อลูกค้าแทนเลขทะเบียน ป้องกันข้อมูลผิดเพี้ยน
 - **Responsive & Premium UI**: ดีไซน์ Glassmorphism ที่สวยงาม พร้อมโทนสี Slate ที่ดูเป็นมืออาชีพ รองรับทั้ง Mobile และ Desktop
 
 ## 🛠 การติดตั้ง (Installation)
@@ -36,9 +37,10 @@
 - **รัน Server สำหรับพัฒนา**: `npm run dev` (มีระบบ Hot Reload แก้โค้ดแล้วเปลี่ยนทันที)
 - **Build สำหรับ Production**: `npm run build` (ไฟล์จะถูกรวมและย่อขนาดไว้ในโฟลเดอร์ `dist/`)
 
-### 3. Power Gallery & Batch Flow (New! V3.7.1)
+### 3. Power Gallery & Batch Flow (New! V3.8.0)
 - **Document Gallery**: เปลี่ยน Modal รูปภาพแบบเดิมเป็น Gallery เต็มตัว (Solid Black Backdrop) ที่สามารถกดเลื่อนดูเอกสารทั้งหมดในหมวดหมู่นั้นๆ ได้ทันที รองรับ Keyboard Navigation (Arrow Keys) และปุ่มปิด Esc
 - **Batch Submission**: เมื่อส่งข้อมูลสำเร็จ ระบบจะล้างข้อมูลเฉพาะส่วนสำคัญ (เอกสาร, ทะเบียน) และพาคุณกลับไปจุดเริ่มต้นเพื่อแจ้งงานต่อทันที โดยยังคงรักษาข้อมูล "ตัวแทน" และ "ประเภทงาน" ไว้เพื่อความเร็ว
+- **Red Plate Logic**: เพิ่มโหมด "รถป้ายแดง" เพื่อรักษาความสะอาดของฐานข้อมูล โดยระบบจะส่ง `plate_number = "ป้ายแดง"` และนำชื่อที่กรอกไปบันทึกในคอลัมน์ `customer_name` แทนข้อมูลทะเบียน
 - **Manual Reset**: เพิ่มปุ่ม "ล้างข้อมูล" (Reset) ที่มาพร้อมระบบยืนยัน (Confirmation) เพื่อความยืดหยุ่นในการเคลียร์ฟอร์ม
 - **Refined Aesthetics**: ปรับปรุงระยะห่างและสีสันใหม่ (Slate Theme) ให้ดูเป็นระเบียบและพรีเมียมมากขึ้น
 

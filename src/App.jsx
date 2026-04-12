@@ -10,6 +10,7 @@ export function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginRequired, setLoginRequired] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -128,17 +129,43 @@ export function App() {
   };
 
   return (
-    <div class="bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8">
-      <h2 class="text-2xl font-bold mb-6 text-center">
-        <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-green-500">ส่งเอกสารเช็คเบี้ย</span>
-        📄
-      </h2>
+    <>
+      <div class="bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8">
+        <h2 class="text-2xl font-bold mb-6 text-center">
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-green-500">ส่งเอกสารเช็คเบี้ย</span>
+          📄
+        </h2>
 
-      {renderProfileBox()}
+        {renderProfileBox()}
 
-      {!isLoading && !error && liffStatus === 2 && (
-        <PolicyForm idToken={idToken} baseApiUrl={baseApiUrl} />
+        {!isLoading && !error && liffStatus === 2 && (
+          <PolicyForm idToken={idToken} baseApiUrl={baseApiUrl} onPreviewImage={setPreviewImageUrl} />
+        )}
+      </div>
+
+      {/* Global Image Preview Modal (Legacy Style) */}
+      {previewImageUrl && (
+        <div
+          class="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-80 p-4 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+          onClick={() => setPreviewImageUrl(null)}
+        >
+          {/* Close Symbol Close Button */}
+          <span
+            class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-300 z-[1010]"
+            onClick={() => setPreviewImageUrl(null)}
+          >
+            &times;
+          </span>
+
+          {/* Modal Image */}
+          <img
+            src={previewImageUrl}
+            alt="Full Preview"
+            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 }

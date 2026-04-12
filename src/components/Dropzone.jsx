@@ -1,9 +1,8 @@
 import { useState, useRef } from 'preact/hooks';
 
-export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false }) {
+export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false, onPreviewImage }) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [files, setFiles] = useState([]);
-  const [previewImageUrl, setPreviewImageUrl] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleDrag = (e) => {
@@ -102,7 +101,7 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
                     <img
                       src={objectUrl}
                       alt="preview"
-                      onClick={() => setPreviewImageUrl(objectUrl)}
+                      onClick={() => onPreviewImage(objectUrl)}
                       class="object-cover w-full h-full cursor-zoom-in hover:opacity-80 transition-opacity"
                     />
                   ) : (
@@ -117,29 +116,6 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
         )}
       </div>
 
-      {/* Image Preview Modal (Legacy Style) */}
-      {previewImageUrl && (
-        <div
-          class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80 p-4 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-          onClick={() => setPreviewImageUrl(null)}
-        >
-          {/* Close Symbol Close Button */}
-          <span
-            class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-300 z-[110]"
-            onClick={() => setPreviewImageUrl(null)}
-          >
-            &times;
-          </span>
-
-          {/* Modal Image */}
-          <img
-            src={previewImageUrl}
-            alt="Full Preview"
-            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
     </div>
   );
 }

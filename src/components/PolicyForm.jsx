@@ -6,7 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
-export function PolicyForm({ idToken, baseApiUrl }) {
+export function PolicyForm({ idToken, baseApiUrl, onPreviewImage }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
@@ -269,12 +269,12 @@ export function PolicyForm({ idToken, baseApiUrl }) {
         </label>
         
         <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
-          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} />
-          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} />
-          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} />
-          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} />
-          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} />
-          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} />
+          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} onPreviewImage={onPreviewImage} />
         </div>
       </div>
 

@@ -1,9 +1,23 @@
 import { useState, useRef } from 'preact/hooks';
 
-export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false, onPreviewImage }) {
+export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false, onOpenGallery }) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null);
+
+  const handleOpenGallery = (clickedIndex) => {
+    // Collect all image files and their indexes
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    const urls = imageFiles.map(f => URL.createObjectURL(f));
+    
+    // Find the relative index of the clicked file among images
+    const clickedFile = files[clickedIndex];
+    const indexInGallery = imageFiles.indexOf(clickedFile);
+    
+    if (indexInGallery !== -1) {
+      onOpenGallery({ urls, index: indexInGallery });
+    }
+  };
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -99,9 +113,9 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
                   </button>
                   {isImage ? (
                     <img
-                      src={objectUrl}
+                      src={URL.createObjectURL(file)} 
                       alt="preview"
-                      onClick={() => onPreviewImage(objectUrl)}
+                      onClick={() => handleOpenGallery(idx)}
                       class="object-cover w-full h-full cursor-zoom-in hover:opacity-80 transition-opacity"
                     />
                   ) : (
@@ -115,7 +129,6 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
           </div>
         )}
       </div>
-
     </div>
   );
 }

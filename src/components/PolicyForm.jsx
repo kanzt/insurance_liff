@@ -6,7 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
-export function PolicyForm({ idToken, baseApiUrl, onPreviewImage }) {
+export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
@@ -269,12 +269,12 @@ export function PolicyForm({ idToken, baseApiUrl, onPreviewImage }) {
         </label>
         
         <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
-          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} onPreviewImage={onPreviewImage} />
-          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} onPreviewImage={onPreviewImage} />
-          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} onPreviewImage={onPreviewImage} />
-          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} onPreviewImage={onPreviewImage} />
-          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} onPreviewImage={onPreviewImage} />
-          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} onPreviewImage={onPreviewImage} />
+          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} onOpenGallery={onOpenGallery} />
         </div>
       </div>
 

@@ -10,10 +10,50 @@ export function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginRequired, setLoginRequired] = useState(false);
-  const [previewImageUrl, setPreviewImageUrl] = useState(null);
+  const [galleryData, setGalleryData] = useState(null); // { urls: [], index: 0 }
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
+
+  // Handle keyboard navigation for the gallery
+  useEffect(() => {
+    if (!galleryData) return;
+    
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'Escape') setGalleryData(null);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [galleryData]);
+
+  const nextImage = () => {
+    if (!galleryData) return;
+    setGalleryData(prev => ({
+      ...prev,
+      index: (prev.index + 1) % prev.urls.length
+    }));
+  };
+
+  const prevImage = () => {
+    if (!galleryData) return;
+    setGalleryData(prev => ({
+      ...prev,
+      index: (prev.index - 1 + prev.urls.length) % prev.urls.length
+    }));
+  };
+
+  // Lock body scroll when gallery is open
+  useEffect(() => {
+    if (galleryData) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [galleryData]);
 
   useEffect(() => {
     async function init() {
@@ -139,31 +179,61 @@ export function App() {
         {renderProfileBox()}
 
         {!isLoading && !error && liffStatus === 2 && (
-          <PolicyForm idToken={idToken} baseApiUrl={baseApiUrl} onPreviewImage={setPreviewImageUrl} />
+          <PolicyForm idToken={idToken} baseApiUrl={baseApiUrl} onOpenGallery={(data) => setGalleryData(data)} />
         )}
       </div>
 
-      {/* Global Image Preview Modal (Legacy Style) */}
-      {previewImageUrl && (
+      {/* Global Image Gallery Modal */}
+      {galleryData && (
         <div
-          class="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-80 p-4 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-          onClick={() => setPreviewImageUrl(null)}
+          class="fixed inset-0 z-[1000] flex items-center justify-center bg-black p-0 transition-opacity animate-in fade-in duration-200 select-none"
+          onClick={() => setGalleryData(null)}
         >
           {/* Close Symbol Close Button */}
           <span
-            class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-300 z-[1010]"
-            onClick={() => setPreviewImageUrl(null)}
+            class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-300 z-[1020] drop-shadow-md"
+            onClick={() => setGalleryData(null)}
           >
             &times;
           </span>
 
+          {/* Navigation Arrows */}
+          {galleryData.urls.length > 1 && (
+            <>
+              <button 
+                type="button"
+                class="absolute left-0 top-0 bottom-0 w-20 flex items-center justify-center text-white/50 hover:text-white transition-all z-[1010] bg-gradient-to-r from-black/50 to-transparent group"
+                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              >
+                <span class="text-6xl font-light transform group-active:scale-90 transition-transform">‹</span>
+              </button>
+              <button 
+                type="button"
+                class="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center text-white/50 hover:text-white transition-all z-[1010] bg-gradient-to-l from-black/50 to-transparent group"
+                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              >
+                <span class="text-6xl font-light transform group-active:scale-90 transition-transform">›</span>
+              </button>
+
+              {/* Counter Indicator */}
+              <div class="absolute bottom-10 left-0 right-0 flex justify-center z-[1010]">
+                <div class="bg-black/40 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-sm font-medium border border-white/20">
+                  {galleryData.index + 1} / {galleryData.urls.length}
+                </div>
+              </div>
+            </>
+          )}
+
           {/* Modal Image */}
-          <img
-            src={previewImageUrl}
-            alt="Full Preview"
-            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div class="w-full h-full flex items-center justify-center p-4">
+            <img
+              key={galleryData.urls[galleryData.index]} // Key forces re-render/animation on change
+              src={galleryData.urls[galleryData.index]}
+              alt={`Preview ${galleryData.index + 1}`}
+              class="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-200"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         </div>
       )}
     </>

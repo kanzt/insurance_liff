@@ -189,7 +189,7 @@ export function PolicyForm({ idToken, baseApiUrl }) {
         <select 
           value={categoryId} 
           onChange={(e) => setCategoryId(e.target.value)}
-          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+          class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
         >
           <option value="1">ประกันรถยนต์ (Motor)</option>
           <option value="2">ประกันอื่นๆ (Non-Motor)</option>
@@ -201,7 +201,7 @@ export function PolicyForm({ idToken, baseApiUrl }) {
         <select 
           value={submissionType}
           onChange={(e) => setSubmissionType(e.target.value)}
-          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+          class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
         >
           <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
           <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>

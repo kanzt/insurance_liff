@@ -158,9 +158,24 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       const result = await response.json();
       if (response.ok) {
         localStorage.removeItem(STORAGE_KEY); // Clear draft on success
-        alert('✅ ' + result.message);
-        if (liff.isInClient()) liff.closeWindow();
-        else window.location.reload();
+        alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
+        
+        // Reset form for next entry but keep the Agent/Informer selection
+        setReferenceInput('');
+        setEndDate('');
+        setEnableReminder(false);
+        setReminderDate('');
+        setFilesData({
+          registration: [],
+          oldPolicy: [],
+          quotation: [],
+          compQuotation: [],
+          renewalNotice: [],
+          others: []
+        });
+        
+        // Scroll to the reference input area to make it easy to start over
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
       }

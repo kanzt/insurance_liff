@@ -34,7 +34,7 @@
 ## 🚀 Workflow สำหรับผู้รับช่วงต่อ
 
 ### การรันโปรเจกต์ (Local Development)
-1. `npm install`
+1. `npm install` (แนะนำให้ใช้ **Node.js 24**)
 2. สร้างไฟล์ `.env` ตามตัวอย่างใน `.env.example`
 3. `npm run dev`
 

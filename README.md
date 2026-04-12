@@ -23,6 +23,7 @@
    ```bash
    npm install
    ```
+   *(แนะนำให้ใช้ **Node.js 24** ขึ้นไปสำหรับระบบการ Deploy ล่าสุด)*
 3. **ตั้งค่าตัวแปรสภาพแวดล้อม (Environment Variables)**
    - คัดลอกไฟล์ `.env.example` ไปเป็น `.env`
    - ระบุ `VITE_LIFF_ID` และ `VITE_API_BASE_URL` ของคุณ

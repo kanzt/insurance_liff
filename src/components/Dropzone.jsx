@@ -117,32 +117,27 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
         )}
       </div>
 
-      {/* Image Preview Modal (True Full Screen) */}
+      {/* Image Preview Modal (Legacy Style) */}
       {previewImageUrl && (
         <div
-          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300"
+          class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80 p-4 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
           onClick={() => setPreviewImageUrl(null)}
         >
-          {/* Close Button Header */}
-          <div class="absolute top-0 left-0 right-0 p-4 flex justify-end z-[110]">
-             <button
-              type="button"
-              class="bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all active:scale-90"
-              onClick={() => setPreviewImageUrl(null)}
-            >
-              ✕
-            </button>
-          </div>
+          {/* Close Symbol Close Button */}
+          <span
+            class="absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer hover:text-gray-300 z-[110]"
+            onClick={() => setPreviewImageUrl(null)}
+          >
+            &times;
+          </span>
 
-          {/* Full Screen Image Container */}
-          <div class="w-full h-full flex items-center justify-center p-2">
-            <img
-              src={previewImageUrl}
-              alt="Full Preview"
-              class="max-w-full max-h-full object-contain animate-in zoom-in-95 duration-300 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
+          {/* Modal Image */}
+          <img
+            src={previewImageUrl}
+            alt="Full Preview"
+            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>

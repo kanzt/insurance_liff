@@ -86,6 +86,7 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
     }
 
     localStorage.removeItem(STORAGE_KEY);
+    setCategoryId('1'); // Reset to Motor Insurance
     setReferenceInput('');
     setEndDate('');
     setEnableReminder(false);

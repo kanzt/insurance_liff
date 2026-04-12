@@ -117,24 +117,29 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
         )}
       </div>
 
-      {/* Image Preview Modal */}
+      {/* Image Preview Modal (True Full Screen) */}
       {previewImageUrl && (
         <div
-          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300"
           onClick={() => setPreviewImageUrl(null)}
         >
-          <div class="relative max-w-full max-h-full">
-            <button
+          {/* Close Button Header */}
+          <div class="absolute top-0 left-0 right-0 p-4 flex justify-end z-[110]">
+             <button
               type="button"
-              class="absolute -top-12 right-0 text-white text-3xl font-bold hover:text-gray-300 transition-colors"
+              class="bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all active:scale-90"
               onClick={() => setPreviewImageUrl(null)}
             >
               ✕
             </button>
+          </div>
+
+          {/* Full Screen Image Container */}
+          <div class="w-full h-full flex items-center justify-center p-2">
             <img
               src={previewImageUrl}
               alt="Full Preview"
-              class="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain animate-in zoom-in-95 duration-300"
+              class="max-w-full max-h-full object-contain animate-in zoom-in-95 duration-300 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
           </div>

@@ -174,53 +174,57 @@ export function PolicyForm({ idToken, baseApiUrl }) {
 
   return (
     <form class="space-y-4" onSubmit={handleSubmit}>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
-        <AgentSearch 
-          baseApiUrl={baseApiUrl} 
-          idToken={idToken} 
-          onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }} 
-          initialQuery={informerName}
-        />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
+          <AgentSearch 
+            baseApiUrl={baseApiUrl} 
+            idToken={idToken} 
+            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }} 
+            initialQuery={informerName}
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+          <select 
+            value={categoryId} 
+            onChange={(e) => setCategoryId(e.target.value)}
+            class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+          >
+            <option value="1">ประกันรถยนต์ (Motor)</option>
+            <option value="2">ประกันอื่นๆ (Non-Motor)</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
-        <select 
-          value={categoryId} 
-          onChange={(e) => setCategoryId(e.target.value)}
-          class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
-        >
-          <option value="1">ประกันรถยนต์ (Motor)</option>
-          <option value="2">ประกันอื่นๆ (Non-Motor)</option>
-        </select>
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
+          <select 
+            value={submissionType}
+            onChange={(e) => setSubmissionType(e.target.value)}
+            class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+          >
+            <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
+            <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
+            <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
+          </select>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
-        <select 
-          value={submissionType}
-          onChange={(e) => setSubmissionType(e.target.value)}
-          class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
-        >
-          <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
-          <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
-          <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
-          {categoryId === '1' ? 'ทะเบียนรถ' : 'ชื่อผู้เอาประกัน'} <span class="text-red-500">*</span>
-        </label>
-        <input 
-          type="text" 
-          value={referenceInput}
-          onInput={(e) => setReferenceInput(e.target.value)}
-          required 
-          placeholder={categoryId === '1' ? 'เช่น 1กข-1234 กทม' : 'เช่น สมชาย ใจดี'}
-          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
-        />
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            {categoryId === '1' ? 'ทะเบียนรถ' : 'ชื่อผู้เอาประกัน'} <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            value={referenceInput}
+            onInput={(e) => setReferenceInput(e.target.value)}
+            required 
+            placeholder={categoryId === '1' ? 'เช่น 1กข-1234 กทม' : 'เช่น สมชาย ใจดี'}
+            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
+          />
+        </div>
       </div>
 
       <div>

@@ -80,6 +80,28 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
     }
   };
 
+  const handleReset = (showConfirm = true) => {
+    if (showConfirm && !window.confirm('♻️ คุณต้องการล้างข้อมูลในฟอร์มทั้งหมดใช่หรือไม่?')) {
+      return;
+    }
+
+    localStorage.removeItem(STORAGE_KEY);
+    setReferenceInput('');
+    setEndDate('');
+    setEnableReminder(false);
+    setReminderDate('');
+    setFilesData({
+      registration: [],
+      oldPolicy: [],
+      quotation: [],
+      compQuotation: [],
+      renewalNotice: [],
+      others: []
+    });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!informerId) {
@@ -157,25 +179,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
       const result = await response.json();
       if (response.ok) {
-        localStorage.removeItem(STORAGE_KEY); // Clear draft on success
         alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
-        
-        // Reset form for next entry but keep the Agent/Informer selection
-        setReferenceInput('');
-        setEndDate('');
-        setEnableReminder(false);
-        setReminderDate('');
-        setFilesData({
-          registration: [],
-          oldPolicy: [],
-          quotation: [],
-          compQuotation: [],
-          renewalNotice: [],
-          others: []
-        });
-        
-        // Scroll to the reference input area to make it easy to start over
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        handleReset(false); // Silent reset on success
       } else {
         alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
       }
@@ -293,14 +298,24 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
         </div>
       </div>
 
-      <button 
-        type="submit" 
-        disabled={isSubmitting}
-        class={`w-full text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all duration-200 mt-6 active:scale-[0.98] 
-          ${isSubmitting ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
-      >
-        {isSubmitting ? '⏳ กำลังเตรียมไฟล์...' : 'ส่งข้อมูลเช็คเบี้ย'}
-      </button>
+      <div class="grid grid-cols-3 gap-3 mt-6">
+        <button 
+          type="button"
+          disabled={isSubmitting}
+          onClick={() => handleReset(true)}
+          class="col-span-1 border-2 border-slate-200 text-slate-500 font-bold py-3 px-2 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98] disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+        >
+          ♻️&nbsp;ล้างข้อมูล
+        </button>
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] 
+            ${isSubmitting ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
+        >
+          {isSubmitting ? '⏳ กำลังส่ง...' : 'ส่งข้อมูลเช็คเบี้ย'}
+        </button>
+      </div>
     </form>
   );
 }

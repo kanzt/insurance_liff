@@ -94,7 +94,7 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       renewalNotice: [],
       others: []
     });
-    
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -147,7 +147,7 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
             const base64Data = await getBase64(file);
             const ext = file.name.split('.').pop() || 'pdf';
             let newFileName = `${safeRef}_${map.docType}`;
-            
+
             if (submissionType === 'additional') {
               newFileName += `_เพิ่มเติม_${Date.now()}`;
             }
@@ -198,18 +198,18 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
-          <AgentSearch 
-            baseApiUrl={baseApiUrl} 
-            idToken={idToken} 
-            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }} 
+          <AgentSearch
+            baseApiUrl={baseApiUrl}
+            idToken={idToken}
+            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
             initialQuery={informerName}
           />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
-          <select 
-            value={categoryId} 
+          <select
+            value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
           >
@@ -222,7 +222,7 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
-          <select 
+          <select
             value={submissionType}
             onChange={(e) => setSubmissionType(e.target.value)}
             class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
@@ -235,26 +235,26 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {categoryId === '1' 
-              ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ') 
-              : 'ชื่อผู้เอาประกัน'} 
+            {categoryId === '1'
+              ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
+              : 'ชื่อผู้เอาประกัน'}
             <span class="text-red-500">*</span>
           </label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={referenceInput}
             onInput={(e) => setReferenceInput(e.target.value)}
-            required 
-            placeholder={categoryId === '1' 
-              ? (isRedPlate ? 'ระบุชื่อลูกค้า หรือ เลขตัวถัง 7 หลักสุดท้าย' : 'เช่น 1กข-1234 กทม') 
+            required
+            placeholder={categoryId === '1'
+              ? (isRedPlate ? 'ระบุชื่อลูกค้า' : 'เช่น 1กข-1234 กทม')
               : 'เช่น สมชาย ใจดี'}
             class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
           />
           {categoryId === '1' && (
             <div class="mt-2 pl-1">
               <label class="flex items-center cursor-pointer group">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={isRedPlate}
                   onChange={(e) => setIsRedPlate(e.target.checked)}
                   class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
@@ -268,8 +268,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
-        <input 
-          type="date" 
+        <input
+          type="date"
           value={endDate}
           onInput={(e) => setEndDate(e.target.value)}
           class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
@@ -277,8 +277,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
         <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
           <label class="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={enableReminder}
               onChange={handleReminderToggle}
               class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
@@ -289,8 +289,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
           {enableReminder && (
             <div class="mt-3">
               <label class="block text-xs font-semibold text-gray-600 mb-1">วันที่ต้องการให้ระบบแจ้งเตือนกลับ</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 value={reminderDate}
                 onInput={(e) => setReminderDate(e.target.value)}
                 required
@@ -306,19 +306,19 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
         <label class="block text-sm font-medium text-gray-700 mb-2">
           แนบเอกสารตามประเภท <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(แนบอย่างน้อย 1 ช่อง)</span>
         </label>
-        
+
         <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
-          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({...filesData, registration: files})} onOpenGallery={onOpenGallery} />
-          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({...filesData, oldPolicy: files})} onOpenGallery={onOpenGallery} />
-          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({...filesData, quotation: files})} onOpenGallery={onOpenGallery} />
-          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({...filesData, compQuotation: files})} onOpenGallery={onOpenGallery} />
-          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({...filesData, renewalNotice: files})} onOpenGallery={onOpenGallery} />
-          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({...filesData, others: files})} onOpenGallery={onOpenGallery} />
+          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({ ...filesData, registration: files })} onOpenGallery={onOpenGallery} />
+          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({ ...filesData, oldPolicy: files })} onOpenGallery={onOpenGallery} />
+          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({ ...filesData, quotation: files })} onOpenGallery={onOpenGallery} />
+          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({ ...filesData, compQuotation: files })} onOpenGallery={onOpenGallery} />
+          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({ ...filesData, renewalNotice: files })} onOpenGallery={onOpenGallery} />
+          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
         </div>
       </div>
 
       <div class="grid grid-cols-3 gap-3 mt-6">
-        <button 
+        <button
           type="button"
           disabled={isSubmitting}
           onClick={() => handleReset(true)}
@@ -326,8 +326,8 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
         >
           ♻️&nbsp;ล้างข้อมูล
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSubmitting}
           class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] 
             ${isSubmitting ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}

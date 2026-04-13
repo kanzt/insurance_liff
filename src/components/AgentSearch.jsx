@@ -9,6 +9,13 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
   const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef(null);
 
+  // Sync internal query when initialQuery changes (e.g. via localStorage restore)
+  useEffect(() => {
+    if (initialQuery !== undefined && initialQuery !== query) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
+
   useEffect(() => {
     async function fetchAgents() {
       try {
@@ -44,7 +51,7 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
 
     if (!val) {
       setSelectedAgent(null);
-      onSelectAgent(null);
+      onSelectAgent(null, '');
       setFilteredAgents(agents);
       return;
     }

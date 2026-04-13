@@ -236,10 +236,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
             <select
+              required
               value={subCategoryId}
               onChange={(e) => setSubCategoryId(e.target.value)}
               class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
             >
+              <option value="" disabled>-- เลือกหมวดหมู่ --</option>
               {subCategories.length > 0 ? (
                 subCategories.map(sub => (
                   <option key={sub.subCategoryId} value={sub.subCategoryId}>
@@ -247,7 +249,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   </option>
                 ))
               ) : (
-                <option value="">กำลังโหลด...</option>
+                <option value="" disabled>กำลังโหลด...</option>
               )}
             </select>
           </div>

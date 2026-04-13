@@ -80,7 +80,10 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
     }
 
     localStorage.removeItem(STORAGE_KEY);
+    setInformerId(null);
+    setInformerName('');
     setCategoryId('1');
+    setSubmissionType('new');
     setIsRedPlate(false);
     setReferenceInput('');
     setEndDate('');

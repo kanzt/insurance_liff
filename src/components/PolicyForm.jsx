@@ -106,7 +106,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     localStorage.removeItem(STORAGE_KEY);
     setInformerId(null);
     setInformerName('');
-    if (subCategories.length > 0) setSubCategoryId(subCategories[0].subCategoryId.toString());
+    setSubCategoryId('');
     setSubmissionType('new');
     setIsRedPlate(false);
     setReferenceInput('');

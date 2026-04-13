@@ -18,6 +18,14 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filesData, setFilesData] = useState({
+    registration: [],
+    oldPolicy: [],
+    quotation: [],
+    compQuotation: [],
+    renewalNotice: [],
+    others: []
+  });
 
   // Restore form state from localStorage on mount
   useEffect(() => {

@@ -205,147 +205,173 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
   };
 
   return (
-    <form class="space-y-4" onSubmit={handleSubmit}>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
-          <AgentSearch
-            baseApiUrl={baseApiUrl}
-            idToken={idToken}
-            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
-            initialQuery={informerName}
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
-          >
-            <option value="1">ประกันรถยนต์ (Motor)</option>
-            <option value="2">ประกันอื่นๆ (Non-Motor)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
-          <select
-            value={submissionType}
-            onChange={(e) => setSubmissionType(e.target.value)}
-            class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
-          >
-            <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
-            <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
-            <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            {categoryId === '1'
-              ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
-              : 'ชื่อผู้เอาประกัน'}
-            <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={referenceInput}
-            onInput={(e) => setReferenceInput(e.target.value)}
-            required
-            placeholder={categoryId === '1'
-              ? (isRedPlate ? 'ระบุชื่อลูกค้า' : 'เช่น 1กข-1234 กทม')
-              : 'เช่น สมชาย ใจดี'}
-            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
-          />
-          {categoryId === '1' && (
-            <div class="mt-2 pl-1">
-              <label class="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={isRedPlate}
-                  onChange={(e) => setIsRedPlate(e.target.checked)}
-                  class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
-                />
-                <span class="ml-2 text-xs font-medium text-gray-500 group-hover:text-brand-600 transition-colors">รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
-              </label>
+    <div class="relative min-h-[400px]">
+      {/* Loading Overlay */}
+      {isSubmitting && (
+        <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/60 backdrop-blur-md transition-all duration-300">
+          <div class="relative flex items-center justify-center mb-6">
+            <div class="absolute inset-0 bg-brand-500/20 rounded-full blur-2xl animate-pulse-slow"></div>
+            <div class="w-20 h-20 border-4 border-brand-100 border-t-brand-500 rounded-full animate-spin"></div>
+            <div class="absolute w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <span class="text-2xl">⚡</span>
             </div>
-          )}
+          </div>
+          <div class="text-center space-y-2">
+            <h3 class="text-xl font-bold text-brand-800 animate-pulse">กำลังส่งข้อมูล...</h3>
+            <p class="text-sm text-gray-500 max-w-[250px] mx-auto px-4">
+              กรุณารอสักครู่ ระบบกำลังอัปโหลดเอกสารและประมวลผลข้อมูลกรมธรรม์ของคุณ
+            </p>
+          </div>
+          <div class="mt-8 flex gap-1">
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce"></div>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
-        <input
-          type="date"
-          value={endDate}
-          onInput={(e) => setEndDate(e.target.value)}
-          class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
-        />
-
-        <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
-          <label class="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={enableReminder}
-              onChange={handleReminderToggle}
-              class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+      <form class={`space-y-4 transition-all duration-300 ${isSubmitting ? 'opacity-20 pointer-events-none scale-[0.98]' : 'opacity-100'}`} onSubmit={handleSubmit}>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
+            <AgentSearch
+              baseApiUrl={baseApiUrl}
+              idToken={idToken}
+              onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
+              initialQuery={informerName}
             />
-            <span class="ml-2 text-sm font-medium text-brand-800">ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า</span>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+            >
+              <option value="1">ประกันรถยนต์ (Motor)</option>
+              <option value="2">ประกันอื่นๆ (Non-Motor)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
+            <select
+              value={submissionType}
+              onChange={(e) => setSubmissionType(e.target.value)}
+              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+            >
+              <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
+              <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
+              <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              {categoryId === '1'
+                ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
+                : 'ชื่อผู้เอาประกัน'}
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={referenceInput}
+              onInput={(e) => setReferenceInput(e.target.value)}
+              required
+              placeholder={categoryId === '1'
+                ? (isRedPlate ? 'ระบุชื่อลูกค้า' : 'เช่น 1กข-1234 กทม')
+                : 'เช่น สมชาย ใจดี'}
+              class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
+            />
+            {categoryId === '1' && (
+              <div class="mt-2 pl-1">
+                <label class="flex items-center cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={isRedPlate}
+                    onChange={(e) => setIsRedPlate(e.target.checked)}
+                    class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+                  />
+                  <span class="ml-2 text-xs font-medium text-gray-500 group-hover:text-brand-600 transition-colors">รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+          <input
+            type="date"
+            value={endDate}
+            onInput={(e) => setEndDate(e.target.value)}
+            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
+          />
+
+          <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
+            <label class="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={enableReminder}
+                onChange={handleReminderToggle}
+                class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+              />
+              <span class="ml-2 text-sm font-medium text-brand-800">ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า</span>
+            </label>
+
+            {enableReminder && (
+              <div class="mt-3">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">วันที่ต้องการให้ระบบแจ้งเตือนกลับ</label>
+                <input
+                  type="date"
+                  value={reminderDate}
+                  onInput={(e) => setReminderDate(e.target.value)}
+                  required
+                  class="block w-full rounded-md border-gray-300 shadow-sm p-2 text-sm border focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
+                />
+                <p class="text-[11px] text-gray-500 mt-1">* ระบบจะส่งข้อความแจ้งเตือนผ่าน LINE ไปหาคุณในวันที่กำหนด</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            แนบเอกสารตามประเภท <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(แนบอย่างน้อย 1 ช่อง)</span>
           </label>
 
-          {enableReminder && (
-            <div class="mt-3">
-              <label class="block text-xs font-semibold text-gray-600 mb-1">วันที่ต้องการให้ระบบแจ้งเตือนกลับ</label>
-              <input
-                type="date"
-                value={reminderDate}
-                onInput={(e) => setReminderDate(e.target.value)}
-                required
-                class="block w-full rounded-md border-gray-300 shadow-sm p-2 text-sm border focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
-              />
-              <p class="text-[11px] text-gray-500 mt-1">* ระบบจะส่งข้อความแจ้งเตือนผ่าน LINE ไปหาคุณในวันที่กำหนด</p>
-            </div>
-          )}
+          <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
+            <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({ ...filesData, registration: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({ ...filesData, oldPolicy: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({ ...filesData, quotation: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({ ...filesData, compQuotation: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({ ...filesData, renewalNotice: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
+          </div>
         </div>
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          แนบเอกสารตามประเภท <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(แนบอย่างน้อย 1 ช่อง)</span>
-        </label>
-
-        <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
-          <Dropzone label="1. หน้ารายการจดทะเบียน / สำเนารถ" fileTypeIcon="📑" onFilesChanged={(files) => setFilesData({ ...filesData, registration: files })} onOpenGallery={onOpenGallery} />
-          <Dropzone label="2. กรมธรรม์เดิม" fileTypeIcon="🛡️" onFilesChanged={(files) => setFilesData({ ...filesData, oldPolicy: files })} onOpenGallery={onOpenGallery} />
-          <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" onFilesChanged={(files) => setFilesData({ ...filesData, quotation: files })} onOpenGallery={onOpenGallery} />
-          <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" onFilesChanged={(files) => setFilesData({ ...filesData, compQuotation: files })} onOpenGallery={onOpenGallery} />
-          <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" onFilesChanged={(files) => setFilesData({ ...filesData, renewalNotice: files })} onOpenGallery={onOpenGallery} />
-          <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
+        <div class="grid grid-cols-3 gap-3 mt-6">
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => handleReset(true)}
+            class="col-span-1 border-2 border-slate-200 text-slate-500 font-bold py-3 px-2 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98] disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+          >
+            ♻️&nbsp;ล้างข้อมูล
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] 
+              ${isSubmitting ? 'bg-brand-300 cursor-not-allowed' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
+          >
+            {isSubmitting ? '⏳ กำลังส่ง...' : 'ส่งข้อมูลเช็คเบี้ย'}
+          </button>
         </div>
-      </div>
-
-      <div class="grid grid-cols-3 gap-3 mt-6">
-        <button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => handleReset(true)}
-          class="col-span-1 border-2 border-slate-200 text-slate-500 font-bold py-3 px-2 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98] disabled:opacity-50 text-sm flex items-center justify-center gap-1"
-        >
-          ♻️&nbsp;ล้างข้อมูล
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] 
-            ${isSubmitting ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
-        >
-          {isSubmitting ? '⏳ กำลังส่ง...' : 'ส่งข้อมูลเช็คเบี้ย'}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

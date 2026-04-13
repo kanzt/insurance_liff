@@ -1,9 +1,20 @@
-import { useState, useRef } from 'preact/hooks';
+import { useState, useRef, useEffect } from 'preact/hooks';
 
-export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false, onOpenGallery }) {
+export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [], multiple = false, onOpenGallery }) {
   const [isDragActive, setIsDragActive] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(initialFiles);
   const fileInputRef = useRef(null);
+
+  // Sync internal files when initialFiles changes (e.g. via form reset)
+  useEffect(() => {
+    if (initialFiles && initialFiles.length === 0 && files.length > 0) {
+      setFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } else if (initialFiles && initialFiles !== files) {
+      // General sync if needed, though mostly for reset
+      setFiles(initialFiles);
+    }
+  }, [initialFiles]);
 
   const handleOpenGallery = (clickedIndex) => {
     // Collect all image files and their indexes

@@ -6,7 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
-export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
+export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
@@ -17,7 +17,6 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
   const [reminderDate, setReminderDate] = useState('');
 
   const [isRedPlate, setIsRedPlate] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [filesData, setFilesData] = useState({
     registration: [],
     oldPolicy: [],
@@ -206,30 +205,6 @@ export function PolicyForm({ idToken, baseApiUrl, onOpenGallery }) {
 
   return (
     <div class="relative min-h-[400px]">
-      {/* Loading Overlay */}
-      {isSubmitting && (
-        <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/60 backdrop-blur-md transition-all duration-300">
-          <div class="relative flex items-center justify-center mb-6">
-            <div class="absolute inset-0 bg-brand-500/20 rounded-full blur-2xl animate-pulse-slow"></div>
-            <div class="w-20 h-20 border-4 border-brand-100 border-t-brand-500 rounded-full animate-spin"></div>
-            <div class="absolute w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <span class="text-2xl">⚡</span>
-            </div>
-          </div>
-          <div class="text-center space-y-2">
-            <h3 class="text-xl font-bold text-brand-800 animate-pulse">กำลังส่งข้อมูล...</h3>
-            <p class="text-sm text-gray-500 max-w-[250px] mx-auto px-4">
-              กรุณารอสักครู่ ระบบกำลังอัปโหลดเอกสารและประมวลผลข้อมูลกรมธรรม์ของคุณ
-            </p>
-          </div>
-          <div class="mt-8 flex gap-1">
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce"></div>
-          </div>
-        </div>
-      )}
-
       <form class={`space-y-4 transition-all duration-300 ${isSubmitting ? 'opacity-20 pointer-events-none scale-[0.98]' : 'opacity-100'}`} onSubmit={handleSubmit}>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           <div>

@@ -9,6 +9,7 @@ export function App() {
   const [idToken, setIdToken] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [galleryData, setGalleryData] = useState(null); // { urls: [], index: 0 }
 
   const liffId = import.meta.env.VITE_LIFF_ID;
@@ -157,9 +158,39 @@ export function App() {
         {renderProfileBox()}
 
         {!isLoading && !error && liffStatus === 2 && (
-          <PolicyForm idToken={idToken} baseApiUrl={baseApiUrl} onOpenGallery={(data) => setGalleryData(data)} />
+          <PolicyForm 
+            idToken={idToken} 
+            baseApiUrl={baseApiUrl} 
+            isSubmitting={isSubmitting}
+            setIsSubmitting={setIsSubmitting}
+            onOpenGallery={(data) => setGalleryData(data)} 
+          />
         )}
       </div>
+
+      {/* Full-screen Loading Overlay */}
+      {isSubmitting && (
+        <div class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/60 backdrop-blur-md transition-all duration-300">
+          <div class="relative flex items-center justify-center mb-6">
+            <div class="absolute inset-0 bg-brand-500/20 rounded-full blur-2xl animate-pulse-slow"></div>
+            <div class="w-20 h-20 border-4 border-brand-100 border-t-brand-500 rounded-full animate-spin"></div>
+            <div class="absolute w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <span class="text-2xl">⚡</span>
+            </div>
+          </div>
+          <div class="text-center space-y-2">
+            <h3 class="text-xl font-bold text-brand-800 animate-pulse">กำลังส่งข้อมูล...</h3>
+            <p class="text-sm text-gray-500 max-w-[250px] mx-auto px-4">
+              กรุณารอสักครู่ ระบบกำลังอัปโหลดเอกสารและประมวลผลข้อมูลกรมธรรม์ของคุณ
+            </p>
+          </div>
+          <div class="mt-8 flex gap-1">
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce"></div>
+          </div>
+        </div>
+      )}
 
       {/* Global Image Gallery Modal */}
       {galleryData && (

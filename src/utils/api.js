@@ -7,11 +7,15 @@ import liff from '@line/liff';
 export async function authenticatedFetch(url, options = {}) {
   const idToken = liff.getIDToken();
   
+  const isFormData = options.body instanceof FormData;
   const headers = {
-    'Content-Type': 'application/json',
     'Authorization': `Bearer ${idToken}`,
     ...options.headers
   };
+
+  if (!isFormData && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   try {
     const response = await fetch(url, { ...options, headers });

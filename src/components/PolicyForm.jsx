@@ -63,13 +63,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, isRedPlate]);
 
-  const getBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = error => reject(error);
-  });
-
   const handleReminderToggle = (e) => {
     setEnableReminder(e.target.checked);
     if (e.target.checked && endDate && !reminderDate) {
@@ -139,7 +132,14 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
 
       const safeRef = referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
-      let uploadedFiles = [];
+      const formData = new FormData();
+      formData.append('informer_id', informerId);
+      formData.append('category_id', categoryId);
+      formData.append('submission_type', submissionType);
+      if (plateNumber) formData.append('plate_number', plateNumber);
+      if (customerName) formData.append('customer_name', customerName);
+      if (endDate) formData.append('end_date', endDate);
+      if (enableReminder && reminderDate) formData.append('reminder_date', reminderDate);
 
       const fileMappings = [
         { key: 'registration', docType: 'หน้ารายการจดทะเบียน' },
@@ -153,8 +153,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       for (const map of fileMappings) {
         const fileArr = filesData[map.key];
         if (fileArr.length > 0) {
-          const promises = fileArr.map(async (file, index) => {
-            const base64Data = await getBase64(file);
+          fileArr.forEach((file, index) => {
             const ext = file.name.split('.').pop() || 'pdf';
             let newFileName = `${safeRef}_${map.docType}`;
 
@@ -166,37 +165,25 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             }
             newFileName += `.${ext}`;
 
-            return { base64: base64Data, fileName: newFileName, mimeType: file.type };
+            // Create a new File object to rename it for the backend
+            const renamedFile = new File([file], newFileName, { type: file.type });
+            formData.append('files', renamedFile);
           });
-          uploadedFiles = uploadedFiles.concat(await Promise.all(promises));
         }
       }
 
-      const payload = JSON.stringify({
-        informer_id: informerId,
-        category_id: parseInt(categoryId),
-        submission_type: submissionType,
-        plate_number: plateNumber,
-        customer_name: customerName,
-        end_date: endDate || null,
-        reminder_date: enableReminder ? reminderDate : null,
-        files: uploadedFiles
+      const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
+        method: 'POST',
+        body: formData
       });
 
-      console.log(`Payload : ${payload}`);
-
-      // const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
-      //   method: 'POST',
-      //   body: payload
-      // });
-
-      // const result = await response.json();
-      // if (response.ok) {
-      //   alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
-      //   handleReset(false); // Silent reset on success
-      // } else {
-      //   alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
-      // }
+      const result = await response.json();
+      if (response.ok) {
+        alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
+        handleReset(false); // Silent reset on success
+      } else {
+        alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
+      }
     } catch (error) {
       console.error(error);
       alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');

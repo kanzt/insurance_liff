@@ -172,7 +172,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         }
       }
 
-      const payload = {
+      const payload = JSON.stringify({
         informer_id: informerId,
         category_id: parseInt(categoryId),
         submission_type: submissionType,
@@ -181,11 +181,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         end_date: endDate || null,
         reminder_date: enableReminder ? reminderDate : null,
         files: uploadedFiles
-      };
+      });
+
+      console.log(`Payload : ${payload}`);
 
       const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: payload
       });
 
       const result = await response.json();

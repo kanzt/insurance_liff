@@ -113,16 +113,19 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, multiple = false
                   </button>
                   {isImage ? (
                     <img
-                      src={URL.createObjectURL(file)} 
+                      src={objectUrl} 
                       alt="preview"
                       onClick={() => handleOpenGallery(idx)}
                       class="object-cover w-full h-full cursor-zoom-in hover:opacity-80 transition-opacity"
                     />
                   ) : (
-                    <div class="flex flex-col items-center p-1 w-full">
+                    <div class="flex flex-col items-center p-1 w-full mb-3">
                       <span class="text-[10px] font-bold text-gray-500 truncate w-full px-1 text-center">{file.name}</span>
                     </div>
                   )}
+                  <div class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] px-1 py-0.5 text-center truncate backdrop-blur-sm pointer-events-none">
+                    {file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(file.size / 1024))} KB`}
+                  </div>
                 </div>
               );
             })}

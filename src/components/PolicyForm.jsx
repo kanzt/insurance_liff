@@ -6,7 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
-export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, onOpenGallery }) {
+export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
@@ -17,8 +17,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [reminderDate, setReminderDate] = useState('');
 
   const [isRedPlate, setIsRedPlate] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [filesData, setFilesData] = useState({
     registration: [],
     oldPolicy: [],
@@ -341,46 +339,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           </button>
         </div>
       </form>
-
-      {/* Success Modal */}
-      {successMessage && (
-        <div class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
-            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
-              ✅
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">{successMessage.title}</h3>
-            <p class="text-slate-600 mb-6 whitespace-pre-line text-sm">{successMessage.description}</p>
-            <button 
-              type="button"
-              onClick={() => setSuccessMessage(null)}
-              class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-green-500/30 active:scale-[0.98]"
-            >
-              ตกลง / กรอกรายการถัดไป
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Error Modal */}
-      {errorMessage && (
-        <div class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
-            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner border border-red-100">
-              ❌
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">แจ้งเตือน</h3>
-            <p class="text-slate-600 mb-6 text-sm">{errorMessage}</p>
-            <button 
-              type="button"
-              onClick={() => setErrorMessage(null)}
-              class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 px-4 rounded-xl transition-all active:scale-[0.98] border border-slate-200"
-            >
-              ปิด
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -185,18 +185,18 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
       console.log(`Payload : ${payload}`);
 
-      const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
-        method: 'POST',
-        body: payload
-      });
+      // const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
+      //   method: 'POST',
+      //   body: payload
+      // });
 
-      const result = await response.json();
-      if (response.ok) {
-        alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
-        handleReset(false); // Silent reset on success
-      } else {
-        alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
-      }
+      // const result = await response.json();
+      // if (response.ok) {
+      //   alert('✅ ' + result.message + '\n\nคุณสามารถกรอกรายการถัดไปได้ทันทีคะ');
+      //   handleReset(false); // Silent reset on success
+      // } else {
+      //   alert('❌ ' + (result.error || 'เกิดข้อผิดพลาด'));
+      // }
     } catch (error) {
       console.error(error);
       alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');

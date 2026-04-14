@@ -170,7 +170,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       formData.append('submission_type', submissionType);
       if (plateNumber) formData.append('plate_number', plateNumber);
       if (customerName) formData.append('customer_name', customerName);
-      if (endDate) formData.append('end_date', endDate);
+      if (endDate) formData.append('expiry_date', endDate);
       if (enableReminder && reminderDate) formData.append('reminder_date', reminderDate);
 
       const fileMappings = [

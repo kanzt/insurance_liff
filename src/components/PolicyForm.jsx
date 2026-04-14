@@ -165,7 +165,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
       const safeRef = referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
       const formData = new FormData();
-      formData.append('informer_id', informerId);
+      formData.append('quote_agent_code', informerId);
       formData.append('sub_category_id', subCategoryId);
       formData.append('submission_type', submissionType);
       if (plateNumber) formData.append('plate_number', plateNumber);

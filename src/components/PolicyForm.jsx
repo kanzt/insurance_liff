@@ -337,6 +337,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   type="date"
                   value={reminderDate}
                   onInput={(e) => setReminderDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
                   required
                   class="block w-full rounded-md border-gray-300 shadow-sm p-2 text-sm border focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
                 />

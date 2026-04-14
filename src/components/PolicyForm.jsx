@@ -16,6 +16,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [endDate, setEndDate] = useState('');
   const [enableReminder, setEnableReminder] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
+  const [reminderType, setReminderType] = useState('quotation_confirm');
+  const [templates, setTemplates] = useState([]);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -41,6 +43,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.endDate) setEndDate(data.endDate);
         if (data.enableReminder) setEnableReminder(data.enableReminder);
         if (data.reminderDate) setReminderDate(data.reminderDate);
+        if (data.reminderType) setReminderType(data.reminderType);
         if (data.isRedPlate !== undefined) setIsRedPlate(data.isRedPlate);
       } catch (e) {
         console.error("Failed to restore form state:", e);
@@ -59,10 +62,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       endDate,
       enableReminder,
       reminderDate,
+      reminderType,
       isRedPlate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, isRedPlate]);
+  }, [informerId, informerName, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
 
   // Load sub-categories
   useEffect(() => {
@@ -81,6 +85,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadSubCategories();
+
+    async function loadTemplates() {
+      try {
+        const response = await authenticatedFetch(`${baseApiUrl}/load-notification-templates`);
+        const json = await response.json();
+        if (json.results) {
+          setTemplates(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load templates:", err);
+      }
+    }
+    loadTemplates();
   }, [baseApiUrl]);
 
   // Derived categoryId to keep motor vs non-motor dynamic logic intact
@@ -110,6 +127,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setEndDate('');
       setEnableReminder(false);
       setReminderDate('');
+      setReminderType('quotation_confirm');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -171,7 +189,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (plateNumber) formData.append('plate_number', plateNumber);
       if (customerName) formData.append('customer_name', customerName);
       if (endDate) formData.append('previous_policy_expiry_date', endDate);
-      if (enableReminder && reminderDate) formData.append('reminder_date', reminderDate);
+      if (enableReminder && reminderDate) {
+        formData.append('reminder_date', reminderDate);
+        formData.append('reminder_type', reminderType);
+      }
 
       const fileMappings = [
         { key: 'registration', docType: 'หน้ารายการจดทะเบียน' },
@@ -327,21 +348,85 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 onChange={handleReminderToggle}
                 class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
               />
-              <span class="ml-2 text-sm font-medium text-brand-800">ตั้งเตือนให้ออกใบเสนอราคาล่วงหน้า</span>
+              <span class="ml-2 text-sm font-medium text-brand-800">ตั้งแจ้งเตือน</span>
             </label>
 
             {enableReminder && (
-              <div class="mt-3">
-                <label class="block text-xs font-semibold text-gray-600 mb-1">วันที่ต้องการให้ระบบแจ้งเตือนกลับ</label>
-                <input
-                  type="date"
-                  value={reminderDate}
-                  onInput={(e) => setReminderDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  required
-                  class="block w-full rounded-md border-gray-300 shadow-sm p-2 text-sm border focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
-                />
-                <p class="text-[11px] text-gray-500 mt-1">* ระบบจะส่งข้อความแจ้งเตือนผ่าน LINE ไปหาคุณในวันที่กำหนด</p>
+              <div class="mt-4 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                {/* ประเภทการแจ้งเตือน */}
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">ประเภทการแจ้งเตือน</label>
+                  <div class="grid grid-cols-1 gap-2">
+                    {templates.length > 0 ? (
+                      templates.map((t) => (
+                        <label 
+                          key={t.slug}
+                          class={`flex items-center p-2 rounded-xl border-2 transition-all cursor-pointer ${
+                            reminderType === t.slug 
+                              ? 'border-brand-500 bg-brand-100/50 shadow-sm' 
+                              : 'border-gray-200 bg-white hover:border-brand-200'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="reminderType"
+                            value={t.slug}
+                            checked={reminderType === t.slug}
+                            onChange={() => setReminderType(t.slug)}
+                            class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                          />
+                          <span class={`ml-3 text-sm font-medium ${reminderType === t.slug ? 'text-brand-800' : 'text-gray-600'}`}>
+                            {t.title}
+                          </span>
+                        </label>
+                      ))
+                    ) : (
+                      <div class="text-xs text-gray-400 italic py-1 text-center bg-white/50 rounded-lg border border-dashed border-gray-200">
+                        กำลังโหลดเทมเพลต...
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* วันที่แจ้งเตือน */}
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wider">แจ้งเตือนกลับในวันที่</label>
+                  <input
+                    type="date"
+                    value={reminderDate}
+                    onInput={(e) => setReminderDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                    class="block w-full rounded-xl border-gray-200 shadow-sm p-3 text-sm border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
+                  />
+                </div>
+
+                {/* พรีวิวข้อความ */}
+                <div class="bg-white/60 rounded-xl p-3 border border-brand-100 shadow-inner">
+                  <label class="block text-[10px] font-bold text-brand-400 mb-2 uppercase tracking-widest pl-1">Preview (LINE Message)</label>
+                  <div class="relative flex items-start">
+                    <div class="w-8 h-8 rounded-full bg-brand-500 flex-shrink-0 flex items-center justify-center text-white text-xs shadow-sm">
+                      Bot
+                    </div>
+                    <div class="ml-2 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-md max-w-[85%]">
+                      <p class="text-[13px] text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {(() => {
+                          const template = templates.find(t => t.slug === reminderType);
+                          if (!template) return 'เลือกประเภทการแจ้งเตือน...';
+                          
+                          const dPlate = categoryId === '1' ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '...')) : 'ไม่ระบุ';
+                          const dCustomer = categoryId === '1' ? (isRedPlate ? (referenceInput || '...') : 'ไม่ระบุ') : (referenceInput || '...');
+                          
+                          return template.body_template
+                            .replace(/{{customer}}/g, dCustomer)
+                            .replace(/{{plate}}/g, dPlate);
+                        })()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <p class="text-[11px] text-gray-400 italic text-center">* ระบบจะส่งข้อความแจ้งเตือนที่เห็นนี้ไปหาคุณอัตโนมัติ</p>
               </div>
             )}
           </div>

@@ -12,6 +12,7 @@ export function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
   const [galleryData, setGalleryData] = useState(null); // { urls: [], index: 0 }
 
   const liffId = import.meta.env.VITE_LIFF_ID;
@@ -167,6 +168,7 @@ export function App() {
             setIsSubmitting={setIsSubmitting}
             setSuccessMessage={setSuccessMessage}
             setErrorMessage={setErrorMessage}
+            setConfirmModal={setConfirmModal}
             onOpenGallery={(data) => setGalleryData(data)} 
           />
         )}
@@ -232,6 +234,38 @@ export function App() {
             >
               ปิด
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
+            <div class="w-16 h-16 bg-brand-50 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner border border-brand-100">
+              ♻️
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">{confirmModal.title}</h3>
+            <p class="text-slate-600 mb-6 text-sm">{confirmModal.message}</p>
+            <div class="grid grid-cols-2 gap-3">
+              <button 
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 px-4 rounded-xl transition-all active:scale-[0.98] border border-slate-200"
+              >
+                ยกเลิก
+              </button>
+              <button 
+                type="button"
+                onClick={() => {
+                  confirmModal.onConfirm();
+                  setConfirmModal(null);
+                }}
+                class="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-brand-500/30 active:scale-[0.98]"
+              >
+                ยืนยัน
+              </button>
+            </div>
           </div>
         </div>
       )}

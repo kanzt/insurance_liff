@@ -6,7 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
-export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, onOpenGallery }) {
+export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, setConfirmModal, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [subCategoryId, setSubCategoryId] = useState('');
@@ -99,30 +99,38 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   };
 
   const handleReset = (showConfirm = true) => {
-    if (showConfirm && !window.confirm('♻️ คุณต้องการล้างข้อมูลในฟอร์มทั้งหมดใช่หรือไม่?')) {
+    const performReset = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      setInformerId(null);
+      setInformerName('');
+      setSubCategoryId('');
+      setSubmissionType('new');
+      setIsRedPlate(false);
+      setReferenceInput('');
+      setEndDate('');
+      setEnableReminder(false);
+      setReminderDate('');
+      setFilesData({
+        registration: [],
+        oldPolicy: [],
+        quotation: [],
+        compQuotation: [],
+        renewalNotice: [],
+        others: []
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (showConfirm) {
+      setConfirmModal({
+        title: 'ยืนยันการล้างข้อมูล',
+        message: 'คุณต้องการล้างข้อมูลในฟอร์มทั้งหมดใช่หรือไม่? ข้อมูลที่กรอกไว้จะหายไปทั้งหมด',
+        onConfirm: performReset
+      });
       return;
     }
 
-    localStorage.removeItem(STORAGE_KEY);
-    setInformerId(null);
-    setInformerName('');
-    setSubCategoryId('');
-    setSubmissionType('new');
-    setIsRedPlate(false);
-    setReferenceInput('');
-    setEndDate('');
-    setEnableReminder(false);
-    setReminderDate('');
-    setFilesData({
-      registration: [],
-      oldPolicy: [],
-      quotation: [],
-      compQuotation: [],
-      renewalNotice: [],
-      others: []
-    });
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    performReset();
   };
 
   const handleSubmit = async (e) => {

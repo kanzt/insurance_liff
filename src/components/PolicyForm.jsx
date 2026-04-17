@@ -151,6 +151,18 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     performReset();
   };
 
+  const formatThaiDate = (dateStr) => {
+    if (!dateStr) return '...';
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+      return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear() + 543}`;
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!informerId) {
@@ -358,28 +370,41 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">ประเภทการแจ้งเตือน</label>
                   <div class="grid grid-cols-1 gap-2">
                     {templates.length > 0 ? (
-                      templates.map((t) => (
-                        <label 
-                          key={t.slug}
-                          class={`flex items-center p-2 rounded-xl border-2 transition-all cursor-pointer ${
-                            reminderType === t.slug 
-                              ? 'border-brand-500 bg-brand-100/50 shadow-sm' 
-                              : 'border-gray-200 bg-white hover:border-brand-200'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="reminderType"
-                            value={t.slug}
-                            checked={reminderType === t.slug}
-                            onChange={() => setReminderType(t.slug)}
-                            class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
-                          />
-                          <span class={`ml-3 text-sm font-medium ${reminderType === t.slug ? 'text-brand-800' : 'text-gray-600'}`}>
-                            {t.title}
-                          </span>
-                        </label>
-                      ))
+                      templates.map((t) => {
+                        const isDisabled = t.slug === 'quotation_followup' && !endDate;
+                        return (
+                          <label 
+                            key={t.slug}
+                            class={`flex items-center p-2 rounded-xl border-2 transition-all ${
+                              isDisabled 
+                                ? 'opacity-50 cursor-not-allowed bg-gray-50 border-gray-100' 
+                                : reminderType === t.slug 
+                                  ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer' 
+                                  : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="reminderType"
+                              value={t.slug}
+                              checked={reminderType === t.slug}
+                              onChange={() => !isDisabled && setReminderType(t.slug)}
+                              disabled={isDisabled}
+                              class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                            />
+                            <div class="ml-3 flex flex-col">
+                              <span class={`text-sm font-medium ${reminderType === t.slug && !isDisabled ? 'text-brand-800' : 'text-gray-600'}`}>
+                                {t.title}
+                              </span>
+                              {isDisabled && (
+                                <span class="text-[10px] text-red-500 font-normal italic">
+                                  * กรุณาระบุวันหมดอายุก่อนเลือก
+                                </span>
+                              )}
+                            </div>
+                          </label>
+                        );
+                      })
                     ) : (
                       <div class="text-xs text-gray-400 italic py-1 text-center bg-white/50 rounded-lg border border-dashed border-gray-200">
                         กำลังโหลดเทมเพลต...
@@ -419,7 +444,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                           
                           let finalPreview = template.body_template
                             .replace(/{{customer}}/g, dCustomer)
-                            .replace(/{{plate}}/g, dPlate);
+                            .replace(/{{plate}}/g, dPlate)
+                            .replace(/{{previous_policy_expiry_date}}/g, formatThaiDate(endDate));
 
                           // ลบวงเล็บที่ว่างเปล่าออกเพื่อความสวยงาม
                           return finalPreview.replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim();

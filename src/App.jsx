@@ -13,7 +13,7 @@ export function App() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
-  const [galleryData, setGalleryData] = useState(null); // { urls: [], index: 0 }
+  const [galleryData, setGalleryData] = useState(null); // { items: [{url, type, name}], index: 0 }
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -36,7 +36,7 @@ export function App() {
     if (!galleryData) return;
     setGalleryData(prev => ({
       ...prev,
-      index: (prev.index + 1) % prev.urls.length
+      index: (prev.index + 1) % prev.items.length
     }));
   };
 
@@ -44,7 +44,7 @@ export function App() {
     if (!galleryData) return;
     setGalleryData(prev => ({
       ...prev,
-      index: (prev.index - 1 + prev.urls.length) % prev.urls.length
+      index: (prev.index - 1 + prev.items.length) % prev.items.length
     }));
   };
 
@@ -285,7 +285,7 @@ export function App() {
           </span>
 
           {/* Navigation Arrows */}
-          {galleryData.urls.length > 1 && (
+          {galleryData.items.length > 1 && (
             <>
               <button
                 type="button"
@@ -305,21 +305,50 @@ export function App() {
               {/* Counter Indicator */}
               <div class="absolute bottom-10 left-0 right-0 flex justify-center z-[1010]">
                 <div class="bg-black/40 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-sm font-medium border border-white/20">
-                  {galleryData.index + 1} / {galleryData.urls.length}
+                  {galleryData.index + 1} / {galleryData.items.length}
                 </div>
               </div>
             </>
           )}
 
-          {/* Modal Image */}
-          <div class="w-full h-full flex items-center justify-center p-4">
-            <img
-              key={galleryData.urls[galleryData.index]} // Key forces re-render/animation on change
-              src={galleryData.urls[galleryData.index]}
-              alt={`Preview ${galleryData.index + 1}`}
-              class="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-200"
-              onClick={(e) => e.stopPropagation()}
-            />
+          {/* Modal Content */}
+          <div class="w-full h-full flex flex-col items-center justify-center p-4 pt-16">
+            <div class="w-full h-full flex items-center justify-center overflow-hidden">
+              {galleryData.items[galleryData.index].type === 'application/pdf' ? (
+                <div class="w-full h-full flex flex-col items-center">
+                  <iframe
+                    key={galleryData.items[galleryData.index].url}
+                    src={galleryData.items[galleryData.index].url}
+                    class="w-full h-full rounded-lg bg-white shadow-2xl"
+                    title="PDF Preview"
+                  />
+                  <div class="mt-4 flex gap-4">
+                    <a
+                      href={galleryData.items[galleryData.index].url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl border border-white/20 text-sm font-bold backdrop-blur-md transition-all flex items-center gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      ↗️ เปิดในหน้าต่างใหม่
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  key={galleryData.items[galleryData.index].url}
+                  src={galleryData.items[galleryData.index].url}
+                  alt={`Preview ${galleryData.index + 1}`}
+                  class="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-200"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+            </div>
+            
+            {/* Filename Indicator */}
+            <div class="mt-4 bg-black/40 backdrop-blur-md text-white/70 px-4 py-1.5 rounded-full text-[10px] border border-white/10 max-w-[80%] truncate">
+              📄 {galleryData.items[galleryData.index].name}
+            </div>
           </div>
         </div>
       )}

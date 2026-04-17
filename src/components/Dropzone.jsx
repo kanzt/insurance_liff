@@ -16,20 +16,58 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
     }
   }, [initialFiles]);
 
-  const handleOpenGallery = (clickedIndex) => {
-    // Collect all image files and their indexes
-    const imageFiles = files.filter(f => f.type.startsWith('image/'));
-    const urls = imageFiles.map(f => URL.createObjectURL(f));
+  const [objectUrls, setObjectUrls] = useState({});
+ 
+  // Manage object URLs for previews and gallery
+  useEffect(() => {
+    const newUrls = { ...objectUrls };
+    let changed = false;
+ 
+    // Revoke URLs for files that are no longer present
+    const currentFileNames = new Set(files.map(f => f.name + f.size));
+    Object.keys(objectUrls).forEach(key => {
+      if (!currentFileNames.has(key)) {
+        URL.revokeObjectURL(objectUrls[key]);
+        delete newUrls[key];
+        changed = true;
+      }
+    });
+ 
+    // Create URLs for new files
+    files.forEach(file => {
+      const key = file.name + file.size;
+      if (!newUrls[key]) {
+        newUrls[key] = URL.createObjectURL(file);
+        changed = true;
+      }
+    });
+ 
+    if (changed) setObjectUrls(newUrls);
     
-    // Find the relative index of the clicked file among images
+    // Cleanup on unmount
+    return () => {
+      Object.values(newUrls).forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [files]);
+ 
+  const handleOpenGallery = (clickedIndex) => {
+    // Collect all previewable files (images and PDFs)
+    const previewableFiles = files.filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+    const items = previewableFiles.map(f => ({
+      url: objectUrls[f.name + f.size],
+      type: f.type,
+      name: f.name
+    }));
+    
+    // Find the relative index of the clicked file among previewable items
     const clickedFile = files[clickedIndex];
-    const indexInGallery = imageFiles.indexOf(clickedFile);
+    const indexInGallery = previewableFiles.indexOf(clickedFile);
     
     if (indexInGallery !== -1) {
-      onOpenGallery({ urls, index: indexInGallery });
+      onOpenGallery({ items, index: indexInGallery });
     }
   };
-
+ 
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -39,12 +77,12 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
       setIsDragActive(false);
     }
   };
-
+ 
   const notifyChange = (newFiles) => {
     setFiles(newFiles);
     onFilesChanged(newFiles);
   };
-
+ 
   const handleDrop = (e) => {
     handleDrag(e);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
@@ -52,14 +90,14 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
       notifyChange(multiple ? [...files, ...added] : added);
     }
   };
-
+ 
   const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const added = Array.from(e.target.files);
       notifyChange(multiple ? [...files, ...added] : added);
     }
   };
-
+ 
   const handlePaste = (e) => {
     if (!e.clipboardData) return;
     const items = e.clipboardData.items;
@@ -73,13 +111,13 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
       notifyChange(multiple ? [...files, ...pastedFiles] : pastedFiles);
     }
   };
-
+ 
   const handleRemove = (index, e) => {
     e.stopPropagation();
     const newFiles = files.filter((_, i) => i !== index);
     notifyChange(newFiles);
   };
-
+ 
   return (
     <div class="space-y-3">
       <div
@@ -96,7 +134,7 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
           {fileTypeIcon} {label}
           <span class="font-normal text-brand-500 ml-1 hidden lg:inline">(คลิกที่นี่แล้วกด Ctrl+V เพื่อวางรูป)</span>
         </label>
-
+ 
         <input
           type="file"
           ref={fileInputRef}
@@ -105,13 +143,13 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
           onChange={handleChange}
           class="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:font-semibold file:bg-brand-100 file:text-brand-700 hover:file:bg-brand-200 transition cursor-pointer"
         />
-
+ 
         {files.length > 0 && (
           <div class="preview-container mt-3 grid grid-cols-4 gap-2">
             {files.map((file, idx) => {
               const isImage = file.type.startsWith('image/');
-              const objectUrl = isImage ? URL.createObjectURL(file) : null;
-
+              const objectUrl = objectUrls[file.name + file.size];
+ 
               return (
                 <div key={idx} class="relative group rounded-md overflow-hidden bg-gray-100 border border-gray-200 aspect-square flex items-center justify-center">
                   <button
@@ -130,7 +168,11 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
                       class="object-cover w-full h-full cursor-zoom-in hover:opacity-80 transition-opacity"
                     />
                   ) : (
-                    <div class="flex flex-col items-center p-1 w-full mb-3">
+                    <div 
+                      class="flex flex-col items-center justify-center p-2 w-full h-full cursor-zoom-in hover:bg-gray-200 transition-colors"
+                      onClick={() => file.type === 'application/pdf' && handleOpenGallery(idx)}
+                    >
+                      <span class="text-3xl mb-1">{file.type === 'application/pdf' ? '📖' : '📄'}</span>
                       <span class="text-[10px] font-bold text-gray-500 truncate w-full px-1 text-center">{file.name}</span>
                     </div>
                   )}

@@ -414,12 +414,15 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                           const template = templates.find(t => t.slug === reminderType);
                           if (!template) return 'เลือกประเภทการแจ้งเตือน...';
                           
-                          const dPlate = categoryId === '1' ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '...')) : 'ไม่ระบุ';
-                          const dCustomer = categoryId === '1' ? (isRedPlate ? (referenceInput || '...') : 'ไม่ระบุ') : (referenceInput || '...');
+                          const dPlate = categoryId === '1' ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '')) : '';
+                          const dCustomer = categoryId === '1' ? (isRedPlate ? (referenceInput || '') : '') : (referenceInput || '');
                           
-                          return template.body_template
+                          let finalPreview = template.body_template
                             .replace(/{{customer}}/g, dCustomer)
                             .replace(/{{plate}}/g, dPlate);
+
+                          // ลบวงเล็บที่ว่างเปล่าออกเพื่อความสวยงาม
+                          return finalPreview.replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
                         })()}
                       </p>
                     </div>

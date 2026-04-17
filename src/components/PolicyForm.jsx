@@ -102,7 +102,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
   // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
   useEffect(() => {
-    if (reminderType === 'quotation_followup' && !endDate) {
+    if (reminderType === 'follow_case' && !endDate) {
       setReminderType('quotation_confirm');
     }
   }, [endDate, reminderType]);
@@ -378,7 +378,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <div class="grid grid-cols-1 gap-2">
                     {templates.length > 0 ? (
                       templates.map((t) => {
-                        const isDisabled = t.slug === 'quotation_followup' && !endDate;
+                        const isDisabled = t.slug === 'follow_case' && !endDate;
                         return (
                           <label 
                             key={t.slug}

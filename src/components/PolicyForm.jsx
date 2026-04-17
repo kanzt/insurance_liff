@@ -100,6 +100,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     loadTemplates();
   }, [baseApiUrl]);
 
+  // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
+  useEffect(() => {
+    if (reminderType === 'quotation_followup' && !endDate) {
+      setReminderType('quotation_confirm');
+    }
+  }, [endDate, reminderType]);
+
   // Derived categoryId to keep motor vs non-motor dynamic logic intact
   const selectedSub = subCategories.find(s => s.subCategoryId.toString() === subCategoryId);
   const categoryId = selectedSub ? selectedSub.categoryId.toString() : '1';
@@ -375,9 +382,15 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                         return (
                           <label 
                             key={t.slug}
+                            onClick={(e) => {
+                              if (isDisabled) {
+                                e.preventDefault();
+                                return;
+                              }
+                            }}
                             class={`flex items-center p-2 rounded-xl border-2 transition-all ${
                               isDisabled 
-                                ? 'opacity-50 cursor-not-allowed bg-gray-50 border-gray-100' 
+                                ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100' 
                                 : reminderType === t.slug 
                                   ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer' 
                                   : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'

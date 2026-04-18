@@ -30,6 +30,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               agentName: "ก้องเกียรติ มั่นคง (A001)",
               expiryDate: "2025-04-10",
               reminderDate: "2025-03-10",
+              reminderType: "follow_case",
               createdAt: "2024-04-10T08:30:00Z"
             },
             {
@@ -42,6 +43,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               agentName: "สมสมัย ใจดี (A002)",
               expiryDate: "2025-05-12",
               reminderDate: "2025-04-12",
+              reminderType: "quotation_confirm",
               createdAt: "2024-04-12T14:20:00Z"
             },
             {
@@ -54,6 +56,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               agentName: "ก้องเกียรติ มั่นคง (A001)",
               expiryDate: "2025-06-15",
               reminderDate: "2025-05-15",
+              reminderType: "follow_case",
               createdAt: "2024-04-15T09:15:00Z"
             }
           ]

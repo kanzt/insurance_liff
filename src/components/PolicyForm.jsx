@@ -198,6 +198,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (policy.reminderDate) {
         setReminderDate(policy.reminderDate);
         setEnableReminder(true);
+        if (policy.reminderType) {
+          setReminderType(policy.reminderType);
+        }
       }
 
       if (policy.expiryDate) {

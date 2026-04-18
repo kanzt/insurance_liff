@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import liff from '@line/liff';
 import { AgentSearch } from './AgentSearch';
+import { PolicySearch } from './PolicySearch';
 import { Dropzone } from './Dropzone';
 import { authenticatedFetch } from '../utils/api';
 
@@ -18,6 +19,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [reminderDate, setReminderDate] = useState('');
   const [reminderType, setReminderType] = useState('quotation_confirm');
   const [templates, setTemplates] = useState([]);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -135,6 +137,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setEnableReminder(false);
       setReminderDate('');
       setReminderType('quotation_confirm');
+      setSelectedPolicy(null);
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -167,6 +170,25 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear() + 543}`;
     } catch (e) {
       return dateStr;
+    }
+  };
+  
+  const handleSelectPolicy = (policy) => {
+    setSelectedPolicy(policy);
+    if (policy) {
+      if (policy.plateNumber && policy.plateNumber !== 'ป้ายแดง') {
+        setIsRedPlate(false);
+        setReferenceInput(policy.plateNumber);
+      } else if (policy.plateNumber === 'ป้ายแดง') {
+        setIsRedPlate(true);
+        setReferenceInput(policy.customerName || '');
+      } else {
+        setReferenceInput(policy.customerName || '');
+      }
+      
+      if (policy.subCategoryId) {
+        setSubCategoryId(policy.subCategoryId.toString());
+      }
     }
   };
 
@@ -211,6 +233,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (enableReminder && reminderDate) {
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);
+      }
+      
+      if (submissionType === 'additional' && selectedPolicy) {
+        formData.append('original_policy_id', selectedPolicy.id);
       }
 
       const fileMappings = [
@@ -316,6 +342,22 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
             </select>
           </div>
+
+          {submissionType === 'additional' && (
+            <div class="md:col-span-2 bg-brand-50/50 p-4 rounded-xl border border-brand-100 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+              <label class="block text-sm font-bold text-brand-800 mb-2">
+                🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
+              </label>
+              <PolicySearch 
+                baseApiUrl={baseApiUrl} 
+                idToken={idToken} 
+                onSelectPolicy={handleSelectPolicy}
+              />
+              <p class="mt-2 text-[10px] text-gray-500 italic px-1">
+                * ระบบจะช่วยกรอกข้อมูลทะเบียนและหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ
+              </p>
+            </div>
+          )}
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">

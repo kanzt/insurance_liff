@@ -374,12 +374,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-1 flex justify-between items-center">
+              <span>หมวดหมู่ <span class="text-red-500">*</span></span>
+              {submissionType === 'additional' && <span class="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">🔒 ล็อคตามรายการเดิม</span>}
+            </label>
             <select
               required
+              disabled={submissionType === 'additional'}
               value={subCategoryId}
               onChange={(e) => setSubCategoryId(e.target.value)}
-              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white transition-all text-sm"
+              class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
+                ${submissionType === 'additional' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
             >
               <option value="" disabled>-- เลือกหมวดหมู่ --</option>
               {subCategories.length > 0 ? (

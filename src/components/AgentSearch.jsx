@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 
-export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery = '' }) {
+export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery = '', disabled = false }) {
   const [agents, setAgents] = useState([]);
   const [filteredAgents, setFilteredAgents] = useState([]);
   const [query, setQuery] = useState(initialQuery);
@@ -45,6 +45,7 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
   }, [baseApiUrl, idToken]);
 
   const handleInput = (e) => {
+    if (disabled) return;
     const val = e.target.value;
     setQuery(val);
     setShowDropdown(true);
@@ -66,6 +67,7 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
   };
 
   const handleSelect = (agent) => {
+    if (disabled) return;
     const formattedName = `${agent.fullName} (${agent.agentId})`;
     setQuery(formattedName);
     setSelectedAgent(agent);
@@ -74,6 +76,7 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
   };
 
   const handleClear = () => {
+    if (disabled) return;
     setQuery('');
     setSelectedAgent(null);
     onSelectAgent(null, '');
@@ -96,14 +99,16 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
         type="text" 
         value={query}
         onInput={handleInput}
-        onFocus={() => { if (agents.length > 0) setShowDropdown(true); }}
+        onFocus={() => { if (agents.length > 0 && !disabled) setShowDropdown(true); }}
         onKeyDown={(e) => { if (e.key === 'Escape') setShowDropdown(false); }}
-        placeholder="🔍 ค้นหาชื่อหรือรหัสตัวแทน..."
-        class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white pr-10"
+        placeholder={disabled ? "" : "🔍 ค้นหาชื่อหรือรหัสตัวแทน..."}
+        disabled={disabled}
+        class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm pr-10
+          ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80'}`}
         autocomplete="off" 
         required
       />
-      {query && (
+      {query && !disabled && (
         <button 
           type="button" 
           onClick={handleClear}

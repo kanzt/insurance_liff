@@ -189,6 +189,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (policy.subCategoryId) {
         setSubCategoryId(policy.subCategoryId.toString());
       }
+
+      if (policy.agentCode && policy.agentName) {
+        setInformerId(policy.agentCode);
+        setInformerName(policy.agentName);
+      }
     }
   };
 
@@ -296,12 +301,64 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   return (
     <div class="relative min-h-[400px]">
       <form class={`space-y-4 transition-all duration-300 ${isSubmitting ? 'opacity-20 pointer-events-none scale-[0.98]' : 'opacity-100'}`} onSubmit={handleSubmit}>
+        {/* วัตถุประสงค์ (Submission Type) - Priority Selection */}
+        <div class="bg-brand-50/30 p-4 rounded-xl border border-brand-100/50 shadow-sm mb-6">
+          <label class="block text-sm font-bold text-brand-800 mb-2">วัตถุประสงค์การแจ้งงาน <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[
+              { id: 'new', label: '🆕 เช็คเบี้ยใหม่', desc: 'ยื่นคำขอใหม่' },
+              { id: 'renewal', label: '🔄 เช็คเบี้ยต่ออายุ', desc: 'งานเดิมปีที่แล้ว' },
+              { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' }
+            ].map((type) => (
+              <label 
+                key={type.id}
+                class={`flex flex-col p-3 rounded-xl border-2 transition-all cursor-pointer ${
+                  submissionType === type.id 
+                    ? 'border-brand-500 bg-white shadow-md scale-[1.02]' 
+                    : 'border-white bg-white/50 hover:border-brand-200 opacity-70'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="submissionType"
+                  value={type.id}
+                  checked={submissionType === type.id}
+                  onChange={(e) => setSubmissionType(e.target.value)}
+                  class="sr-only"
+                />
+                <span class="text-sm font-bold text-slate-700">{type.label}</span>
+                <span class="text-[10px] text-gray-400 font-medium">{type.desc}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {submissionType === 'additional' && (
+          <div class="bg-white p-4 rounded-xl border-2 border-brand-500 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 mb-6 ring-4 ring-brand-50">
+            <label class="block text-sm font-bold text-brand-800 mb-2">
+              🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
+            </label>
+            <PolicySearch 
+              baseApiUrl={baseApiUrl} 
+              idToken={idToken} 
+              onSelectPolicy={handleSelectPolicy}
+            />
+            <p class="mt-2 text-[10px] text-gray-500 italic px-1">
+              * ระบบจะช่วยเลือกตัวแทน ทะเบียน และหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ
+            </p>
+          </div>
+        )}
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-1 flex justify-between items-center">
+              <span>ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></span>
+              {submissionType === 'additional' && <span class="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">🔒 ล็อคตามรายการเดิม</span>}
+            </label>
             <AgentSearch
               baseApiUrl={baseApiUrl}
               idToken={idToken}
+              disabled={submissionType === 'additional'}
               onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
               initialQuery={informerName}
             />
@@ -313,7 +370,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               required
               value={subCategoryId}
               onChange={(e) => setSubCategoryId(e.target.value)}
-              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
+              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white transition-all text-sm"
             >
               <option value="" disabled>-- เลือกหมวดหมู่ --</option>
               {subCategories.length > 0 ? (
@@ -330,36 +387,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ <span class="text-red-500">*</span></label>
-            <select
-              value={submissionType}
-              onChange={(e) => setSubmissionType(e.target.value)}
-              class="block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm bg-white"
-            >
-              <option value="new">🆕 แจ้งเช็คเบี้ยใหม่</option>
-              <option value="renewal">🔄 แจ้งเช็คเบี้ยต่ออายุ</option>
-              <option value="additional">📎 ส่งเอกสารเพิ่มเติม (อัปเดตงานเดิม)</option>
-            </select>
-          </div>
-
-          {submissionType === 'additional' && (
-            <div class="md:col-span-2 bg-brand-50/50 p-4 rounded-xl border border-brand-100 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
-              <label class="block text-sm font-bold text-brand-800 mb-2">
-                🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
-              </label>
-              <PolicySearch 
-                baseApiUrl={baseApiUrl} 
-                idToken={idToken} 
-                onSelectPolicy={handleSelectPolicy}
-              />
-              <p class="mt-2 text-[10px] text-gray-500 italic px-1">
-                * ระบบจะช่วยกรอกข้อมูลทะเบียนและหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ
-              </p>
-            </div>
-          )}
-
-          <div>
+          <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">
               {categoryId === '1'
                 ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')

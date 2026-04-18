@@ -26,6 +26,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               customerName: "สมชาย ใจดี",
               subCategoryId: "1",
               subCategoryName: "รรถยนต์ (ภาคสมัครใจ)",
+              agentCode: "A001",
+              agentName: "ก้องเกียรติ มั่นคง (A001)",
               createdAt: "2024-04-10T08:30:00Z"
             },
             {
@@ -34,6 +36,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               customerName: "วิชัย รักชาติ",
               subCategoryId: "1",
               subCategoryName: "รถยนต์ (ภาคสมัครใจ)",
+              agentCode: "A002",
+              agentName: "สมสมัย ใจดี (A002)",
               createdAt: "2024-04-12T14:20:00Z"
             },
             {
@@ -42,6 +46,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               customerName: "นางสาวสมหญิง มั่งมี",
               subCategoryId: "7",
               subCategoryName: "ประกันอุบัติเหตุ (PA)",
+              agentCode: "A001",
+              agentName: "ก้องเกียรติ มั่นคง (A001)",
               createdAt: "2024-04-15T09:15:00Z"
             }
           ]

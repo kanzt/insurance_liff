@@ -4,6 +4,7 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
   const [isDragActive, setIsDragActive] = useState(false);
   const [files, setFiles] = useState(initialFiles);
   const fileInputRef = useRef(null);
+  const objectUrlsRef = useRef({});
 
   // Sync internal files when initialFiles changes (e.g. via form reset)
   useEffect(() => {
@@ -18,15 +19,30 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
 
   const [objectUrls, setObjectUrls] = useState({});
  
+  // Sync ref with state for unmount cleanup
+  useEffect(() => {
+    objectUrlsRef.current = objectUrls;
+  }, [objectUrls]);
+
+  // Handle unmount cleanup
+  useEffect(() => {
+    return () => {
+      Object.values(objectUrlsRef.current).forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
+
+  // Helper to generate a unique key for each file to track its object URL
+  const getFileKey = (file) => `${file.name}-${file.size}-${file.lastModified || ''}`;
+ 
   // Manage object URLs for previews and gallery
   useEffect(() => {
     const newUrls = { ...objectUrls };
     let changed = false;
  
     // Revoke URLs for files that are no longer present
-    const currentFileNames = new Set(files.map(f => f.name + f.size));
+    const currentFileKeys = new Set(files.map(getFileKey));
     Object.keys(objectUrls).forEach(key => {
-      if (!currentFileNames.has(key)) {
+      if (!currentFileKeys.has(key)) {
         URL.revokeObjectURL(objectUrls[key]);
         delete newUrls[key];
         changed = true;
@@ -35,7 +51,7 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
  
     // Create URLs for new files
     files.forEach(file => {
-      const key = file.name + file.size;
+      const key = getFileKey(file);
       if (!newUrls[key]) {
         newUrls[key] = URL.createObjectURL(file);
         changed = true;
@@ -43,18 +59,13 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
     });
  
     if (changed) setObjectUrls(newUrls);
-    
-    // Cleanup on unmount
-    return () => {
-      Object.values(newUrls).forEach(url => URL.revokeObjectURL(url));
-    };
   }, [files]);
  
   const handleOpenGallery = (clickedIndex) => {
     // Collect all previewable files (images and PDFs)
     const previewableFiles = files.filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
     const items = previewableFiles.map(f => ({
-      url: objectUrls[f.name + f.size],
+      url: objectUrls[getFileKey(f)],
       type: f.type,
       name: f.name
     }));
@@ -148,7 +159,7 @@ export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [
           <div class="preview-container mt-3 grid grid-cols-4 gap-2">
             {files.map((file, idx) => {
               const isImage = file.type.startsWith('image/');
-              const objectUrl = objectUrls[file.name + file.size];
+              const objectUrl = objectUrls[getFileKey(file)];
  
               return (
                 <div key={idx} class="relative group rounded-md overflow-hidden bg-gray-100 border border-gray-200 aspect-square flex items-center justify-center">

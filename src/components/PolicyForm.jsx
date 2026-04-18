@@ -194,6 +194,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         setInformerId(policy.agentCode);
         setInformerName(policy.agentName);
       }
+
+      if (policy.reminderDate) {
+        setReminderDate(policy.reminderDate);
+        setEnableReminder(true);
+      }
     }
   };
 

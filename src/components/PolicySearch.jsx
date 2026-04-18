@@ -28,6 +28,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               subCategoryName: "รรถยนต์ (ภาคสมัครใจ)",
               agentCode: "A001",
               agentName: "ก้องเกียรติ มั่นคง (A001)",
+              expiryDate: "2025-04-10",
+              reminderDate: "2025-03-10",
               createdAt: "2024-04-10T08:30:00Z"
             },
             {
@@ -38,6 +40,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               subCategoryName: "รถยนต์ (ภาคสมัครใจ)",
               agentCode: "A002",
               agentName: "สมสมัย ใจดี (A002)",
+              expiryDate: "2025-05-12",
+              reminderDate: "2025-04-12",
               createdAt: "2024-04-12T14:20:00Z"
             },
             {
@@ -48,6 +52,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               subCategoryName: "ประกันอุบัติเหตุ (PA)",
               agentCode: "A001",
               agentName: "ก้องเกียรติ มั่นคง (A001)",
+              expiryDate: "2025-06-15",
+              reminderDate: "2025-05-15",
               createdAt: "2024-04-15T09:15:00Z"
             }
           ]
@@ -119,6 +125,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   };
 
   const formatThaiDate = (dateStr) => {
+    if (!dateStr) return '-';
     const date = new Date(dateStr);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() + 543}`;
   };
@@ -184,8 +191,13 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                       <span class="opacity-50 text-[10px]">👤</span> 
                       <span>{highlightText(policy.customerName, query) || '-'}</span>
                     </div>
-                    <div class="mt-1 text-[10px] text-brand-600 font-medium">
-                      📦 {policy.subCategoryName}
+                    <div class="flex justify-between items-center mt-1">
+                      <div class="text-[10px] text-brand-600 font-medium">
+                        📦 {policy.subCategoryName}
+                      </div>
+                      <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
+                        ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}
+                      </div>
                     </div>
                   </div>
                 </div>

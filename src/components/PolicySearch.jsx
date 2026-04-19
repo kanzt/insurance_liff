@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
+import { authenticatedFetch } from '../utils/api';
 
 export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery = '' }) {
   const [policies, setPolicies] = useState([]);
@@ -11,60 +12,12 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   useEffect(() => {
     async function fetchPolicies() {
       try {
-        // MOCK DATA until backend is ready
-        // In real implementation, this would be: 
-        // const response = await fetch(`${baseApiUrl}/load-policies`, { headers: { 'Authorization': `Bearer ${idToken}` } });
-        // const result = await response.json();
+        const response = await authenticatedFetch(`${baseApiUrl}/load-policies`);
+        const json = await response.json();
         
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
-        
-        const mockResult = {
-          results: [
-            {
-              id: "POL-001",
-              plateNumber: "1กข-1234 กทม",
-              customerName: "สมชาย ใจดี",
-              subCategoryId: "1",
-              subCategoryName: "รรถยนต์ (ภาคสมัครใจ)",
-              agentCode: "A001",
-              agentName: "ก้องเกียรติ มั่นคง (A001)",
-              expiryDate: "2025-04-10",
-              reminderDate: "2025-03-10",
-              reminderType: "follow_case",
-              createdAt: "2024-04-10T08:30:00Z"
-            },
-            {
-              id: "POL-002",
-              plateNumber: "7กก-8888 นนทบุรี",
-              customerName: "วิชัย รักชาติ",
-              subCategoryId: "1",
-              subCategoryName: "รถยนต์ (ภาคสมัครใจ)",
-              agentCode: "A002",
-              agentName: "สมสมัย ใจดี (A002)",
-              expiryDate: "2025-05-12",
-              reminderDate: "2025-04-12",
-              reminderType: "quotation_confirm",
-              createdAt: "2024-04-12T14:20:00Z"
-            },
-            {
-              id: "POL-003",
-              plateNumber: "ป้ายแดง",
-              customerName: "นางสาวสมหญิง มั่งมี",
-              subCategoryId: "7",
-              subCategoryName: "ประกันอุบัติเหตุ (PA)",
-              agentCode: "A001",
-              agentName: "ก้องเกียรติ มั่นคง (A001)",
-              expiryDate: "2025-06-15",
-              reminderDate: "2025-05-15",
-              reminderType: "follow_case",
-              createdAt: "2024-04-15T09:15:00Z"
-            }
-          ]
-        };
-
-        if (mockResult.results && Array.isArray(mockResult.results)) {
-          setPolicies(mockResult.results);
-          setFilteredPolicies(mockResult.results);
+        if (json.results && Array.isArray(json.results)) {
+          setPolicies(json.results);
+          setFilteredPolicies(json.results);
         }
       } catch (error) {
         console.error("Error loading policies:", error);

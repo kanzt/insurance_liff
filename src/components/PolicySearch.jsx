@@ -132,17 +132,13 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                 >
                   <div class="flex justify-between items-start mb-1">
                     <span class="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">
-                      {highlightText(policy.id, query)}
+                      {highlightText(policy.plateNumber, query) || 'ไม่ระบุทะเบียน'}
                     </span>
                     <span class="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
                       📅 {formatThaiDate(policy.createdAt)}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5 text-xs text-slate-500">
-                    <div class="flex items-center gap-1">
-                      <span class="opacity-50 text-[10px]">🚗</span> 
-                      <span>{highlightText(policy.plateNumber, query) || '-'}</span>
-                    </div>
                     <div class="flex items-center gap-1">
                       <span class="opacity-50 text-[10px]">👤</span> 
                       <span>{highlightText(policy.customerName, query) || '-'}</span>

@@ -363,9 +363,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1 flex justify-between items-center">
-              <span>ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span></span>
-              {submissionType === 'additional' && <span class="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">🔒 ล็อคตามรายการเดิม</span>}
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span>
             </label>
             <AgentSearch
               baseApiUrl={baseApiUrl}
@@ -377,9 +376,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1 flex justify-between items-center">
-              <span>หมวดหมู่ <span class="text-red-500">*</span></span>
-              {submissionType === 'additional' && <span class="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">🔒 ล็อคตามรายการเดิม</span>}
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              หมวดหมู่ <span class="text-red-500">*</span>
             </label>
             <select
               required

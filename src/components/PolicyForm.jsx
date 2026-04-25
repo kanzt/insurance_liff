@@ -10,7 +10,7 @@ const STORAGE_KEY = 'insurance_liff_form_draft';
 export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, setConfirmModal, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState('1');
   const [categories, setCategories] = useState([]);
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
@@ -39,7 +39,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         const data = JSON.parse(savedData);
         if (data.informerId) setInformerId(data.informerId);
         if (data.informerName) setInformerName(data.informerName);
-        if (data.categoryId) setCategoryId(data.categoryId);
+        if (data.categoryId) setCategoryId(data.categoryId.toString());
+        else if (data.subCategoryId) {
+          // หากมีข้อมูลเก่าที่เป็น subCategoryId ให้พยายามใช้ค่าเดิม (แต่ default เป็น '1' หากไม่แน่ใจ)
+          setCategoryId(data.subCategoryId.toString());
+        }
         if (data.submissionType) setSubmissionType(data.submissionType);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
@@ -78,8 +82,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         const json = await response.json();
         if (json.results) {
           setCategories(json.results);
-          if (json.results.length > 0 && !localStorage.getItem(STORAGE_KEY)?.includes('categoryId')) {
-             setCategoryId(json.results[0].category_id.toString());
+          const storage = localStorage.getItem(STORAGE_KEY);
+          const hasExistingCategory = storage && (storage.includes('"categoryId":') || storage.includes('"subCategoryId":'));
+
+          if (json.results.length > 0 && !hasExistingCategory) {
+            setCategoryId(json.results[0].categoryId.toString());
           }
         }
       } catch (err) {
@@ -171,7 +178,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       return dateStr;
     }
   };
-  
+
   const handleSelectPolicy = (policy) => {
     setSelectedPolicy(policy);
     if (policy) {
@@ -184,9 +191,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       } else {
         setReferenceInput(policy.customerName || '');
       }
-      
-      if (policy.category_id) {
-        setCategoryId(policy.category_id.toString());
+
+      if (policy.categoryId) {
+        setCategoryId(policy.categoryId.toString());
       }
 
       if (policy.agentCode && policy.agentName) {
@@ -250,7 +257,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);
       }
-      
+
       if (submissionType === 'additional' && selectedPolicy) {
         formData.append('original_policy_id', selectedPolicy.id);
       }
@@ -321,13 +328,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               { id: 'renewal', label: '🔄 เช็คเบี้ยต่ออายุ', desc: 'งานเดิมปีที่แล้ว' },
               { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' }
             ].map((type) => (
-              <label 
+              <label
                 key={type.id}
-                class={`flex flex-col p-3 rounded-xl border-2 transition-all cursor-pointer ${
-                  submissionType === type.id 
-                    ? 'border-brand-500 bg-white shadow-md scale-[1.02]' 
+                class={`flex flex-col p-3 rounded-xl border-2 transition-all cursor-pointer ${submissionType === type.id
+                    ? 'border-brand-500 bg-white shadow-md scale-[1.02]'
                     : 'border-white bg-white/50 hover:border-brand-200 opacity-70'
-                }`}
+                  }`}
               >
                 <input
                   type="radio"
@@ -349,9 +355,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <label class="block text-sm font-bold text-brand-800 mb-2">
               🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
             </label>
-            <PolicySearch 
-              baseApiUrl={baseApiUrl} 
-              idToken={idToken} 
+            <PolicySearch
+              baseApiUrl={baseApiUrl}
+              idToken={idToken}
               onSelectPolicy={handleSelectPolicy}
             />
             <p class="mt-2 text-[10px] text-gray-500 italic px-1">
@@ -389,7 +395,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <option value="" disabled>-- เลือกหมวดหมู่ --</option>
               {categories.length > 0 ? (
                 categories.map(cat => (
-                  <option key={cat.category_id} value={cat.category_id}>
+                  <option key={cat.categoryId} value={cat.categoryId}>
                     {cat.categoryName}
                   </option>
                 ))
@@ -464,7 +470,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                       templates.map((t) => {
                         const isDisabled = t.slug === 'follow_case' && !endDate;
                         return (
-                          <label 
+                          <label
                             key={t.slug}
                             onClick={(e) => {
                               if (isDisabled) {
@@ -472,13 +478,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                                 return;
                               }
                             }}
-                            class={`flex items-center p-2 rounded-xl border-2 transition-all ${
-                              isDisabled 
-                                ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100' 
-                                : reminderType === t.slug 
-                                  ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer' 
+                            class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled
+                                ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
+                                : reminderType === t.slug
+                                  ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
                                   : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'
-                            }`}
+                              }`}
                           >
                             <input
                               type="radio"
@@ -535,10 +540,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                         {(() => {
                           const template = templates.find(t => t.slug === reminderType);
                           if (!template) return 'เลือกประเภทการแจ้งเตือน...';
-                          
+
                           const dPlate = categoryId === '1' ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '')) : '';
                           const dCustomer = categoryId === '1' ? (isRedPlate ? (referenceInput || '') : '') : (referenceInput || '');
-                          
+
                           let finalPreview = template.body_template
                             .replace(/{{customer}}/g, dCustomer)
                             .replace(/{{plate}}/g, dPlate)
@@ -551,7 +556,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     </div>
                   </div>
                 </div>
-                
+
                 <p class="text-[11px] text-gray-400 italic text-center">* ระบบจะส่งข้อความแจ้งเตือนที่เห็นนี้ไปหาคุณอัตโนมัติ</p>
               </div>
             )}

@@ -10,8 +10,8 @@ const STORAGE_KEY = 'insurance_liff_form_draft';
 export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, setConfirmModal, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
-  const [subCategoryId, setSubCategoryId] = useState('');
-  const [subCategories, setSubCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -39,7 +39,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         const data = JSON.parse(savedData);
         if (data.informerId) setInformerId(data.informerId);
         if (data.informerName) setInformerName(data.informerName);
-        if (data.subCategoryId) setSubCategoryId(data.subCategoryId);
+        if (data.categoryId) setCategoryId(data.categoryId);
         if (data.submissionType) setSubmissionType(data.submissionType);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
@@ -58,7 +58,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     const stateToSave = {
       informerId,
       informerName,
-      subCategoryId,
+      categoryId,
       submissionType,
       referenceInput,
       endDate,
@@ -68,25 +68,25 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       isRedPlate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
+  }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
 
   // Load sub-categories
   useEffect(() => {
-    async function loadSubCategories() {
+    async function loadCategories() {
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-sub-categories`);
+        const response = await authenticatedFetch(`${baseApiUrl}/load-categories`);
         const json = await response.json();
         if (json.results) {
-          setSubCategories(json.results);
-          if (json.results.length > 0 && !localStorage.getItem(STORAGE_KEY)?.includes('subCategoryId')) {
-             setSubCategoryId(json.results[0].subCategoryId.toString());
+          setCategories(json.results);
+          if (json.results.length > 0 && !localStorage.getItem(STORAGE_KEY)?.includes('categoryId')) {
+             setCategoryId(json.results[0].category_id.toString());
           }
         }
       } catch (err) {
-        console.error("Failed to load sub-categories:", err);
+        console.error("Failed to load categories:", err);
       }
     }
-    loadSubCategories();
+    loadCategories();
 
     async function loadTemplates() {
       try {
@@ -109,9 +109,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     }
   }, [endDate, reminderType]);
 
-  // Derived categoryId to keep motor vs non-motor dynamic logic intact
-  const selectedSub = subCategories.find(s => s.subCategoryId.toString() === subCategoryId);
-  const categoryId = selectedSub ? selectedSub.categoryId.toString() : '1';
+  // No longer need derived categoryId as we use it directly as state now
+  // const categoryId = ... logic removed
 
   const handleReminderToggle = (e) => {
     setEnableReminder(e.target.checked);
@@ -129,7 +128,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       localStorage.removeItem(STORAGE_KEY);
       setInformerId(null);
       setInformerName('');
-      setSubCategoryId('');
+      setCategoryId('');
       setSubmissionType('new');
       setIsRedPlate(false);
       setReferenceInput('');
@@ -186,8 +185,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         setReferenceInput(policy.customerName || '');
       }
       
-      if (policy.subCategoryId) {
-        setSubCategoryId(policy.subCategoryId.toString());
+      if (policy.category_id) {
+        setCategoryId(policy.category_id.toString());
       }
 
       if (policy.agentCode && policy.agentName) {
@@ -242,7 +241,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       const safeRef = referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
       const formData = new FormData();
       formData.append('quote_agent_code', informerId);
-      formData.append('sub_category_id', subCategoryId);
+      formData.append('category_id', categoryId);
       formData.append('submission_type', submissionType);
       if (plateNumber) formData.append('plate_number', plateNumber);
       if (customerName) formData.append('customer_name', customerName);
@@ -382,16 +381,16 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <select
               required
               disabled={submissionType === 'additional'}
-              value={subCategoryId}
-              onChange={(e) => setSubCategoryId(e.target.value)}
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
               class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
                 ${submissionType === 'additional' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
             >
               <option value="" disabled>-- เลือกหมวดหมู่ --</option>
-              {subCategories.length > 0 ? (
-                subCategories.map(sub => (
-                  <option key={sub.subCategoryId} value={sub.subCategoryId}>
-                    {sub.subCategoryName}
+              {categories.length > 0 ? (
+                categories.map(cat => (
+                  <option key={cat.category_id} value={cat.category_id}>
+                    {cat.categoryName}
                   </option>
                 ))
               ) : (

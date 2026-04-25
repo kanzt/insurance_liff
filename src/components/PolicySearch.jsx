@@ -145,7 +145,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                     </div>
                     <div class="flex justify-between items-center mt-1">
                       <div class="text-[10px] text-brand-600 font-medium">
-                        📦 {policy.subCategoryName}
+                        📦 {policy.categoryName || policy.subCategoryName}
                       </div>
                       <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
                         ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}

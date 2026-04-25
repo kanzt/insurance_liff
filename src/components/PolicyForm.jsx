@@ -10,7 +10,7 @@ const STORAGE_KEY = 'insurance_liff_form_draft';
 export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting, setSuccessMessage, setErrorMessage, setConfirmModal, onOpenGallery }) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
-  const [categoryId, setCategoryId] = useState('1');
+  const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
@@ -39,11 +39,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         const data = JSON.parse(savedData);
         if (data.informerId) setInformerId(data.informerId);
         if (data.informerName) setInformerName(data.informerName);
-        if (data.categoryId) setCategoryId(data.categoryId.toString());
-        else if (data.subCategoryId) {
-          // หากมีข้อมูลเก่าที่เป็น subCategoryId ให้พยายามใช้ค่าเดิม (แต่ default เป็น '1' หากไม่แน่ใจ)
-          setCategoryId(data.subCategoryId.toString());
-        }
+        if (data.categoryId) setCategoryId(data.categoryId);
         if (data.submissionType) setSubmissionType(data.submissionType);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
@@ -82,10 +78,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         const json = await response.json();
         if (json.results) {
           setCategories(json.results);
-          const storage = localStorage.getItem(STORAGE_KEY);
-          const hasExistingCategory = storage && (storage.includes('"categoryId":') || storage.includes('"subCategoryId":'));
-          
-          if (json.results.length > 0 && !hasExistingCategory) {
+          if (json.results.length > 0 && !localStorage.getItem(STORAGE_KEY)?.includes('categoryId')) {
              setCategoryId(json.results[0].category_id.toString());
           }
         }

@@ -253,7 +253,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     }
 
     const hasFiles = Object.values(filesData).some(arr => arr.length > 0);
-    if (!hasFiles) {
+    if (!hasFiles && submissionType !== 'additional') {
       setErrorMessage('กรุณาแนบเอกสารอย่างน้อย 1 รายการ');
       return;
     }
@@ -642,7 +642,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            แนบเอกสารตามประเภท <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(แนบอย่างน้อย 1 ช่อง)</span>
+            แนบเอกสารตามประเภท {submissionType === 'additional' ? <span class="text-xs text-gray-400 font-normal">(ถ้ามี)</span> : <span class="text-red-500">*</span>}
+            {submissionType !== 'additional' && <span class="text-xs text-gray-400 font-normal"> (แนบอย่างน้อย 1 ช่อง)</span>}
           </label>
 
           <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">

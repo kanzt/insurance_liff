@@ -22,6 +22,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [reminderType, setReminderType] = useState('quotation_confirm');
   const [templates, setTemplates] = useState([]);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [notes, setNotes] = useState('');
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -54,6 +55,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.reminderDate) setReminderDate(data.reminderDate);
         if (data.reminderType) setReminderType(data.reminderType);
         if (data.isRedPlate !== undefined) setIsRedPlate(data.isRedPlate);
+        if (data.notes) setNotes(data.notes);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -73,10 +75,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       enableReminder,
       reminderDate,
       reminderType,
-      isRedPlate
+      isRedPlate,
+      notes
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes]);
 
   // Load sub-categories
   useEffect(() => {
@@ -162,6 +165,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setReminderDate('');
       setReminderType('quotation_confirm');
       setSelectedPolicy(null);
+      setNotes('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -234,6 +238,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (policy.expiryDate) {
         setEndDate(policy.expiryDate);
       }
+
+      if (policy.notes) {
+        setNotes(policy.notes);
+      }
     }
   };
 
@@ -287,6 +295,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);
       }
+      if (notes) formData.append('notes', notes);
 
       if (submissionType === 'additional' && selectedPolicy) {
         formData.append('original_policy_id', selectedPolicy.id);
@@ -495,6 +504,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               </div>
             )}
           </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ / ข้อมูลเพิ่มเติม</label>
+          <textarea
+            value={notes}
+            onInput={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="ระบุรายละเอียดเพิ่มเติม เช่น บริษัทเดิม, เลขกรมธรรม์เดิม หรือข้อความถึงแอดมิน..."
+            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm resize-none"
+          />
         </div>
 
         <div>

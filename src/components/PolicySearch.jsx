@@ -14,7 +14,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
       try {
         const response = await authenticatedFetch(`${baseApiUrl}/load-policies`);
         const json = await response.json();
-        
+
         if (json.results && Array.isArray(json.results)) {
           setPolicies(json.results);
           setFilteredPolicies(json.results);
@@ -49,8 +49,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
     const lowerVal = val.toLowerCase();
     setFilteredPolicies(
-      policies.filter(p => 
-        (p.plateNumber && p.plateNumber.toLowerCase().includes(lowerVal)) || 
+      policies.filter(p =>
+        (p.plateNumber && p.plateNumber.toLowerCase().includes(lowerVal)) ||
         (p.customerName && p.customerName.toLowerCase().includes(lowerVal)) ||
         p.id.toLowerCase().includes(lowerVal)
       )
@@ -75,7 +75,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
     if (!text || !q) return text || '';
     const regex = new RegExp(`(${q})`, 'gi');
     const parts = text.split(regex);
-    return parts.map((part, i) => 
+    return parts.map((part, i) =>
       regex.test(part) ? <span key={i} class="text-brand-600 font-bold underline">{part}</span> : part
     );
   };
@@ -88,19 +88,19 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
   return (
     <div class="relative" ref={containerRef}>
-      <input 
-        type="text" 
+      <input
+        type="text"
         value={query}
         onInput={handleInput}
         onFocus={() => { if (policies.length > 0) setShowDropdown(true); }}
         onKeyDown={(e) => { if (e.key === 'Escape') setShowDropdown(false); }}
         placeholder="🔍 ค้นหาจาก ทะเบียน, ชื่อลูกค้า หรือ เลขที่รายการ..."
         class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm pr-10"
-        autocomplete="off" 
+        autocomplete="off"
       />
       {query && (
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={handleClear}
           class="absolute right-3 top-3.5 text-gray-400 hover:text-brand-600 transition-all"
         >
@@ -125,7 +125,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                 รายการล่าสุด
               </div>
               {filteredPolicies.map(policy => (
-                <div 
+                <div
                   key={policy.id}
                   onClick={() => handleSelect(policy)}
                   class="p-3 text-sm border-b border-gray-50 last:border-0 cursor-pointer hover:bg-brand-50 transition-colors group"
@@ -140,12 +140,12 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                   </div>
                   <div class="flex flex-col gap-0.5 text-xs text-slate-500">
                     <div class="flex items-center gap-1">
-                      <span class="opacity-50 text-[10px]">👤</span> 
+                      <span class="opacity-50 text-[10px]">👤</span>
                       <span>{highlightText(policy.customerName, query) || '-'}</span>
                     </div>
                     <div class="flex justify-between items-center mt-1">
                       <div class="text-[10px] text-brand-600 font-medium">
-                        📦 {policy.categoryName || policy.subCategoryName}
+                        📦 {policy.subCategoryName || policy.categoryName}
                       </div>
                       <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
                         ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}

@@ -11,7 +11,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
+  const [subCategoryId, setSubCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -44,6 +46,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           // หากมีข้อมูลเก่าที่เป็น subCategoryId ให้พยายามใช้ค่าเดิม (แต่ default เป็น '1' หากไม่แน่ใจ)
           setCategoryId(data.subCategoryId.toString());
         }
+        if (data.subCategoryId) setSubCategoryId(data.subCategoryId.toString());
         if (data.submissionType) setSubmissionType(data.submissionType);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
@@ -63,6 +66,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       informerId,
       informerName,
       categoryId,
+      subCategoryId,
       submissionType,
       referenceInput,
       endDate,
@@ -72,7 +76,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       isRedPlate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate]);
 
   // Load sub-categories
   useEffect(() => {
@@ -94,6 +98,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadCategories();
+
+    async function loadSubCategories() {
+      try {
+        const response = await authenticatedFetch(`${baseApiUrl}/load-sub-categories`);
+        const json = await response.json();
+        if (json.results) {
+          setSubCategories(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load sub-categories:", err);
+      }
+    }
+    loadSubCategories();
 
     async function loadTemplates() {
       try {
@@ -136,6 +153,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setInformerId(null);
       setInformerName('');
       setCategoryId('');
+      setSubCategoryId('');
       setSubmissionType('new');
       setIsRedPlate(false);
       setReferenceInput('');
@@ -196,6 +214,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         setCategoryId(policy.categoryId.toString());
       }
 
+      if (policy.subCategoryId) {
+        setSubCategoryId(policy.subCategoryId.toString());
+      }
+
       if (policy.agentCode && policy.agentName) {
         setInformerId(policy.agentCode);
         setInformerName(policy.agentName);
@@ -228,6 +250,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       return;
     }
 
+    if (categoryId === '2' && !subCategoryId) {
+      setErrorMessage('กรุณาเลือกหมวดหมู่ย่อย');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -249,6 +276,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       const formData = new FormData();
       formData.append('quote_agent_code', informerId);
       formData.append('category_id', categoryId);
+      if (categoryId === '2' && subCategoryId) {
+        formData.append('sub_category_id', subCategoryId);
+      }
       formData.append('submission_type', submissionType);
       if (plateNumber) formData.append('plate_number', plateNumber);
       if (customerName) formData.append('customer_name', customerName);
@@ -404,6 +434,33 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               )}
             </select>
           </div>
+
+          {categoryId === '2' && (
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                หมวดหมู่ย่อย <span class="text-red-500">*</span>
+              </label>
+              <select
+                required={categoryId === '2'}
+                disabled={submissionType === 'additional'}
+                value={subCategoryId}
+                onChange={(e) => setSubCategoryId(e.target.value)}
+                class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
+                  ${submissionType === 'additional' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
+              >
+                <option value="" disabled>-- เลือกหมวดหมู่ย่อย --</option>
+                {subCategories.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
+                  subCategories.filter(s => s.categoryId?.toString() === '2').map(sub => (
+                    <option key={sub.subCategoryId} value={sub.subCategoryId}>
+                      {sub.subCategoryName}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>กำลังโหลดหมวดหมู่ย่อย...</option>
+                )}
+              </select>
+            </div>
+          )}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">

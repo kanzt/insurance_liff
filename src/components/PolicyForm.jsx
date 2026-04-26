@@ -364,7 +364,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[
               { id: 'new', label: '🆕 เช็คเบี้ยใหม่', desc: 'ยื่นคำขอใหม่' },
-              { id: 'renewal', label: '🔄 เช็คเบี้ยต่ออายุ', desc: 'งานเดิมปีที่แล้ว' },
               { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' }
             ].map((type) => (
               <label

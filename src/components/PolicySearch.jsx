@@ -59,7 +59,11 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   };
 
   const handleSelect = (policy) => {
-    const displayValue = `${policy.plateNumber || ''} ${policy.customerName || ''}`.trim();
+    const plate = policy.plateNumber || '';
+    const displayValue = (plate === 'ประกันอื่นๆ' || policy.categoryId === '2')
+      ? `${policy.subCategoryName || ''} ${policy.customerName || ''}`.trim()
+      : `${plate} ${policy.customerName || ''}`.trim();
+      
     setQuery(displayValue);
     onSelectPolicy(policy);
     setShowDropdown(false);
@@ -130,7 +134,10 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                 >
                   <div class="flex justify-between items-start mb-1">
                     <span class="font-bold text-slate-700 group-hover:text-brand-700">
-                      {policy.plateNumber || 'ไม่ระบุทะเบียน'}
+                      {(policy.categoryId === '2' || policy.plateNumber === 'ประกันอื่นๆ') 
+                        ? (policy.subCategoryName || policy.categoryName)
+                        : (policy.plateNumber || 'ไม่ระบุทะเบียน')
+                      }
                     </span>
                     <span class="text-[10px] text-gray-400">
                       📅 {formatThaiDate(policy.createdAt)}
@@ -142,7 +149,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
                     </div>
                     <div class="flex justify-between items-center mt-1">
                       <div class="text-[10px] text-brand-600 font-medium">
-                        📦 {policy.categoryName || 'ประกันภัย'}
+                        📦 {policy.categoryName || 'ประกันภัย'} {policy.subCategoryName ? `(${policy.subCategoryName})` : ''}
                       </div>
                       <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
                         ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}

@@ -383,10 +383,32 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   value={type.id}
                   checked={submissionType === type.id}
                   onChange={(e) => {
-                    setSubmissionType(e.target.value);
-                    if (e.target.value !== 'success') {
-                      setFilesData(prev => ({ ...prev, workOrder: [] }));
-                    }
+                    const nextType = e.target.value;
+                    // Reset all fields to ensure clean state for new purpose
+                    setInformerId(null);
+                    setInformerName('');
+                    setCategoryId('1');
+                    setSubCategoryId('');
+                    setIsRedPlate(false);
+                    setReferenceInput('');
+                    setEndDate('');
+                    setEnableReminder(false);
+                    setReminderDate('');
+                    setReminderType('quotation_confirm');
+                    setSelectedPolicy(null);
+                    setNotes('');
+                    setFilesData({
+                      registration: [],
+                      oldPolicy: [],
+                      quotation: [],
+                      compQuotation: [],
+                      renewalNotice: [],
+                      workOrder: [],
+                      others: []
+                    });
+                    
+                    // Update type
+                    setSubmissionType(nextType);
                   }}
                   class="sr-only"
                 />

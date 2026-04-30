@@ -397,7 +397,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           </div>
         </div>
 
-        {submissionType === 'additional' && (
+        {(submissionType === 'additional' || submissionType === 'success') && (
           <div class="bg-white p-4 rounded-xl border-2 border-brand-500 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 mb-6 ring-4 ring-brand-50">
             <label class="block text-sm font-bold text-brand-800 mb-2">
               🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
@@ -408,7 +408,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               onSelectPolicy={handleSelectPolicy}
             />
             <p class="mt-2 text-[10px] text-gray-500 italic px-1">
-              * ระบบจะช่วยเลือกตัวแทน ทะเบียน และหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ
+              * ระบบจะช่วยเลือกตัวแทน ทะเบียน และหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ (สำหรับแจ้งงานสำเร็จหรือส่งเอกสารเพิ่ม)
             </p>
           </div>
         )}
@@ -421,7 +421,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <AgentSearch
               baseApiUrl={baseApiUrl}
               idToken={idToken}
-              disabled={submissionType === 'additional'}
+              disabled={submissionType === 'additional' || submissionType === 'success'}
               onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
               initialQuery={informerName}
             />
@@ -433,11 +433,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             </label>
             <select
               required
-              disabled={submissionType === 'additional'}
+              disabled={submissionType === 'additional' || submissionType === 'success'}
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-                ${submissionType === 'additional' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
+                ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
             >
               <option value="" disabled>-- เลือกหมวดหมู่ --</option>
               {categories.length > 0 ? (
@@ -459,11 +459,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               </label>
               <select
                 required={categoryId === '2'}
-                disabled={submissionType === 'additional'}
+                disabled={submissionType === 'additional' || submissionType === 'success'}
                 value={subCategoryId}
                 onChange={(e) => setSubCategoryId(e.target.value)}
                 class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-                  ${submissionType === 'additional' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
+                  ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
               >
                 <option value="" disabled>-- เลือกหมวดหมู่ย่อย --</option>
                 {subCategories.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
@@ -650,8 +650,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            แนบเอกสารตามประเภท {submissionType === 'additional' ? <span class="text-xs text-gray-400 font-normal">(ถ้ามี)</span> : <span class="text-red-500">*</span>}
-            {submissionType !== 'additional' && <span class="text-xs text-gray-400 font-normal"> (แนบอย่างน้อย 1 ช่อง)</span>}
+            แนบเอกสารตามประเภท {(submissionType === 'additional' || submissionType === 'success') ? <span class="text-xs text-gray-400 font-normal">(ถ้ามี)</span> : <span class="text-red-500">*</span>}
+            {!(submissionType === 'additional' || submissionType === 'success') && <span class="text-xs text-gray-400 font-normal"> (แนบอย่างน้อย 1 ช่อง)</span>}
           </label>
 
           <div class="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">

@@ -31,6 +31,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     quotation: [],
     compQuotation: [],
     renewalNotice: [],
+    workOrder: [],
     others: []
   });
 
@@ -172,6 +173,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         quotation: [],
         compQuotation: [],
         renewalNotice: [],
+        workOrder: [],
         others: []
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -307,6 +309,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         { key: 'quotation', docType: 'ใบเสนอราคา' },
         { key: 'compQuotation', docType: 'ใบเสนอราคาคู่แข่ง' },
         { key: 'renewalNotice', docType: 'เบี้ยต่ออายุ' },
+        { key: 'workOrder', docType: 'ใบแจ้งงาน' },
         { key: 'others', docType: 'เอกสารอื่นๆ' }
       ];
 
@@ -364,7 +367,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[
               { id: 'new', label: '🆕 เช็คเบี้ยใหม่', desc: 'ยื่นคำขอใหม่' },
-              { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' }
+              { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' },
+              { id: 'success', label: '✅ แจ้งงานสำเร็จ', desc: 'แนบใบแจ้งงาน' }
             ].map((type) => (
               <label
                 key={type.id}
@@ -651,7 +655,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" initialFiles={filesData.quotation} onFilesChanged={(files) => setFilesData({ ...filesData, quotation: files })} onOpenGallery={onOpenGallery} />
             <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" initialFiles={filesData.compQuotation} onFilesChanged={(files) => setFilesData({ ...filesData, compQuotation: files })} onOpenGallery={onOpenGallery} />
             <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" initialFiles={filesData.renewalNotice} onFilesChanged={(files) => setFilesData({ ...filesData, renewalNotice: files })} onOpenGallery={onOpenGallery} />
-            <Dropzone label="6. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" initialFiles={filesData.others} multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="6. ใบแจ้งงาน" fileTypeIcon="📝" initialFiles={filesData.workOrder} onFilesChanged={(files) => setFilesData({ ...filesData, workOrder: files })} onOpenGallery={onOpenGallery} />
+            <Dropzone label="7. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" initialFiles={filesData.others} multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
           </div>
         </div>
 

@@ -42,3 +42,23 @@ export async function authenticatedFetch(url, options = {}) {
     throw error;
   }
 }
+export const fetchAgents = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-agents`, idToken);
+export const fetchCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-categories`, idToken);
+export const fetchSubCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-sub-categories`, idToken);
+
+/**
+ * Server-side search for policies
+ */
+export const searchPolicies = (baseUrl, idToken, searchTerm = '', limit = 20) => {
+  const params = new URLSearchParams();
+  if (searchTerm) params.append('search', searchTerm);
+  params.append('limit', limit.toString());
+  
+  return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`, idToken);
+};
+
+export const submitPolicy = (baseUrl, idToken, formData) => authenticatedFetch(`${baseUrl}/submit-policy`, {
+  idToken,
+  method: 'POST',
+  body: formData
+});

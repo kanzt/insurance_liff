@@ -1,64 +1,65 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { authenticatedFetch } from '../utils/api';
+import { searchPolicies } from '../utils/api';
 
 export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery = '' }) {
   const [policies, setPolicies] = useState([]);
-  const [filteredPolicies, setFilteredPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    async function fetchPolicies() {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [query]);
+
+  useEffect(() => {
+    async function performSearch() {
+      if (debouncedQuery && debouncedQuery.length < 2) return;
+
+      setIsLoading(true);
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-policies`);
+        const response = await searchPolicies(baseApiUrl, idToken, debouncedQuery, 20);
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {
           setPolicies(json.results);
-          setFilteredPolicies(json.results);
+        } else {
+          setPolicies([]);
         }
       } catch (error) {
-        console.error("Error loading policies:", error);
+        console.error("Search error:", error);
+        setPolicies([]);
       } finally {
         setIsLoading(false);
+        setHasSearched(true);
       }
     }
-    fetchPolicies();
 
+    performSearch();
+  }, [baseApiUrl, idToken, debouncedQuery]);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [baseApiUrl, idToken]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleInput = (e) => {
-    const val = e.target.value;
-    setQuery(val);
+    setQuery(e.target.value);
     setShowDropdown(true);
-
-    if (!val) {
-      onSelectPolicy(null);
-      setFilteredPolicies(policies);
-      return;
-    }
-
-    const lowerVal = val.toLowerCase();
-    setFilteredPolicies(
-      policies.filter(p =>
-        (p.plateNumber && p.plateNumber.toLowerCase().includes(lowerVal)) ||
-        (p.customerName && p.customerName.toLowerCase().includes(lowerVal)) ||
-        p.id.toLowerCase().includes(lowerVal)
-      )
-    );
   };
 
   const handleSelect = (policy) => {
-    const displayValue = `${policy.id} | ${policy.plateNumber || ''} ${policy.customerName || ''}`.trim();
+    const displayValue = `${policy.plateNumber || ''} ${policy.customerName || ''}`.trim();
     setQuery(displayValue);
     onSelectPolicy(policy);
     setShowDropdown(false);
@@ -67,85 +68,81 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   const handleClear = () => {
     setQuery('');
     onSelectPolicy(null);
-    setFilteredPolicies(policies);
-    setShowDropdown(false);
-  };
-
-  const highlightText = (text, q) => {
-    if (!text || !q) return text || '';
-    const regex = new RegExp(`(${q})`, 'gi');
-    const parts = text.split(regex);
-    return parts.map((part, i) =>
-      regex.test(part) ? <span key={i} class="text-brand-600 font-bold underline">{part}</span> : part
-    );
+    setPolicies([]);
+    setHasSearched(false);
   };
 
   const formatThaiDate = (dateStr) => {
     if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() + 543}`;
+    try {
+      const date = new Date(dateStr);
+      return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() + 543}`;
+    } catch (e) { return dateStr; }
   };
 
   return (
     <div class="relative" ref={containerRef}>
-      <input
-        type="text"
-        value={query}
-        onInput={handleInput}
-        onFocus={() => { if (policies.length > 0) setShowDropdown(true); }}
-        onKeyDown={(e) => { if (e.key === 'Escape') setShowDropdown(false); }}
-        placeholder="🔍 ค้นหาจาก ทะเบียน, ชื่อลูกค้า หรือ เลขที่รายการ..."
-        class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm pr-10"
-        autocomplete="off"
-      />
-      {query && (
-        <button
-          type="button"
-          onClick={handleClear}
-          class="absolute right-3 top-3.5 text-gray-400 hover:text-brand-600 transition-all"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      )}
+      <div class="relative">
+        <input
+          type="text"
+          value={query}
+          onInput={handleInput}
+          onFocus={() => setShowDropdown(true)}
+          placeholder="🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..."
+          class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm pr-10"
+          autocomplete="off"
+        />
+        <div class="absolute right-3 top-3.5 flex items-center gap-2">
+          {isLoading && (
+            <div class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+          )}
+          {query && (
+            <button type="button" onClick={handleClear} class="text-gray-400 hover:text-brand-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
 
       {showDropdown && (
         <div class="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-2xl max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-          {isLoading ? (
-            <div class="p-4 text-center text-gray-500 text-sm flex flex-col items-center gap-2">
-              <div class="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-              <span>กำลังดึงรายการล่าสุด...</span>
+          {isLoading && policies.length === 0 ? (
+            <div class="p-8 text-center text-gray-500 text-sm flex flex-col items-center gap-2">
+              <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+              <span>กำลังค้นหาข้อมูล...</span>
             </div>
-          ) : filteredPolicies.length === 0 ? (
-            <div class="p-4 text-center text-gray-500 text-sm">❌ ไม่พบรายการที่โชะกับคำค้นหา</div>
+          ) : policies.length === 0 ? (
+            <div class="p-8 text-center text-gray-500 text-sm">
+              {query.length < 2 ? '⚠️ กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร' : '❌ ไม่พบรายการที่ตรงกับคำค้นหา'}
+            </div>
           ) : (
             <div class="py-1">
-              <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50">
-                รายการล่าสุด
+              <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
+                <span>{debouncedQuery ? 'ผลการค้นหา' : 'รายการล่าสุด (20 อันดับแรก)'}</span>
               </div>
-              {filteredPolicies.map(policy => (
+              {policies.map(policy => (
                 <div
                   key={policy.id}
                   onClick={() => handleSelect(policy)}
                   class="p-3 text-sm border-b border-gray-50 last:border-0 cursor-pointer hover:bg-brand-50 transition-colors group"
                 >
                   <div class="flex justify-between items-start mb-1">
-                    <span class="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">
-                      {highlightText(policy.plateNumber, query) || 'ไม่ระบุทะเบียน'}
+                    <span class="font-bold text-slate-700 group-hover:text-brand-700">
+                      {policy.plateNumber || 'ไม่ระบุทะเบียน'}
                     </span>
-                    <span class="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                    <span class="text-[10px] text-gray-400">
                       📅 {formatThaiDate(policy.createdAt)}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5 text-xs text-slate-500">
                     <div class="flex items-center gap-1">
-                      <span class="opacity-50 text-[10px]">👤</span>
-                      <span>{highlightText(policy.customerName, query) || '-'}</span>
+                      <span>👤 {policy.customerName || '-'}</span>
                     </div>
                     <div class="flex justify-between items-center mt-1">
                       <div class="text-[10px] text-brand-600 font-medium">
-                        📦 {policy.subCategoryName || policy.categoryName}
+                        📦 {policy.categoryName || 'ประกันภัย'}
                       </div>
                       <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
                         ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}

@@ -382,7 +382,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   name="submissionType"
                   value={type.id}
                   checked={submissionType === type.id}
-                  onChange={(e) => setSubmissionType(e.target.value)}
+                  onChange={(e) => {
+                    setSubmissionType(e.target.value);
+                    if (e.target.value !== 'success') {
+                      setFilesData(prev => ({ ...prev, workOrder: [] }));
+                    }
+                  }}
                   class="sr-only"
                 />
                 <span class="text-sm font-bold text-slate-700">{type.label}</span>
@@ -655,8 +660,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <Dropzone label="3. ใบเสนอราคา" fileTypeIcon="💰" initialFiles={filesData.quotation} onFilesChanged={(files) => setFilesData({ ...filesData, quotation: files })} onOpenGallery={onOpenGallery} />
             <Dropzone label="4. ใบเสนอราคาคู่แข่ง" fileTypeIcon="🏢" initialFiles={filesData.compQuotation} onFilesChanged={(files) => setFilesData({ ...filesData, compQuotation: files })} onOpenGallery={onOpenGallery} />
             <Dropzone label="5. เบี้ยต่ออายุ / ใบเตือนต่ออายุ" fileTypeIcon="🔄" initialFiles={filesData.renewalNotice} onFilesChanged={(files) => setFilesData({ ...filesData, renewalNotice: files })} onOpenGallery={onOpenGallery} />
-            <Dropzone label="6. ใบแจ้งงาน" fileTypeIcon="📝" initialFiles={filesData.workOrder} onFilesChanged={(files) => setFilesData({ ...filesData, workOrder: files })} onOpenGallery={onOpenGallery} />
-            <Dropzone label="7. เอกสารอื่นๆ (แนบได้หลายไฟล์)" fileTypeIcon="📎" initialFiles={filesData.others} multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
+            {submissionType === 'success' && (
+              <Dropzone label="6. ใบแจ้งงาน" fileTypeIcon="📝" initialFiles={filesData.workOrder} onFilesChanged={(files) => setFilesData({ ...filesData, workOrder: files })} onOpenGallery={onOpenGallery} />
+            )}
+            <Dropzone label={submissionType === 'success' ? "7. เอกสารอื่นๆ (แนบได้หลายไฟล์)" : "6. เอกสารอื่นๆ (แนบได้หลายไฟล์)"} fileTypeIcon="📎" initialFiles={filesData.others} multiple={true} onFilesChanged={(files) => setFilesData({ ...filesData, others: files })} onOpenGallery={onOpenGallery} />
           </div>
         </div>
 

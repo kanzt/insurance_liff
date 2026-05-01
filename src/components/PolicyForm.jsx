@@ -206,43 +206,55 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const handleSelectPolicy = (policy) => {
     setSelectedPolicy(policy);
     if (policy) {
-      if (policy.plateNumber && policy.plateNumber !== 'ป้ายแดง') {
+      // Normalize property access (handle both camelCase and snake_case)
+      const plate = policy.plateNumber || policy.plate_number;
+      const customer = policy.customerName || policy.customer_name;
+      const catId = policy.categoryId || policy.category_id;
+      const subCatId = policy.subCategoryId || policy.sub_category_id;
+      const agentCode = policy.agentCode || policy.agent_code;
+      const agentName = policy.agentName || policy.agent_name;
+      const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
+      const reminder = policy.reminderDate || policy.reminder_date;
+      const rType = policy.reminderType || policy.reminder_type;
+      const notesVal = policy.notes;
+
+      if (plate && plate !== 'ป้ายแดง') {
         setIsRedPlate(false);
-        setReferenceInput(policy.plateNumber);
-      } else if (policy.plateNumber === 'ป้ายแดง') {
+        setReferenceInput(plate);
+      } else if (plate === 'ป้ายแดง') {
         setIsRedPlate(true);
-        setReferenceInput(policy.customerName || '');
+        setReferenceInput(customer || '');
       } else {
-        setReferenceInput(policy.customerName || '');
+        setReferenceInput(customer || '');
       }
 
-      if (policy.categoryId) {
-        setCategoryId(policy.categoryId.toString());
+      if (catId) {
+        setCategoryId(catId.toString());
       }
 
-      if (policy.subCategoryId) {
-        setSubCategoryId(policy.subCategoryId.toString());
+      if (subCatId) {
+        setSubCategoryId(subCatId.toString());
       }
 
-      if (policy.agentCode && policy.agentName) {
-        setInformerId(policy.agentCode);
-        setInformerName(policy.agentName);
+      if (agentCode && agentName) {
+        setInformerId(agentCode);
+        setInformerName(agentName);
       }
 
-      if (policy.reminderDate) {
-        setReminderDate(policy.reminderDate);
+      if (reminder) {
+        setReminderDate(reminder);
         setEnableReminder(true);
-        if (policy.reminderType) {
-          setReminderType(policy.reminderType);
+        if (rType) {
+          setReminderType(rType);
         }
       }
 
-      if (policy.expiryDate) {
-        setEndDate(policy.expiryDate);
+      if (expiry) {
+        setEndDate(expiry);
       }
 
-      if (policy.notes) {
-        setNotes(policy.notes);
+      if (notesVal) {
+        setNotes(notesVal);
       }
     }
   };

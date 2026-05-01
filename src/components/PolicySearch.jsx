@@ -59,10 +59,14 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   };
 
   const handleSelect = (policy) => {
-    const plate = policy.plateNumber || '';
-    const displayValue = (plate === 'ประกันอื่นๆ' || policy.categoryId === '2')
-      ? `${policy.subCategoryName || ''} ${policy.customerName || ''}`.trim()
-      : `${plate} ${policy.customerName || ''}`.trim();
+    const plate = policy.plateNumber || policy.plate_number || '';
+    const customer = policy.customerName || policy.customer_name || '';
+    const catId = policy.categoryId || policy.category_id;
+    const subCatName = policy.subCategoryName || policy.sub_category_name || '';
+    
+    const displayValue = (plate === 'ประกันอื่นๆ' || catId === '2' || catId === 2)
+      ? `${subCatName} ${customer}`.trim()
+      : `${plate} ${customer}`.trim();
       
     setQuery(displayValue);
     onSelectPolicy(policy);
@@ -126,38 +130,48 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
               <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
                 <span>{debouncedQuery ? 'ผลการค้นหา' : 'รายการล่าสุด (20 อันดับแรก)'}</span>
               </div>
-              {policies.map(policy => (
-                <div
-                  key={policy.id}
-                  onClick={() => handleSelect(policy)}
-                  class="p-3 text-sm border-b border-gray-50 last:border-0 cursor-pointer hover:bg-brand-50 transition-colors group"
-                >
-                  <div class="flex justify-between items-start mb-1">
-                    <span class="font-bold text-slate-700 group-hover:text-brand-700">
-                      {(policy.categoryId === '2' || policy.plateNumber === 'ประกันอื่นๆ') 
-                        ? (policy.subCategoryName || policy.categoryName)
-                        : (policy.plateNumber || 'ไม่ระบุทะเบียน')
-                      }
-                    </span>
-                    <span class="text-[10px] text-gray-400">
-                      📅 {formatThaiDate(policy.createdAt)}
-                    </span>
-                  </div>
-                  <div class="flex flex-col gap-0.5 text-xs text-slate-500">
-                    <div class="flex items-center gap-1">
-                      <span>👤 {policy.customerName || '-'}</span>
+              {policies.map(policy => {
+                const plate = policy.plateNumber || policy.plate_number;
+                const customer = policy.customerName || policy.customer_name;
+                const catId = policy.categoryId || policy.category_id;
+                const catName = policy.categoryName || policy.category_name;
+                const subCatName = policy.subCategoryName || policy.sub_category_name;
+                const createdAt = policy.createdAt || policy.created_at;
+                const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
+
+                return (
+                  <div
+                    key={policy.id || policy.policy_id}
+                    onClick={() => handleSelect(policy)}
+                    class="p-3 text-sm border-b border-gray-50 last:border-0 cursor-pointer hover:bg-brand-50 transition-colors group"
+                  >
+                    <div class="flex justify-between items-start mb-1">
+                      <span class="font-bold text-slate-700 group-hover:text-brand-700">
+                        {(catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
+                          ? (subCatName || catName)
+                          : (plate || 'ไม่ระบุทะเบียน')
+                        }
+                      </span>
+                      <span class="text-[10px] text-gray-400">
+                        📅 {formatThaiDate(createdAt)}
+                      </span>
                     </div>
-                    <div class="flex justify-between items-center mt-1">
-                      <div class="text-[10px] text-brand-600 font-medium">
-                        📦 {policy.categoryName || 'ประกันภัย'} {policy.subCategoryName ? `(${policy.subCategoryName})` : ''}
+                    <div class="flex flex-col gap-0.5 text-xs text-slate-500">
+                      <div class="flex items-center gap-1">
+                        <span>👤 {customer || '-'}</span>
                       </div>
-                      <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
-                        ⏳ หมดอายุ: {formatThaiDate(policy.expiryDate)}
+                      <div class="flex justify-between items-center mt-1">
+                        <div class="text-[10px] text-brand-600 font-medium">
+                          📦 {catName || 'ประกันภัย'} {subCatName ? `(${subCatName})` : ''}
+                        </div>
+                        <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
+                          ⏳ หมดอายุ: {formatThaiDate(expiry)}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

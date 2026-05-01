@@ -422,7 +422,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         {(submissionType === 'additional' || submissionType === 'success') && (
           <div class="bg-white p-4 rounded-xl border-2 border-brand-500 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 mb-6 ring-4 ring-brand-50">
             <label class="block text-sm font-bold text-brand-800 mb-2">
-              🔎&nbsp;ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม <span class="text-red-500">*</span>
+              {submissionType === 'success' ? '🔎\u00A0ค้นหารายการเดิมเพื่อแจ้งงานสำเร็จ' : '🔎\u00A0ค้นหารายการเดิมที่ต้องการส่งเอกสารเพิ่ม'} <span class="text-red-500">*</span>
             </label>
             <PolicySearch
               baseApiUrl={baseApiUrl}
@@ -432,6 +432,41 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <p class="mt-2 text-[10px] text-gray-500 italic px-1">
               * ระบบจะช่วยเลือกตัวแทน ทะเบียน และหมวดหมู่ให้อัตโนมัติเมื่อเลือกรายการ (สำหรับแจ้งงานสำเร็จหรือส่งเอกสารเพิ่ม)
             </p>
+
+            {submissionType === 'success' && (
+              <div class="mt-4 pt-4 border-t border-brand-100 animate-in fade-in zoom-in-95 duration-300">
+                <label class="block text-sm font-bold text-brand-700 mb-2">
+                  📋 ประเภทงานที่แจ้งสำเร็จจริง <span class="text-red-500">*</span>
+                </label>
+                <select
+                  required={submissionType === 'success'}
+                  value={subCategoryId}
+                  onChange={(e) => setSubCategoryId(e.target.value)}
+                  class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                >
+                  <option value="">-- เลือกประเภทงานที่ปิดการขายได้ --</option>
+                  <optgroup label="🚗 งานรถยนต์ (Motor)">
+                    {subCategories
+                      .filter(sub => sub.category_id === 1 || sub.category_id === '1')
+                      .map(sub => (
+                        <option key={sub.id} value={sub.id}>{sub.sub_category_name}</option>
+                      ))
+                    }
+                  </optgroup>
+                  <optgroup label="🛡️ งานประกันอื่นๆ (Non-Motor)">
+                    {subCategories
+                      .filter(sub => sub.category_id === 2 || sub.category_id === '2')
+                      .map(sub => (
+                        <option key={sub.id} value={sub.id}>{sub.sub_category_name}</option>
+                      ))
+                    }
+                  </optgroup>
+                </select>
+                <p class="mt-1.5 text-[11px] text-brand-500 italic pl-1">
+                  * หากเป็นงานประกันอื่นๆ โปรดเลือกประเภทประกันที่ถูกต้อง
+                </p>
+              </div>
+            )}
           </div>
         )}
 

@@ -247,15 +247,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (rType) {
           setReminderType(rType);
         }
+      } else {
+        setReminderDate('');
+        setEnableReminder(false);
       }
 
-      if (expiry) {
-        setEndDate(expiry);
-      }
-
-      if (notesVal) {
-        setNotes(notesVal);
-      }
+      setEndDate(expiry || '');
+      setNotes(notesVal || '');
     }
   };
 

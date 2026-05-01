@@ -447,17 +447,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <option value="">-- เลือกประเภทงานที่ปิดการขายได้ --</option>
                   <optgroup label="🚗 งานรถยนต์ (Motor)">
                     {subCategories
-                      .filter(sub => sub.category_id === 1 || sub.category_id === '1')
+                      .filter(sub => sub.categoryId?.toString() === '1')
                       .map(sub => (
-                        <option key={sub.id} value={sub.id}>{sub.sub_category_name}</option>
+                        <option key={sub.subCategoryId} value={sub.subCategoryId}>{sub.subCategoryName}</option>
                       ))
                     }
                   </optgroup>
                   <optgroup label="🛡️ งานประกันอื่นๆ (Non-Motor)">
                     {subCategories
-                      .filter(sub => sub.category_id === 2 || sub.category_id === '2')
+                      .filter(sub => sub.categoryId?.toString() === '2')
                       .map(sub => (
-                        <option key={sub.id} value={sub.id}>{sub.sub_category_name}</option>
+                        <option key={sub.subCategoryId} value={sub.subCategoryId}>{sub.subCategoryName}</option>
                       ))
                     }
                   </optgroup>

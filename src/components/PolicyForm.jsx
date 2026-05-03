@@ -25,6 +25,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [policyExpiryDate, setPolicyExpiryDate] = useState('');
   const [submitAgentCode, setSubmitAgentCode] = useState('');
   const [allAgents, setAllAgents] = useState([]);
+  const [companyId, setCompanyId] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companies, setCompanies] = useState([]);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -62,6 +65,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.policyStartDate) setPolicyStartDate(data.policyStartDate);
         if (data.policyExpiryDate) setPolicyExpiryDate(data.policyExpiryDate);
         if (data.submitAgentCode) setSubmitAgentCode(data.submitAgentCode);
+        if (data.companyId) setCompanyId(data.companyId);
+        if (data.companyName) setCompanyName(data.companyName);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -85,10 +90,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       notes,
       policyStartDate,
       policyExpiryDate,
-      submitAgentCode
+      submitAgentCode,
+      companyId,
+      companyName
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName]);
 
   // Load sub-categories
   useEffect(() => {
@@ -149,6 +156,38 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadAllAgents();
+
+    async function loadCompanies() {
+      const CACHE_KEY = 'insurance_companies_cache';
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          const isExpired = Date.now() - timestamp > 24 * 60 * 60 * 1000; // 24 hours
+          if (!isExpired) {
+            setCompanies(data);
+            return;
+          }
+        } catch (e) {
+          console.warn("Invalid company cache");
+        }
+      }
+
+      try {
+        const response = await authenticatedFetch(`${baseApiUrl}/load-companies`);
+        const json = await response.json();
+        if (json.results) {
+          setCompanies(json.results);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: json.results,
+            timestamp: Date.now()
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to load companies:", err);
+      }
+    }
+    loadCompanies();
   }, [baseApiUrl]);
 
   // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
@@ -200,6 +239,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setPolicyStartDate('');
       setPolicyExpiryDate('');
       setSubmitAgentCode('');
+      setCompanyId('');
+      setCompanyName('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -350,6 +391,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (policyStartDate) formData.append('policy_start_date', policyStartDate);
         if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
         if (submitAgentCode) formData.append('submit_agent_code', submitAgentCode);
+        if (companyId) formData.append('company_id', companyId);
+        if (companyName) formData.append('company_name', companyName);
       }
 
       const fileMappings = [
@@ -449,6 +492,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setPolicyStartDate('');
                     setPolicyExpiryDate('');
                     setSubmitAgentCode('');
+                    setCompanyId('');
+                    setCompanyName('');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -556,6 +601,28 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     {allAgents.map(agent => (
                       <option key={agent.agentId} value={agent.agentId}>
                         {agent.fullName} ({agent.agentId})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div class="mt-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">🏦 บริษัทประกันภัย <span class="text-red-500">*</span></label>
+                  <select
+                    required={submissionType === 'success'}
+                    value={companyId}
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setCompanyId(id);
+                      const comp = companies.find(c => c.companyId.toString() === id);
+                      setCompanyName(comp ? comp.companyName : '');
+                    }}
+                    class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                  >
+                    <option value="">-- เลือกบริษัทประกัน --</option>
+                    {companies.map(company => (
+                      <option key={company.companyId} value={company.companyId}>
+                        {company.companyName}
                       </option>
                     ))}
                   </select>

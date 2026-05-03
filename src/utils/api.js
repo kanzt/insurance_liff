@@ -45,6 +45,7 @@ export async function authenticatedFetch(url, options = {}) {
 export const fetchAgents = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-agents`, idToken);
 export const fetchCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-categories`, idToken);
 export const fetchSubCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-sub-categories`, idToken);
+export const fetchCompanies = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-companies`, idToken);
 
 /**
  * Server-side search for policies

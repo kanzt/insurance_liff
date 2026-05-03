@@ -23,6 +23,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [templates, setTemplates] = useState([]);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [notes, setNotes] = useState('');
+  const [policyStartDate, setPolicyStartDate] = useState('');
+  const [policyExpiryDate, setPolicyExpiryDate] = useState('');
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -57,6 +59,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.reminderType) setReminderType(data.reminderType);
         if (data.isRedPlate !== undefined) setIsRedPlate(data.isRedPlate);
         if (data.notes) setNotes(data.notes);
+        if (data.policyStartDate) setPolicyStartDate(data.policyStartDate);
+        if (data.policyExpiryDate) setPolicyExpiryDate(data.policyExpiryDate);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -77,10 +81,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       reminderDate,
       reminderType,
       isRedPlate,
-      notes
+      notes,
+      policyStartDate,
+      policyExpiryDate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate]);
 
   // Load sub-categories
   useEffect(() => {
@@ -137,8 +143,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     }
   }, [endDate, reminderType]);
 
-  // No longer need derived categoryId as we use it directly as state now
   // const categoryId = ... logic removed
+  
+  // Auto-calculate expiry date (default +1 year)
+  useEffect(() => {
+    if (policyStartDate && !policyExpiryDate) {
+      const start = new Date(policyStartDate);
+      const expiry = new Date(start);
+      expiry.setFullYear(start.getFullYear() + 1);
+      setPolicyExpiryDate(expiry.toISOString().split('T')[0]);
+    }
+  }, [policyStartDate]);
 
   const handleReminderToggle = (e) => {
     setEnableReminder(e.target.checked);
@@ -167,6 +182,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setReminderType('quotation_confirm');
       setSelectedPolicy(null);
       setNotes('');
+      setPolicyStartDate('');
+      setPolicyExpiryDate('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -313,6 +330,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         formData.append('original_policy_id', selectedPolicy.id);
       }
 
+      if (submissionType === 'success') {
+        if (policyStartDate) formData.append('policy_start_date', policyStartDate);
+        if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
+      }
+
       const fileMappings = [
         { key: 'registration', docType: 'หน้ารายการจดทะเบียน' },
         { key: 'oldPolicy', docType: 'กรมธรรม์เดิม' },
@@ -407,6 +429,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setReminderType('quotation_confirm');
                     setSelectedPolicy(null);
                     setNotes('');
+                    setPolicyStartDate('');
+                    setPolicyExpiryDate('');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -474,6 +498,32 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 </select>
                 <p class="mt-1.5 text-[11px] text-brand-500 italic pl-1">
                   * หากเป็นงานประกันอื่นๆ โปรดเลือกประเภทประกันที่ถูกต้อง
+                </p>
+
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่เริ่มคุ้มครอง <span class="text-red-500">*</span></label>
+                    <input
+                      type="date"
+                      required={submissionType === 'success'}
+                      value={policyStartDate}
+                      onInput={(e) => setPolicyStartDate(e.target.value)}
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่หมดอายุ <span class="text-red-500">*</span></label>
+                    <input
+                      type="date"
+                      required={submissionType === 'success'}
+                      value={policyExpiryDate}
+                      onInput={(e) => setPolicyExpiryDate(e.target.value)}
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                </div>
+                <p class="mt-1.5 text-[10px] text-gray-400 italic pl-1">
+                  * ระบบจะคำนวณวันหมดอายุให้ 1 ปีอัตโนมัติเมื่อเลือกวันเริ่มคุ้มครอง (ปรับเปลี่ยนเองได้)
                 </p>
               </div>
             )}

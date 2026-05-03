@@ -14,6 +14,8 @@
 - **Category Reset Logic**: กำหนดค่าเริ่มต้นของหมวดหมู่เป็นค่าว่างเมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" หรือ "แจ้งงานสำเร็จ" เพื่อความถูกต้องของข้อมูล
 
 ### 2. UI/UX Synchronization
+- **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
+- **Policy Timeline Management**: เพิ่มการบันทึกวันเริ่มคุ้มครองและวันหมดอายุอัตโนมัติ (1 ปี) สำหรับงานที่แจ้งสำเร็จแล้ว
 - **PolicyForm Update**: ปรับปรุงส่วนการเลือกหมวดหมู่ให้รองรับข้อมูลใหม่ พร้อมระบบ Auto-fill ที่เชื่อมโยงกับ `category_id`
 - **PolicySearch Support**: เพิ่มการรองรับการแสดงผลชื่อหมวดหมู่ผ่าน `categoryName`
 
@@ -29,6 +31,8 @@
 | `selectedPolicy.id` | `original_policy_id` | ID งานเดิมสำหรับเอกสารเพิ่มเติม |
 | `endDate` | `previous_policy_expiry_date` | วันหมดอายุกรมธรรม์เดิม |
 | `reminderType` | `reminder_type` | Slug ของประเภทเทมเพลตแจ้งเตือน |
+| `policyStartDate` | `policy_start_date` | วันเริ่มคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
+| `policyExpiryDate` | `policy_expiry_date` | วันหมดความคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
 
 ---
 

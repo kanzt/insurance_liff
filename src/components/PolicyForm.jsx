@@ -539,6 +539,22 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
             {submissionType === 'success' && (
               <div class="mt-4 pt-4 border-t border-brand-100 animate-in fade-in zoom-in-95 duration-300">
+                <div class="mb-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">🏦 บริษัทประกันภัย <span class="text-red-500">*</span></label>
+                  <SearchableSelect
+                    options={companies}
+                    value={companyId}
+                    onSelect={(company) => {
+                      setCompanyId(company ? company.companyId : '');
+                      setCompanyName(company ? company.companyName : '');
+                    }}
+                    placeholder="-- เลือกบริษัทประกันภัย --"
+                    required={submissionType === 'success'}
+                    valueKey="companyId"
+                    labelKey="companyName"
+                  />
+                </div>
+
                 <label class="block text-sm font-bold text-brand-700 mb-2">
                   📋 ประเภทงานที่แจ้งสำเร็จจริง <span class="text-red-500">*</span>
                 </label>
@@ -604,22 +620,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     valueKey="agentId"
                     labelKey="fullName"
                     displayTemplate={(agent) => `${agent.fullName}`}
-                  />
-                </div>
-
-                <div class="mt-4">
-                  <label class="block text-sm font-bold text-brand-700 mb-1">🏦 บริษัทประกันภัย <span class="text-red-500">*</span></label>
-                  <SearchableSelect
-                    options={companies}
-                    value={companyId}
-                    onSelect={(company) => {
-                      setCompanyId(company ? company.companyId : '');
-                      setCompanyName(company ? company.companyName : '');
-                    }}
-                    placeholder="-- เลือกบริษัทประกันภัย --"
-                    required={submissionType === 'success'}
-                    valueKey="companyId"
-                    labelKey="companyName"
                   />
                 </div>
               </div>

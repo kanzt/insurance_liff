@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
+import { fetchAgents } from '../utils/api';
 
 export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery = '', disabled = false }) {
   const [agents, setAgents] = useState([]);
@@ -17,11 +18,9 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
   }, [initialQuery]);
 
   useEffect(() => {
-    async function fetchAgents() {
+    async function loadAgentsData() {
       try {
-        const response = await fetch(`${baseApiUrl}/load-agents`, {
-          headers: { 'Authorization': `Bearer ${idToken}` }
-        });
+        const response = await fetchAgents(baseApiUrl);
         const result = await response.json();
         if (result.results && Array.isArray(result.results)) {
           setAgents(result.results);
@@ -33,7 +32,7 @@ export function AgentSearch({ baseApiUrl, idToken, onSelectAgent, initialQuery =
         setIsLoading(false);
       }
     }
-    fetchAgents();
+    loadAgentsData();
 
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {

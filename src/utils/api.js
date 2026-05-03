@@ -42,24 +42,23 @@ export async function authenticatedFetch(url, options = {}) {
     throw error;
   }
 }
-export const fetchAgents = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-agents`, idToken);
-export const fetchCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-categories`, idToken);
-export const fetchSubCategories = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-sub-categories`, idToken);
-export const fetchCompanies = (baseUrl, idToken) => authenticatedFetch(`${baseUrl}/load-companies`, idToken);
+export const fetchAgents = (baseUrl) => authenticatedFetch(`${baseUrl}/load-agents`);
+export const fetchCategories = (baseUrl) => authenticatedFetch(`${baseUrl}/load-categories`);
+export const fetchSubCategories = (baseUrl) => authenticatedFetch(`${baseUrl}/load-sub-categories`);
+export const fetchCompanies = (baseUrl) => authenticatedFetch(`${baseUrl}/load-companies`);
 
 /**
  * Server-side search for policies
  */
-export const searchPolicies = (baseUrl, idToken, searchTerm = '', limit = 20) => {
+export const searchPolicies = (baseUrl, searchTerm = '', limit = 20) => {
   const params = new URLSearchParams();
   if (searchTerm) params.append('search', searchTerm);
   params.append('limit', limit.toString());
   
-  return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`, idToken);
+  return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`);
 };
 
-export const submitPolicy = (baseUrl, idToken, formData) => authenticatedFetch(`${baseUrl}/submit-policy`, {
-  idToken,
+export const submitPolicy = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-policy`, {
   method: 'POST',
   body: formData
 });

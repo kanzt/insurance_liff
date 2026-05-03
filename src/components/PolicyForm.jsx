@@ -3,7 +3,14 @@ import liff from '@line/liff';
 import { AgentSearch } from './AgentSearch';
 import { PolicySearch } from './PolicySearch';
 import { Dropzone } from './Dropzone';
-import { authenticatedFetch } from '../utils/api';
+import { 
+  authenticatedFetch, 
+  fetchCategories, 
+  fetchSubCategories, 
+  fetchAgents, 
+  fetchCompanies,
+  submitPolicy
+} from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
 
@@ -101,7 +108,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   useEffect(() => {
     async function loadCategories() {
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-categories`);
+        const response = await fetchCategories(baseApiUrl);
         const json = await response.json();
         if (json.results) {
           setCategories(json.results);
@@ -120,7 +127,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
     async function loadSubCategories() {
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-sub-categories`);
+        const response = await fetchSubCategories(baseApiUrl);
         const json = await response.json();
         if (json.results) {
           setSubCategories(json.results);
@@ -133,6 +140,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
     async function loadTemplates() {
       try {
+        // load-notification-templates don't have a helper yet, keeping authenticatedFetch or adding one
         const response = await authenticatedFetch(`${baseApiUrl}/load-notification-templates`);
         const json = await response.json();
         if (json.results) {
@@ -146,7 +154,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
     async function loadAllAgents() {
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-agents`);
+        const response = await fetchAgents(baseApiUrl);
         const json = await response.json();
         if (json.results) {
           setAllAgents(json.results);
@@ -174,7 +182,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
 
       try {
-        const response = await authenticatedFetch(`${baseApiUrl}/load-companies`);
+        const response = await fetchCompanies(baseApiUrl);
         const json = await response.json();
         if (json.results) {
           setCompanies(json.results);
@@ -427,10 +435,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         }
       }
 
-      const response = await authenticatedFetch(`${baseApiUrl}/submit-policy`, {
-        method: 'POST',
-        body: formData
-      });
+      const response = await submitPolicy(baseApiUrl, formData);
 
       const result = await response.json();
       if (response.ok) {

@@ -23,7 +23,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
       setIsLoading(true);
       try {
-        const response = await searchPolicies(baseApiUrl, idToken, debouncedQuery, 20);
+        const response = await searchPolicies(baseApiUrl, debouncedQuery, 20);
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {

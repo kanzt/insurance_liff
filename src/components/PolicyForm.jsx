@@ -20,11 +20,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [enableReminder, setEnableReminder] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
   const [reminderType, setReminderType] = useState('quotation_confirm');
-  const [templates, setTemplates] = useState([]);
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [notes, setNotes] = useState('');
   const [policyStartDate, setPolicyStartDate] = useState('');
   const [policyExpiryDate, setPolicyExpiryDate] = useState('');
+  const [submitAgentCode, setSubmitAgentCode] = useState('');
+  const [allAgents, setAllAgents] = useState([]);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -61,6 +61,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.notes) setNotes(data.notes);
         if (data.policyStartDate) setPolicyStartDate(data.policyStartDate);
         if (data.policyExpiryDate) setPolicyExpiryDate(data.policyExpiryDate);
+        if (data.submitAgentCode) setSubmitAgentCode(data.submitAgentCode);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -83,10 +84,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       isRedPlate,
       notes,
       policyStartDate,
-      policyExpiryDate
+      policyExpiryDate,
+      submitAgentCode
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode]);
 
   // Load sub-categories
   useEffect(() => {
@@ -134,6 +136,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadTemplates();
+
+    async function loadAllAgents() {
+      try {
+        const response = await authenticatedFetch(`${baseApiUrl}/load-agents`);
+        const json = await response.json();
+        if (json.results) {
+          setAllAgents(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load all agents:", err);
+      }
+    }
+    loadAllAgents();
   }, [baseApiUrl]);
 
   // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
@@ -184,6 +199,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setNotes('');
       setPolicyStartDate('');
       setPolicyExpiryDate('');
+      setSubmitAgentCode('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -333,6 +349,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (submissionType === 'success') {
         if (policyStartDate) formData.append('policy_start_date', policyStartDate);
         if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
+        if (submitAgentCode) formData.append('submit_agent_code', submitAgentCode);
       }
 
       const fileMappings = [
@@ -431,6 +448,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setNotes('');
                     setPolicyStartDate('');
                     setPolicyExpiryDate('');
+                    setSubmitAgentCode('');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -525,6 +543,23 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 <p class="mt-1.5 text-[10px] text-gray-400 italic pl-1">
                   * ระบบจะคำนวณวันหมดอายุให้ 1 ปีอัตโนมัติเมื่อเลือกวันเริ่มคุ้มครอง (ปรับเปลี่ยนเองได้)
                 </p>
+
+                <div class="mt-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">👤 ผู้ปิดการขาย (ผู้แจ้งงานตัวจริง) <span class="text-red-500">*</span></label>
+                  <select
+                    required={submissionType === 'success'}
+                    value={submitAgentCode}
+                    onChange={(e) => setSubmitAgentCode(e.target.value)}
+                    class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                  >
+                    <option value="">-- เลือกผู้ปิดการขาย --</option>
+                    {allAgents.map(agent => (
+                      <option key={agent.agentId} value={agent.agentId}>
+                        {agent.fullName} ({agent.agentId})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
           </div>

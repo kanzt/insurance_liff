@@ -4,10 +4,10 @@ import { AgentSearch } from './AgentSearch';
 import { PolicySearch } from './PolicySearch';
 import { Dropzone } from './Dropzone';
 import { SearchableSelect } from './SearchableSelect';
-import { 
-  fetchCategories, 
-  fetchSubCategories, 
-  fetchAgents, 
+import {
+  fetchCategories,
+  fetchSubCategories,
+  fetchAgents,
   fetchCompanies,
   fetchTemplates,
   submitPolicy
@@ -208,7 +208,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   }, [endDate, reminderType]);
 
   // const categoryId = ... logic removed
-  
+
   // Auto-calculate expiry date (default +1 year)
   useEffect(() => {
     if (policyStartDate && !policyExpiryDate) {
@@ -472,8 +472,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <label
                 key={type.id}
                 class={`flex flex-col p-3 rounded-xl border-2 transition-all cursor-pointer ${submissionType === type.id
-                    ? 'border-brand-500 bg-white shadow-md scale-[1.02]'
-                    : 'border-white bg-white/50 hover:border-brand-200 opacity-70'
+                  ? 'border-brand-500 bg-white shadow-md scale-[1.02]'
+                  : 'border-white bg-white/50 hover:border-brand-200 opacity-70'
                   }`}
               >
                 <input
@@ -510,7 +510,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                       workOrder: [],
                       others: []
                     });
-                    
+
                     // Update type
                     setSubmissionType(nextType);
                   }}
@@ -603,7 +603,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     required={submissionType === 'success'}
                     valueKey="agentId"
                     labelKey="fullName"
-                    displayTemplate={(agent) => `${agent.fullName} (${agent.agentId})`}
+                    displayTemplate={(agent) => `${agent.fullName}`}
                   />
                 </div>
 
@@ -778,10 +778,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                               }
                             }}
                             class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled
-                                ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
-                                : reminderType === t.slug
-                                  ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
-                                  : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'
+                              ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
+                              : reminderType === t.slug
+                                ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
+                                : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'
                               }`}
                           >
                             <input

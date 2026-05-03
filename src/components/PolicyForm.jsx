@@ -397,7 +397,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     // Reset all fields to ensure clean state for new purpose
                     setInformerId(null);
                     setInformerName('');
-                    setCategoryId('1');
+                    setCategoryId(nextType === 'new' ? '1' : '');
                     setSubCategoryId('');
                     setIsRedPlate(false);
                     setReferenceInput('');

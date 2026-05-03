@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-04-12 (V3.8.0: Batch Flow & Red Plate Support)*
+*Last Updated: 2026-05-03 (V4.4.0: Category Migration & API Cleanup)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -43,6 +43,7 @@
 - **Red Plate Logic**: เพิ่มโหมด "รถป้ายแดง" เพื่อรักษาความสะอาดของฐานข้อมูล โดยระบบจะส่ง `plate_number = "ป้ายแดง"` และนำชื่อที่กรอกไปบันทึกในคอลัมน์ `customer_name` แทนข้อมูลทะเบียน
 - **Manual Reset**: เพิ่มปุ่ม "ล้างข้อมูล" (Reset) ที่มาพร้อมระบบยืนยัน (Confirmation) เพื่อความยืดหยุ่นในการเคลียร์ฟอร์ม
 - **Refined Aesthetics**: ปรับปรุงระยะห่างและสีสันใหม่ (Slate Theme) ให้ดูเป็นระเบียบและพรีเมียมมากขึ้น
+- **V4.4.0: Category Migration**: ปรับปรุงโครงสร้างหมวดหมู่ใหม่ โดยใช้ระบบ `/load-categories` แทน Sub-categories เพื่อลดความซับซ้อน และเพิ่มระบบ Smart Reset เมื่อเปลี่ยนวัตถุประสงค์งาน
 
 ### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
@@ -59,4 +60,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
+*Last Updated: 2026-05-03 (V4.4.0: Category Migration & API Cleanup)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

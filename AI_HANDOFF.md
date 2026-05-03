@@ -11,6 +11,7 @@
 - **Load Categories API**: เปลี่ยนการดึงข้อมูลจาก `/load-sub-categories` เป็น `/load-categories`
 - **Dynamic Field Mapping**: ปรับให้ใช้ `category_id` และ `categoryName` เป็นฟิลด์หลักแทนโครงสร้างเดิม
 - **Submission Payload**: อัปเดตการส่งข้อมูลไปยัง API `/submit-policy` โดยใช้ Key `category_id` แทน `sub_category_id`
+- **Category Reset Logic**: กำหนดค่าเริ่มต้นของหมวดหมู่เป็นค่าว่างเมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" หรือ "แจ้งงานสำเร็จ" เพื่อความถูกต้องของข้อมูล
 
 ### 2. UI/UX Synchronization
 - **PolicyForm Update**: ปรับปรุงส่วนการเลือกหมวดหมู่ให้รองรับข้อมูลใหม่ พร้อมระบบ Auto-fill ที่เชื่อมโยงกับ `category_id`
@@ -38,4 +39,4 @@
 - **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
-*Last Updated: 2024-04-25 (V4.4.0: Category Migration & API Cleanup)*
+*Last Updated: 2026-05-03 (V4.4.0: Category Migration & API Cleanup)*

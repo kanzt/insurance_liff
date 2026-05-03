@@ -3,6 +3,7 @@ import liff from '@line/liff';
 import { AgentSearch } from './AgentSearch';
 import { PolicySearch } from './PolicySearch';
 import { Dropzone } from './Dropzone';
+import { SearchableSelect } from './SearchableSelect';
 import { 
   fetchCategories, 
   fetchSubCategories, 
@@ -591,47 +592,35 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     />
                   </div>
                 </div>
-                <p class="mt-1.5 text-[10px] text-gray-400 italic pl-1">
-                  * ระบบจะคำนวณวันหมดอายุให้ 1 ปีอัตโนมัติเมื่อเลือกวันเริ่มคุ้มครอง (ปรับเปลี่ยนเองได้)
-                </p>
 
                 <div class="mt-4">
                   <label class="block text-sm font-bold text-brand-700 mb-1">👤 รหัสแจ้งงาน <span class="text-red-500">*</span></label>
-                  <select
-                    required={submissionType === 'success'}
+                  <SearchableSelect
+                    options={allAgents}
                     value={submitAgentCode}
-                    onChange={(e) => setSubmitAgentCode(e.target.value)}
-                    class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
-                  >
-                    <option value="">-- เลือกรหัสแจ้งงาน --</option>
-                    {allAgents.map(agent => (
-                      <option key={agent.agentId} value={agent.agentId}>
-                        {agent.fullName} ({agent.agentId})
-                      </option>
-                    ))}
-                  </select>
+                    onSelect={(agent) => setSubmitAgentCode(agent.agentId)}
+                    placeholder="-- เลือกรหัสแจ้งงาน --"
+                    required={submissionType === 'success'}
+                    valueKey="agentId"
+                    labelKey="fullName"
+                    displayTemplate={(agent) => `${agent.fullName} (${agent.agentId})`}
+                  />
                 </div>
 
                 <div class="mt-4">
                   <label class="block text-sm font-bold text-brand-700 mb-1">🏦 บริษัทประกันภัย <span class="text-red-500">*</span></label>
-                  <select
-                    required={submissionType === 'success'}
+                  <SearchableSelect
+                    options={companies}
                     value={companyId}
-                    onChange={(e) => {
-                      const id = e.target.value;
-                      setCompanyId(id);
-                      const comp = companies.find(c => c.companyId.toString() === id);
-                      setCompanyName(comp ? comp.companyName : '');
+                    onSelect={(company) => {
+                      setCompanyId(company.companyId);
+                      setCompanyName(company.companyName);
                     }}
-                    class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
-                  >
-                    <option value="">-- เลือกบริษัทประกัน --</option>
-                    {companies.map(company => (
-                      <option key={company.companyId} value={company.companyId}>
-                        {company.companyName}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="-- เลือกบริษัทประกันภัย --"
+                    required={submissionType === 'success'}
+                    valueKey="companyId"
+                    labelKey="companyName"
+                  />
                 </div>
               </div>
             )}

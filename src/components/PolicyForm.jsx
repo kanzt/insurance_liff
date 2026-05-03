@@ -598,7 +598,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <SearchableSelect
                     options={allAgents}
                     value={submitAgentCode}
-                    onSelect={(agent) => setSubmitAgentCode(agent.agentId)}
+                    onSelect={(agent) => setSubmitAgentCode(agent ? agent.agentId : '')}
                     placeholder="-- เลือกรหัสแจ้งงาน --"
                     required={submissionType === 'success'}
                     valueKey="agentId"
@@ -613,8 +613,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     options={companies}
                     value={companyId}
                     onSelect={(company) => {
-                      setCompanyId(company.companyId);
-                      setCompanyName(company.companyName);
+                      setCompanyId(company ? company.companyId : '');
+                      setCompanyName(company ? company.companyName : '');
                     }}
                     placeholder="-- เลือกบริษัทประกันภัย --"
                     required={submissionType === 'success'}

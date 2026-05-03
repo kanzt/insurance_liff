@@ -4,11 +4,11 @@ import { AgentSearch } from './AgentSearch';
 import { PolicySearch } from './PolicySearch';
 import { Dropzone } from './Dropzone';
 import { 
-  authenticatedFetch, 
   fetchCategories, 
   fetchSubCategories, 
   fetchAgents, 
   fetchCompanies,
+  fetchTemplates,
   submitPolicy
 } from '../utils/api';
 
@@ -21,6 +21,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [subCategoryId, setSubCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [submissionType, setSubmissionType] = useState('new');
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -140,8 +142,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
     async function loadTemplates() {
       try {
-        // load-notification-templates don't have a helper yet, keeping authenticatedFetch or adding one
-        const response = await authenticatedFetch(`${baseApiUrl}/load-notification-templates`);
+        const response = await fetchTemplates(baseApiUrl);
         const json = await response.json();
         if (json.results) {
           setTemplates(json.results);

@@ -545,14 +545,14 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 </p>
 
                 <div class="mt-4">
-                  <label class="block text-sm font-bold text-brand-700 mb-1">👤 ผู้ปิดการขาย (ผู้แจ้งงานตัวจริง) <span class="text-red-500">*</span></label>
+                  <label class="block text-sm font-bold text-brand-700 mb-1">👤 รหัสแจ้งงาน <span class="text-red-500">*</span></label>
                   <select
                     required={submissionType === 'success'}
                     value={submitAgentCode}
                     onChange={(e) => setSubmitAgentCode(e.target.value)}
                     class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
                   >
-                    <option value="">-- เลือกผู้ปิดการขาย --</option>
+                    <option value="">-- เลือกรหัสแจ้งงาน --</option>
                     {allAgents.map(agent => (
                       <option key={agent.agentId} value={agent.agentId}>
                         {agent.fullName} ({agent.agentId})

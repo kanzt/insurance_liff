@@ -34,7 +34,7 @@
 | `reminderType` | `reminder_type` | Slug ของประเภทเทมเพลตแจ้งเตือน |
 | `policyStartDate` | `policy_start_date` | วันเริ่มคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
 | `policyExpiryDate` | `policy_expiry_date` | วันหมดความคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
-| `submitAgentCode` | `submit_agent_code` | ผู้ปิดการขาย (เฉพาะแจ้งงานสำเร็จ) |
+| `submitAgentCode` | `submit_agent_code` | รหัสแจ้งงาน (เฉพาะแจ้งงานสำเร็จ) |
 
 ---
 

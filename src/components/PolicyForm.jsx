@@ -429,7 +429,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
         if (submitAgentCode) formData.append('submit_agent_id', submitAgentCode);
         if (companyId) formData.append('company_id', companyId);
-        if (companyName) formData.append('company_name', companyName);
         if (premiumAmount) formData.append('premium_amount', premiumAmount);
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
         

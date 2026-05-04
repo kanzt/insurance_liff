@@ -44,7 +44,7 @@
 | `policyExpiryDate` | `policy_expiry_date` | วันหมดความคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
 | `submitAgentCode` | `submit_agent_id` | **(Updated)** รหัสแจ้งงาน (เฉพาะแจ้งงานสำเร็จ) |
 | `companyId` | `company_id` | ID บริษัทประกัน (เฉพาะแจ้งงานสำเร็จ) |
-| `companyName` | `company_name` | ชื่อบริษัทประกัน |
+| `companyName` | `company_name` | **(Deprecated)** ปัจจุบัน Backend ดึงจาก ID เอง |
 | `premiumAmount` | `premium_amount` | ราคาเบี้ยประกัน (เฉพาะแจ้งงานสำเร็จ) |
 | `paymentMethodId` | `payment_method_id` | ID ช่องทางการชำระเงิน (เฉพาะแจ้งงานสำเร็จ) |
 | `actualPaid` | `actual_paid` | ยอดเงินที่โอนจริง (ไม่ใช่การผ่อน) |

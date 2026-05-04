@@ -42,7 +42,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [premiumAmount, setPremiumAmount] = useState('');
   const [paymentMethodId, setPaymentMethodId] = useState('');
   const [actualPaid, setActualPaid] = useState('');
+  const [installmentMonths, setInstallmentMonths] = useState('1');
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -113,10 +115,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       companyName,
       premiumAmount,
       paymentMethodId,
-      actualPaid
+      actualPaid,
+      installmentMonths
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths]);
 
   // Load sub-categories
   useEffect(() => {
@@ -402,7 +405,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
       const safeRef = referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
       const formData = new FormData();
-      formData.append('quote_agent_code', informerId);
+      formData.append('quote_agent_id', informerId);
       formData.append('category_id', categoryId);
       if (categoryId === '2' && subCategoryId) {
         formData.append('sub_category_id', subCategoryId);
@@ -424,12 +427,18 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (submissionType === 'success') {
         if (policyStartDate) formData.append('policy_start_date', policyStartDate);
         if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
-        if (submitAgentCode) formData.append('submit_agent_code', submitAgentCode);
+        if (submitAgentCode) formData.append('submit_agent_id', submitAgentCode);
         if (companyId) formData.append('company_id', companyId);
         if (companyName) formData.append('company_name', companyName);
         if (premiumAmount) formData.append('premium_amount', premiumAmount);
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
-        if (actualPaid) formData.append('actual_paid', actualPaid);
+        
+        const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
+        if (isInstallment) {
+          formData.append('installment_months', installmentMonths);
+        } else if (actualPaid) {
+          formData.append('actual_paid', actualPaid);
+        }
       }
 
       const fileMappings = [
@@ -530,7 +539,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setCompanyName('');
                     setPremiumAmount('');
                     setPaymentMethodId('');
+                    setSelectedPaymentMethod(null);
                     setActualPaid('');
+                    setInstallmentMonths('1');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -644,7 +655,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <SearchableSelect
                     options={paymentMethods}
                     value={paymentMethodId}
-                    onSelect={(method) => setPaymentMethodId(method ? method.paymentMethodId : '')}
+                    onSelect={(method) => {
+                      setPaymentMethodId(method ? method.paymentMethodId : '');
+                      setSelectedPaymentMethod(method);
+                    }}
                     placeholder="-- เลือกช่องทางการชำระเงิน --"
                     required={submissionType === 'success'}
                     valueKey="paymentMethodId"
@@ -665,18 +679,34 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                       class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
                     />
                   </div>
-                  <div>
-                    <label class="block text-sm font-bold text-brand-700 mb-1">💸 ยอดโอนชำระจริง <span class="text-red-500">*</span></label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required={submissionType === 'success'}
-                      value={actualPaid}
-                      onInput={(e) => setActualPaid(e.target.value)}
-                      placeholder="เช่น 14850.00"
-                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
-                    />
-                  </div>
+                  
+                  {selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด') ? (
+                    <div class="animate-in fade-in slide-in-from-right-2 duration-300">
+                      <label class="block text-sm font-bold text-brand-700 mb-1">📅 จำนวนงวดที่ผ่อน <span class="text-red-500">*</span></label>
+                      <select
+                        value={installmentMonths}
+                        onChange={(e) => setInstallmentMonths(e.target.value)}
+                        class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm appearance-none"
+                      >
+                        {[...Array(12)].map((_, i) => (
+                          <option key={i+1} value={i+1}>{i+1} เดือน</option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div class="animate-in fade-in slide-in-from-left-2 duration-300">
+                      <label class="block text-sm font-bold text-brand-700 mb-1">💸 ยอดโอนชำระจริง <span class="text-red-500">*</span></label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        required={submissionType === 'success' && !selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด')}
+                        value={actualPaid}
+                        onInput={(e) => setActualPaid(e.target.value)}
+                        placeholder="เช่น 14850.00"
+                        class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
 
 

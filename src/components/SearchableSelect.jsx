@@ -26,6 +26,11 @@ export function SearchableSelect({
     }
   }, [value, options]);
 
+  // Sync filtered options when source options change
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, [options]);
+
   // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -81,7 +86,12 @@ export function SearchableSelect({
           type="text"
           value={query}
           onInput={handleInput}
-          onFocus={() => { if (!disabled) setShowDropdown(true); }}
+          onFocus={() => { 
+            if (!disabled) {
+              setFilteredOptions(options); // Reset to all options on focus
+              setShowDropdown(true); 
+            }
+          }}
           onKeyDown={(e) => { if (e.key === 'Escape') setShowDropdown(false); }}
           placeholder={disabled ? "" : `🔍 ${placeholder}`}
           disabled={disabled}

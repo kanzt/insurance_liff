@@ -639,6 +639,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   * หากเป็นงานประกันอื่นๆ โปรดเลือกประเภทประกันที่ถูกต้อง
                 </p>
 
+                <div class="mt-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">💳 ช่องทางการชำระเงิน <span class="text-red-500">*</span></label>
+                  <SearchableSelect
+                    options={paymentMethods}
+                    value={paymentMethodId}
+                    onSelect={(method) => setPaymentMethodId(method ? method.paymentMethodId : '')}
+                    placeholder="-- เลือกช่องทางการชำระเงิน --"
+                    required={submissionType === 'success'}
+                    valueKey="paymentMethodId"
+                    labelKey="paymentMethodName"
+                  />
+                </div>
+
                 <div class="mt-4 grid grid-cols-2 gap-4">
                   <div>
                     <label class="block text-sm font-bold text-brand-700 mb-1">💰 ราคาบนใบเสนอราคา (Premium) <span class="text-red-500">*</span></label>
@@ -681,19 +694,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   />
                 </div>
 
-
-                <div class="mt-4">
-                  <label class="block text-sm font-bold text-brand-700 mb-1">💳 ช่องทางการชำระเงิน <span class="text-red-500">*</span></label>
-                  <SearchableSelect
-                    options={paymentMethods}
-                    value={paymentMethodId}
-                    onSelect={(method) => setPaymentMethodId(method ? method.paymentMethodId : '')}
-                    placeholder="-- เลือกช่องทางการชำระเงิน --"
-                    required={submissionType === 'success'}
-                    valueKey="paymentMethodId"
-                    labelKey="paymentMethodName"
-                  />
-                </div>
               </div>
             )}
           </div>

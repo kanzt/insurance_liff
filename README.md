@@ -8,10 +8,11 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-03 (V4.5.0: Searchable Dropdowns & API Refactoring)*
+*Last Updated: 2026-05-04 (V4.6.0: Success Flow Enhancements)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
+- **Financial Tracking**: ระบบบันทึกเบี้ยประกันและยอดโอนจริง พร้อมช่องทางการชำระเงิน (เฉพาะแจ้งงานสำเร็จ)
 - **Searchable Agent Selection**: กล่องค้นหาตัวแทนอัจฉริยะ (กรองตามชื่อหรือรหัสตัวแทน)
 - **Searchable Dropdowns**: ระบบเลือก "รหัสแจ้งงาน" และ "บริษัทประกัน" แบบพิมพ์ค้นหาได้ เพื่อความรวดเร็ว
 - **Smart Upload**: รองรับการลากไฟล์วาง (Drag & Drop) และการกด Ctrl+V เพื่อวางรูปภาพ
@@ -46,6 +47,7 @@
 - **Refined Aesthetics**: ปรับปรุงระยะห่างและสีสันใหม่ (Slate Theme) ให้ดูเป็นระเบียบและพรีเมียมมากขึ้น
 - **V4.4.0: Category Migration**: ปรับปรุงโครงสร้างหมวดหมู่ใหม่ โดยใช้ระบบ `/load-categories` แทน Sub-categories เพื่อลดความซับซ้อน และเพิ่มระบบ Smart Reset เมื่อเปลี่ยนวัตถุประสงค์งาน
 - **V4.5.0: Searchable Dropdowns**: เพิ่มคอมโพเนนต์ `SearchableSelect` และ Refactor ระบบ API ให้เป็นศูนย์กลางที่ `api.js` เพื่อความเสถียรและดูแลรักษาง่าย
+- **V4.6.0: Success Flow Enhancements**: เพิ่มฟิลด์รายละเอียดการเงิน (เบี้ยประกัน, ยอดโอนจริง) และระบบเลือกช่องทางการชำระเงินจาก API
 
 ### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
@@ -62,5 +64,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-03 (V4.4.0: Category Migration & API Cleanup)*
+*Last Updated: 2026-05-04 (V4.6.0: Success Flow Enhancements)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

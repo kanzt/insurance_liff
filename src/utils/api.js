@@ -47,6 +47,7 @@ export const fetchCategories = (baseUrl) => authenticatedFetch(`${baseUrl}/load-
 export const fetchSubCategories = (baseUrl) => authenticatedFetch(`${baseUrl}/load-sub-categories`);
 export const fetchCompanies = (baseUrl) => authenticatedFetch(`${baseUrl}/load-insurance-companies`);
 export const fetchTemplates = (baseUrl) => authenticatedFetch(`${baseUrl}/load-notification-templates`);
+export const fetchPaymentMethods = (baseUrl) => authenticatedFetch(`${baseUrl}/load-payment-methods`);
 
 /**
  * Server-side search for policies

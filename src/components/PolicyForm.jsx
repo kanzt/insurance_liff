@@ -10,6 +10,7 @@ import {
   fetchAgents,
   fetchCompanies,
   fetchTemplates,
+  fetchPaymentMethods,
   submitPolicy
 } from '../utils/api';
 
@@ -38,6 +39,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [companyId, setCompanyId] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [companies, setCompanies] = useState([]);
+  const [premiumAmount, setPremiumAmount] = useState('');
+  const [paymentMethodId, setPaymentMethodId] = useState('');
+  const [actualPaid, setActualPaid] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState([]);
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -77,6 +82,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.submitAgentCode) setSubmitAgentCode(data.submitAgentCode);
         if (data.companyId) setCompanyId(data.companyId);
         if (data.companyName) setCompanyName(data.companyName);
+        if (data.premiumAmount) setPremiumAmount(data.premiumAmount);
+        if (data.paymentMethodId) setPaymentMethodId(data.paymentMethodId);
+        if (data.actualPaid) setActualPaid(data.actualPaid);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -102,10 +110,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       policyExpiryDate,
       submitAgentCode,
       companyId,
-      companyName
+      companyName,
+      premiumAmount,
+      paymentMethodId,
+      actualPaid
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid]);
 
   // Load sub-categories
   useEffect(() => {
@@ -198,6 +209,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadCompanies();
+
+    async function loadPaymentMethods() {
+      try {
+        const response = await fetchPaymentMethods(baseApiUrl);
+        const json = await response.json();
+        if (json.results) {
+          setPaymentMethods(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load payment methods:", err);
+      }
+    }
+    loadPaymentMethods();
   }, [baseApiUrl]);
 
   // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
@@ -403,6 +427,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (submitAgentCode) formData.append('submit_agent_code', submitAgentCode);
         if (companyId) formData.append('company_id', companyId);
         if (companyName) formData.append('company_name', companyName);
+        if (premiumAmount) formData.append('premium_amount', premiumAmount);
+        if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
+        if (actualPaid) formData.append('actual_paid', actualPaid);
       }
 
       const fileMappings = [
@@ -501,6 +528,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setSubmitAgentCode('');
                     setCompanyId('');
                     setCompanyName('');
+                    setPremiumAmount('');
+                    setPaymentMethodId('');
+                    setActualPaid('');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -620,6 +650,46 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     valueKey="agentId"
                     labelKey="fullName"
                     displayTemplate={(agent) => `${agent.fullName}`}
+                  />
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">💰 ราคาบนใบเสนอราคา (Premium) <span class="text-red-500">*</span></label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required={submissionType === 'success'}
+                      value={premiumAmount}
+                      onInput={(e) => setPremiumAmount(e.target.value)}
+                      placeholder="เช่น 15000.50"
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">💸 ยอดโอนชำระจริง <span class="text-red-500">*</span></label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required={submissionType === 'success'}
+                      value={actualPaid}
+                      onInput={(e) => setActualPaid(e.target.value)}
+                      placeholder="เช่น 14850.00"
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">💳 ช่องทางการชำระเงิน <span class="text-red-500">*</span></label>
+                  <SearchableSelect
+                    options={paymentMethods}
+                    value={paymentMethodId}
+                    onSelect={(method) => setPaymentMethodId(method ? method.paymentMethodId : '')}
+                    placeholder="-- เลือกช่องทางการชำระเงิน --"
+                    required={submissionType === 'success'}
+                    valueKey="paymentMethodId"
+                    labelKey="paymentMethodName"
                   />
                 </div>
               </div>

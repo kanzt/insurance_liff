@@ -1,25 +1,22 @@
-# AI Handoff: Insurance LIFF Project Status (V4.5.0: Searchable Dropdowns & API Refactoring)
+# AI Handoff: Insurance LIFF Project Status (V4.6.0: Success Flow Enhancements)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.5.0 เน้นการเพิ่มประสิทธิภาพการใช้งานด้วย Searchable Dropdowns และการปรับปรุงโครงสร้างโค้ด API ให้เป็นระเบียบ
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
 
 ---
 
-## 🟢 Current Status (อัปเดตสถานะ V4.5.0)
+### 1. Success Flow Enhancements (New!)
+- **Financial Fields**: เพิ่มช่องกรอก `premium_amount` (เบี้ยประกันตามใบเสนอราคา) และ `actual_paid` (ยอดโอนจริง) พร้อมระบบตรวจสอบค่าว่าง
+- **Payment Methods Integration**: เพิ่ม Dropdown เลือกช่องทางการชำระเงินที่ดึงข้อมูลจาก API `/load-payment-methods` แบบ Searchable
+- **UI Reordering**: จัดลำดับฟิลด์ในส่วนงานสำเร็จใหม่เพื่อให้สอดคล้องกับขั้นตอนการทำงานจริง (บริษัทประกัน -> ประเภทงาน -> การเงิน)
 
-### 1. Searchable Dropdowns (New!)
-- **SearchableSelect Component**: สร้างคอมโพเนนต์ใหม่สำหรับ Dropdown ที่สามารถพิมพ์ค้นหาได้ รองรับการกรองข้อมูลแบบ Real-time
-- **Reporting Code Search**: ปรับปรุงส่วน "รหัสแจ้งงาน" ให้ค้นหาได้จากทั้งชื่อตัวแทนและรหัส
-- **Insurance Company Search**: ปรับปรุงส่วน "บริษัทประกันภัย" ให้พิมพ์ค้นหาชื่อบริษัทได้ทันที
+### 2. Searchable Dropdowns
+- **SearchableSelect Component**: คอมโพเนนต์มาตรฐานสำหรับทุก Dropdown ในระบบ รองรับการค้นหาและ Highlight ข้อความ
+- **Reporting Code Search**: ค้นหารหัสแจ้งงาน (Submit Agent) ได้ทันที
 
-### 2. API Refactoring & Cleanup
-- **Centralized API Helpers**: รวมการเรียก API ทั้งหมดไว้ที่ `src/utils/api.js` เพื่อความง่ายในการบำรุงรักษา
-- **Endpoint Update**: เปลี่ยนเส้นทางโหลดบริษัทประกันเป็น `/load-insurance-companies` ตามโครงสร้างใหม่
-- **Simplified Fetch**: ตัดพารามิเตอร์ `idToken` ออกจากฟังก์ชัน Helper เนื่องจาก `authenticatedFetch` ดึงจาก SDK ได้เองอัตโนมัติ
-
-### 3. Stability & Fixes
-- **State Restoration**: แก้ไขปัญหา ReferenceError ของ `selectedPolicy` และ `templates` ที่หายไปจากการ Refactor
-- **Code Consistency**: ปรับคอมโพเนนต์ `AgentSearch` และ `PolicySearch` ให้ใช้ Helper Functions มาตรฐาน
+### 3. API & Persistence
+- **fetchPaymentMethods**: เพิ่ม Helper ใน `api.js` สำหรับโหลดข้อมูลช่องทางชำระเงิน
+- **Draft Persistence**: อัปเดตระบบ LocalStorage ให้บันทึกค่าเบี้ยและช่องทางชำระเงินอัตโนมัติ ป้องกันข้อมูลหาย
 
 ### 2. UI/UX Synchronization
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -45,7 +42,10 @@
 | `policyExpiryDate` | `policy_expiry_date` | วันหมดความคุ้มครอง (เฉพาะแจ้งงานสำเร็จ) |
 | `submitAgentCode` | `submit_agent_code` | รหัสแจ้งงาน (เฉพาะแจ้งงานสำเร็จ) |
 | `companyId` | `company_id` | ID บริษัทประกัน (เฉพาะแจ้งงานสำเร็จ) |
-| `companyName` | `company_name` | ชื่อบริษัทประกัน (เฉพาะแจ้งงานสำเร็จ) |
+| `companyName` | `company_name` | ชื่อบริษัทประกัน |
+| `premiumAmount` | `premium_amount` | ราคาเบี้ยประกัน (เฉพาะแจ้งงานสำเร็จ) |
+| `paymentMethodId` | `payment_method_id` | ID ช่องทางการชำระเงิน (เฉพาะแจ้งงานสำเร็จ) |
+| `actualPaid` | `actual_paid` | ยอดเงินที่โอนจริง (เฉพาะแจ้งงานสำเร็จ) |
 
 ---
 
@@ -56,4 +56,4 @@
 - **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
-*Last Updated: 2026-05-03 (V4.5.0: Searchable Dropdowns & API Refactoring)*
+*Last Updated: 2026-05-04 (V4.6.0: Success Flow Enhancements)*

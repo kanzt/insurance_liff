@@ -569,6 +569,29 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
             {submissionType === 'success' && (
               <div class="mt-4 pt-4 border-t border-brand-100 animate-in fade-in zoom-in-95 duration-300">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่เริ่มคุ้มครอง <span class="text-red-500">*</span></label>
+                    <input
+                      type="date"
+                      required={submissionType === 'success'}
+                      value={policyStartDate}
+                      onInput={(e) => setPolicyStartDate(e.target.value)}
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่หมดอายุ <span class="text-red-500">*</span></label>
+                    <input
+                      type="date"
+                      required={submissionType === 'success'}
+                      value={policyExpiryDate}
+                      onInput={(e) => setPolicyExpiryDate(e.target.value)}
+                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+                    />
+                  </div>
+                </div>
+
                 <div class="mb-4">
                   <label class="block text-sm font-bold text-brand-700 mb-1">🏦 บริษัทประกันภัย <span class="text-red-500">*</span></label>
                   <SearchableSelect
@@ -618,43 +641,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
                 <div class="mt-4 grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่เริ่มคุ้มครอง <span class="text-red-500">*</span></label>
-                    <input
-                      type="date"
-                      required={submissionType === 'success'}
-                      value={policyStartDate}
-                      onInput={(e) => setPolicyStartDate(e.target.value)}
-                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-bold text-brand-700 mb-1">📅 วันที่หมดอายุ <span class="text-red-500">*</span></label>
-                    <input
-                      type="date"
-                      required={submissionType === 'success'}
-                      value={policyExpiryDate}
-                      onInput={(e) => setPolicyExpiryDate(e.target.value)}
-                      class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div class="mt-4">
-                  <label class="block text-sm font-bold text-brand-700 mb-1">👤 รหัสแจ้งงาน <span class="text-red-500">*</span></label>
-                  <SearchableSelect
-                    options={allAgents}
-                    value={submitAgentCode}
-                    onSelect={(agent) => setSubmitAgentCode(agent ? agent.agentId : '')}
-                    placeholder="-- เลือกรหัสแจ้งงาน --"
-                    required={submissionType === 'success'}
-                    valueKey="agentId"
-                    labelKey="fullName"
-                    displayTemplate={(agent) => `${agent.fullName}`}
-                  />
-                </div>
-
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                  <div>
                     <label class="block text-sm font-bold text-brand-700 mb-1">💰 ราคาบนใบเสนอราคา (Premium) <span class="text-red-500">*</span></label>
                     <input
                       type="number"
@@ -679,6 +665,22 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     />
                   </div>
                 </div>
+
+
+                <div class="mt-4">
+                  <label class="block text-sm font-bold text-brand-700 mb-1">👤 รหัสแจ้งงาน <span class="text-red-500">*</span></label>
+                  <SearchableSelect
+                    options={allAgents}
+                    value={submitAgentCode}
+                    onSelect={(agent) => setSubmitAgentCode(agent ? agent.agentId : '')}
+                    placeholder="-- เลือกรหัสแจ้งงาน --"
+                    required={submissionType === 'success'}
+                    valueKey="agentId"
+                    labelKey="fullName"
+                    displayTemplate={(agent) => `${agent.fullName}`}
+                  />
+                </div>
+
 
                 <div class="mt-4">
                   <label class="block text-sm font-bold text-brand-700 mb-1">💳 ช่องทางการชำระเงิน <span class="text-red-500">*</span></label>

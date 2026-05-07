@@ -6,7 +6,7 @@ import { Dropzone } from './Dropzone';
 import { SearchableSelect } from './SearchableSelect';
 import {
   fetchCategories,
-  fetchSubCategories,
+  fetchProducts,
   fetchAgents,
   fetchCompanies,
   fetchTemplates,
@@ -23,7 +23,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [categoryId, setCategoryId] = useState('1');
   const [productId, setProductId] = useState('');
   const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [templates, setTemplates] = useState([]);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [submissionType, setSubmissionType] = useState('new');
@@ -152,10 +152,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
     async function loadSubCategories() {
       try {
-        const response = await fetchSubCategories(baseApiUrl);
+        const response = await fetchProducts(baseApiUrl);
         const json = await response.json();
         if (json.results) {
-          setSubCategories(json.results);
+          setProducts(json.results);
         }
       } catch (err) {
         console.error("Failed to load sub-categories:", err);
@@ -672,7 +672,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           {categoryId === '2' && (
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                หมวดหมู่ย่อย <span class="text-red-500">*</span>
+                ผลิตภัณฑ์ <span class="text-red-500">*</span>
               </label>
               <select
                 required={categoryId === '2'}
@@ -682,15 +682,15 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
                   ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
               >
-                <option value="" disabled>-- เลือกหมวดหมู่ย่อย --</option>
-                {subCategories.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
-                  subCategories.filter(s => s.categoryId?.toString() === '2').map(sub => (
+                <option value="" disabled>-- เลือกผลิตภัณฑ์ --</option>
+                {products.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
+                  products.filter(s => s.categoryId?.toString() === '2').map(sub => (
                     <option key={sub.productId} value={sub.productId}>
                       {sub.productName}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>กำลังโหลดหมวดหมู่ย่อย...</option>
+                  <option value="" disabled>กำลังโหลดผลิตภัณฑ์...</option>
                 )}
               </select>
             </div>
@@ -784,7 +784,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             >
               <option value="">-- เลือกประเภทงานที่ปิดการขายได้ --</option>
               <optgroup label="🚗 งานรถยนต์ (Motor)">
-                {subCategories
+                {products
                   .filter(sub => sub.categoryId?.toString() === '1')
                   .map(sub => (
                     <option key={sub.productId} value={sub.productId}>{sub.productName}</option>
@@ -792,7 +792,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 }
               </optgroup>
               <optgroup label="🛡️ งานประกันอื่นๆ (Non-Motor)">
-                {subCategories
+                {products
                   .filter(sub => sub.categoryId?.toString() === '2')
                   .map(sub => (
                     <option key={sub.productId} value={sub.productId}>{sub.productName}</option>

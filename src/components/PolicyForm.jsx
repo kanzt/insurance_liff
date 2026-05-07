@@ -21,7 +21,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
   const [categoryId, setCategoryId] = useState('1');
-  const [subCategoryId, setSubCategoryId] = useState('');
+  const [productId, setProductId] = useState('');
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [templates, setTemplates] = useState([]);
@@ -72,11 +72,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.informerId) setInformerId(data.informerId);
         if (data.informerName) setInformerName(data.informerName);
         if (data.categoryId) setCategoryId(data.categoryId.toString());
-        else if (data.subCategoryId) {
-          // หากมีข้อมูลเก่าที่เป็น subCategoryId ให้พยายามใช้ค่าเดิม (แต่ default เป็น '1' หากไม่แน่ใจ)
-          setCategoryId(data.subCategoryId.toString());
+        else if (data.productId) {
+          // หากมีข้อมูลเก่าที่เป็น productId ให้พยายามใช้ค่าเดิม (แต่ default เป็น '1' หากไม่แน่ใจ)
+          setCategoryId(data.productId.toString());
         }
-        if (data.subCategoryId) setSubCategoryId(data.subCategoryId.toString());
+        if (data.productId) setProductId(data.productId.toString());
         if (data.submissionType) setSubmissionType(data.submissionType);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
@@ -106,7 +106,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       informerId,
       informerName,
       categoryId,
-      subCategoryId,
+      productId,
       submissionType,
       referenceInput,
       endDate,
@@ -127,7 +127,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       brokerChannelId
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId]);
+  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId]);
 
   // Load sub-categories
   useEffect(() => {
@@ -138,7 +138,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (json.results) {
           setCategories(json.results);
           const storage = localStorage.getItem(STORAGE_KEY);
-          const hasExistingCategory = storage && (storage.includes('"categoryId":') || storage.includes('"subCategoryId":'));
+          const hasExistingCategory = storage && (storage.includes('"categoryId":') || storage.includes('"productId":'));
 
           if (json.results.length > 0 && !hasExistingCategory) {
             setCategoryId(json.results[0].categoryId.toString());
@@ -284,7 +284,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setInformerId(null);
       setInformerName('');
       setCategoryId('');
-      setSubCategoryId('');
+      setProductId('');
       setSubmissionType('new');
       setIsRedPlate(false);
       setReferenceInput('');
@@ -343,7 +343,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       const plate = policy.plateNumber || policy.plate_number;
       const customer = policy.customerName || policy.customer_name;
       const catId = policy.categoryId || policy.category_id;
-      const subCatId = policy.subCategoryId || policy.sub_category_id;
+      const subCatId = policy.productId || policy.product_id;
       const agentCode = policy.agentCode || policy.agent_code;
       const agentName = policy.agentName || policy.agent_name;
       const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
@@ -366,7 +366,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
 
       if (subCatId) {
-        setSubCategoryId(subCatId.toString());
+        setProductId(subCatId.toString());
       }
 
       if (agentCode && agentName) {
@@ -403,7 +403,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       return;
     }
 
-    if (categoryId === '2' && !subCategoryId) {
+    if (categoryId === '2' && !productId) {
       setErrorMessage('กรุณาเลือกหมวดหมู่ย่อย');
       return;
     }
@@ -429,8 +429,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       const formData = new FormData();
       formData.append('quote_agent_id', informerId);
       formData.append('category_id', categoryId);
-      if (categoryId === '2' && subCategoryId) {
-        formData.append('sub_category_id', subCategoryId);
+      if (categoryId === '2' && productId) {
+        formData.append('product_id', productId);
       }
       formData.append('submission_type', submissionType);
       if (plateNumber) formData.append('plate_number', plateNumber);
@@ -544,7 +544,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setInformerId(null);
                     setInformerName('');
                     setCategoryId(nextType === 'new' ? '1' : '');
-                    setSubCategoryId('');
+                    setProductId('');
                     setIsRedPlate(false);
                     setReferenceInput('');
                     setEndDate('');
@@ -677,16 +677,16 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <select
                 required={categoryId === '2'}
                 disabled={submissionType === 'additional' || submissionType === 'success'}
-                value={subCategoryId}
-                onChange={(e) => setSubCategoryId(e.target.value)}
+                value={productId}
+                onChange={(e) => setProductId(e.target.value)}
                 class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
                   ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
               >
                 <option value="" disabled>-- เลือกหมวดหมู่ย่อย --</option>
                 {subCategories.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
                   subCategories.filter(s => s.categoryId?.toString() === '2').map(sub => (
-                    <option key={sub.subCategoryId} value={sub.subCategoryId}>
-                      {sub.subCategoryName}
+                    <option key={sub.productId} value={sub.productId}>
+                      {sub.productName}
                     </option>
                   ))
                 ) : (
@@ -778,8 +778,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             </label>
             <select
               required={submissionType === 'success'}
-              value={subCategoryId}
-              onChange={(e) => setSubCategoryId(e.target.value)}
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
               class="block w-full appearance-none rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
             >
               <option value="">-- เลือกประเภทงานที่ปิดการขายได้ --</option>
@@ -787,7 +787,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 {subCategories
                   .filter(sub => sub.categoryId?.toString() === '1')
                   .map(sub => (
-                    <option key={sub.subCategoryId} value={sub.subCategoryId}>{sub.subCategoryName}</option>
+                    <option key={sub.productId} value={sub.productId}>{sub.productName}</option>
                   ))
                 }
               </optgroup>
@@ -795,7 +795,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 {subCategories
                   .filter(sub => sub.categoryId?.toString() === '2')
                   .map(sub => (
-                    <option key={sub.subCategoryId} value={sub.subCategoryId}>{sub.subCategoryName}</option>
+                    <option key={sub.productId} value={sub.productId}>{sub.productName}</option>
                   ))
                 }
               </optgroup>

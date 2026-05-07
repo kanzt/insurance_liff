@@ -45,6 +45,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [installmentMonths, setInstallmentMonths] = useState('1');
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  
+  const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
+  const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
 
   const [isRedPlate, setIsRedPlate] = useState(false);
   const [filesData, setFilesData] = useState({
@@ -432,9 +435,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (premiumAmount) formData.append('premium_amount', premiumAmount);
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
         
-        const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
-        const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
-
         if (isInstallment) {
           formData.append('installment_months', installmentMonths);
         } else if (!isCreditCard && actualPaid) {
@@ -697,7 +697,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 </div>
 
                 <div class="mt-4 grid grid-cols-2 gap-4">
-                  <div>
+                  <div class={isCreditCard ? "col-span-2" : ""}>
                     <label class="block text-sm font-bold text-brand-700 mb-1">💰 ราคาบนใบเสนอราคา (Premium) <span class="text-red-500">*</span></label>
                     <input
                       type="number"
@@ -708,9 +708,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                       placeholder="เช่น 15000.50"
                       class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
                     />
+                    {isCreditCard && (
+                      <p class="mt-1.5 text-[10px] text-brand-500 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-left-1 duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                        <span>ชำระผ่านบัตรเครดิต: ไม่ต้องระบุยอดโอนชำระจริง</span>
+                      </p>
+                    )}
                   </div>
                   
-                  {selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด') ? (
+                  {isInstallment ? (
                     <div class="animate-in fade-in slide-in-from-right-2 duration-300">
                       <label class="block text-sm font-bold text-brand-700 mb-1">📅 จำนวนงวดที่ผ่อน <span class="text-red-500">*</span></label>
                       <select
@@ -723,20 +731,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                         ))}
                       </select>
                     </div>
-                  ) : selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต') ? (
-                    <div class="animate-in fade-in slide-in-from-bottom-2 duration-300 flex items-end pb-3">
-                      <div class="w-full p-3 bg-brand-50 rounded-xl border border-dashed border-brand-200 text-center">
-                        <span class="text-[11px] text-brand-600 font-bold">💳 ชำระผ่านบัตรเครดิต</span>
-                        <p class="text-[9px] text-brand-400">ไม่ต้องระบุยอดโอนชำระจริง</p>
-                      </div>
-                    </div>
-                  ) : (
+                  ) : !isCreditCard && (
                     <div class="animate-in fade-in slide-in-from-left-2 duration-300">
                       <label class="block text-sm font-bold text-brand-700 mb-1">💸 ยอดโอนชำระจริง <span class="text-red-500">*</span></label>
                       <input
                         type="number"
                         step="0.01"
-                        required={submissionType === 'success' && !selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด') && !selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต')}
+                        required={submissionType === 'success' && !isInstallment && !isCreditCard}
                         value={actualPaid}
                         onInput={(e) => setActualPaid(e.target.value)}
                         placeholder="เช่น 14850.00"

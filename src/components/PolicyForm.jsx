@@ -11,6 +11,7 @@ import {
   fetchCompanies,
   fetchTemplates,
   fetchPaymentMethods,
+  fetchBrokerChannels,
   submitPolicy
 } from '../utils/api';
 
@@ -44,6 +45,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [actualPaid, setActualPaid] = useState('');
   const [installmentMonths, setInstallmentMonths] = useState('1');
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [brokerChannelId, setBrokerChannelId] = useState('');
+  const [brokerChannels, setBrokerChannels] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
@@ -90,6 +93,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.premiumAmount) setPremiumAmount(data.premiumAmount);
         if (data.paymentMethodId) setPaymentMethodId(data.paymentMethodId);
         if (data.actualPaid) setActualPaid(data.actualPaid);
+        if (data.brokerChannelId) setBrokerChannelId(data.brokerChannelId);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -119,10 +123,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       premiumAmount,
       paymentMethodId,
       actualPaid,
-      installmentMonths
+      installmentMonths,
+      brokerChannelId
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths]);
+  }, [informerId, informerName, categoryId, subCategoryId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId]);
 
   // Load sub-categories
   useEffect(() => {
@@ -228,6 +233,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       }
     }
     loadPaymentMethods();
+
+    async function loadBrokerChannels() {
+      try {
+        const response = await fetchBrokerChannels(baseApiUrl);
+        const json = await response.json();
+        if (json.results) {
+          setBrokerChannels(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load broker channels:", err);
+      }
+    }
+    loadBrokerChannels();
   }, [baseApiUrl]);
 
   // ✅ ป้องกันการเลือก "ติดตามการเสนอราคา" ค้างไว้หากวันหมดอายุถูกลบออก
@@ -279,6 +297,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setPolicyStartDate('');
       setPolicyExpiryDate('');
       setSubmitAgentCode('');
+      setBrokerChannelId('');
       setCompanyId('');
       setCompanyName('');
       setFilesData({
@@ -434,6 +453,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (companyId) formData.append('company_id', companyId);
         if (premiumAmount) formData.append('premium_amount', premiumAmount);
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
+        if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
         
         if (isInstallment) {
           formData.append('installment_months', installmentMonths);
@@ -861,6 +881,19 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 valueKey="agentId"
                 labelKey="fullName"
                 displayTemplate={(agent) => `${agent.fullName}`}
+              />
+            </div>
+
+            <div class="mt-4">
+              <label class="block text-sm font-bold text-brand-700 mb-1">📢 ช่องทางการแจ้งงาน <span class="text-red-500">*</span></label>
+              <SearchableSelect
+                options={brokerChannels}
+                value={brokerChannelId}
+                onSelect={(channel) => setBrokerChannelId(channel ? channel.brokerChannelId : '')}
+                placeholder="-- เลือกช่องทางการแจ้งงาน --"
+                required={submissionType === 'success'}
+                valueKey="brokerChannelId"
+                labelKey="brokerChannelName"
               />
             </div>
           </div>

@@ -433,9 +433,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
         
         const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
+        const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
+
         if (isInstallment) {
           formData.append('installment_months', installmentMonths);
-        } else if (actualPaid) {
+        } else if (!isCreditCard && actualPaid) {
           formData.append('actual_paid', actualPaid);
         }
       }
@@ -721,13 +723,20 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                         ))}
                       </select>
                     </div>
+                  ) : selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต') ? (
+                    <div class="animate-in fade-in slide-in-from-bottom-2 duration-300 flex items-end pb-3">
+                      <div class="w-full p-3 bg-brand-50 rounded-xl border border-dashed border-brand-200 text-center">
+                        <span class="text-[11px] text-brand-600 font-bold">💳 ชำระผ่านบัตรเครดิต</span>
+                        <p class="text-[9px] text-brand-400">ไม่ต้องระบุยอดโอนชำระจริง</p>
+                      </div>
+                    </div>
                   ) : (
                     <div class="animate-in fade-in slide-in-from-left-2 duration-300">
                       <label class="block text-sm font-bold text-brand-700 mb-1">💸 ยอดโอนชำระจริง <span class="text-red-500">*</span></label>
                       <input
                         type="number"
                         step="0.01"
-                        required={submissionType === 'success' && !selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด')}
+                        required={submissionType === 'success' && !selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด') && !selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต')}
                         value={actualPaid}
                         onInput={(e) => setActualPaid(e.target.value)}
                         placeholder="เช่น 14850.00"

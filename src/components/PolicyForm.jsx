@@ -769,6 +769,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 required={submissionType === 'success'}
                 valueKey="companyId"
                 labelKey="companyName"
+                showIdInList={false}
               />
             </div>
 
@@ -816,6 +817,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 required={submissionType === 'success'}
                 valueKey="paymentMethodId"
                 labelKey="paymentMethodName"
+                showIdInList={false}
               />
             </div>
 
@@ -894,6 +896,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 required={submissionType === 'success'}
                 valueKey="channelId"
                 labelKey="channelName"
+                showIdInList={false}
               />
             </div>
           </div>

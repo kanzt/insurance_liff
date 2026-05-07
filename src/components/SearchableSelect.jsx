@@ -9,7 +9,8 @@ export function SearchableSelect({
   labelKey = "label",
   valueKey = "value",
   disabled = false,
-  displayTemplate = (opt) => opt[labelKey]
+  displayTemplate = (opt) => opt[labelKey],
+  showIdInList = true
 }) {
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -130,7 +131,7 @@ export function SearchableSelect({
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                   </svg>
                 ) : (
-                   <span class="text-xs text-gray-400 font-mono ml-2 opacity-50">{opt[valueKey]}</span>
+                   showIdInList && <span class="text-xs text-gray-400 font-mono ml-2 opacity-50">{opt[valueKey]}</span>
                 )}
               </div>
             ))

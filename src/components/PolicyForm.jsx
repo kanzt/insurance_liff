@@ -717,10 +717,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               value={referenceInput}
               onInput={(e) => setReferenceInput(e.target.value)}
               required
+              disabled={submissionType === 'success'}
               placeholder={categoryId === '1'
                 ? (isRedPlate ? 'ระบุชื่อลูกค้า' : 'เช่น 1กข-1234 กทม')
                 : 'เช่น สมชาย ใจดี'}
-              class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm"
+              class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
+                ${submissionType === 'success' ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80'}`}
             />
             {categoryId === '1' && (
               <div class="mt-2 pl-1">
@@ -728,10 +730,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   <input
                     type="checkbox"
                     checked={isRedPlate}
+                    disabled={submissionType === 'success'}
                     onChange={(e) => setIsRedPlate(e.target.checked)}
-                    class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+                    class={`w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 transition-all
+                      ${submissionType === 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   />
-                  <span class="ml-2 text-xs font-medium text-gray-500 group-hover:text-brand-600 transition-colors">รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
+                  <span class={`ml-2 text-xs font-medium transition-colors ${submissionType === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 group-hover:text-brand-600'}`}>รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
                 </label>
               </div>
             )}

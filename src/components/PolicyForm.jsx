@@ -889,11 +889,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <SearchableSelect
                 options={brokerChannels}
                 value={brokerChannelId}
-                onSelect={(channel) => setBrokerChannelId(channel ? channel.brokerChannelId : '')}
+                onSelect={(channel) => setBrokerChannelId(channel ? channel.channelId : '')}
                 placeholder="-- เลือกช่องทางการแจ้งงาน --"
                 required={submissionType === 'success'}
-                valueKey="brokerChannelId"
-                labelKey="brokerChannelName"
+                valueKey="channelId"
+                labelKey="channelName"
               />
             </div>
           </div>

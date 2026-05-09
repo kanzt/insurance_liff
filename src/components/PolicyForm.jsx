@@ -132,13 +132,6 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent]);
 
-  // Automatically disable reminder if submission type is success
-  useEffect(() => {
-    if (submissionType === 'success') {
-      setEnableReminder(false);
-    }
-  }, [submissionType]);
-
   // Load sub-categories
   useEffect(() => {
     async function loadCategories() {
@@ -925,15 +918,15 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           />
         </div>
 
-        {submissionType !== 'success' && (
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
-            <input
-              type="date"
-              value={endDate}
-              onInput={(e) => setEndDate(e.target.value)}
-              class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
-            />
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+          <input
+            type="date"
+            value={endDate}
+            onInput={(e) => setEndDate(e.target.value)}
+            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
+          />
+
 
             <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
               <label class="flex items-center cursor-pointer">
@@ -1048,7 +1041,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               )}
             </div>
           </div>
-        )}
+
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">

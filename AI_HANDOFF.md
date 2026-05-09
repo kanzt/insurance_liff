@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.0.0: Quotation Flow Refactor)
+# AI Handoff: Insurance LIFF Project Status (V5.1.0: Reminder Restoration)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -16,7 +16,11 @@
 - **New Endpoint**: เปลี่ยนเส้นทางการส่งข้อมูลจาก `/submit-policy` เป็น `/submit-quotation`
 - **Payload Optimization**: ลดจำนวนฟิลด์ที่ส่งไปยัง Backend ให้เหลือเฉพาะข้อมูลพื้นฐานสำหรับการขอใบเสนอราคา (Minimal Payload) เพื่อรองรับการปรับปรุงระบบครั้งใหญ่
 
-### 2. Data Integrity & Validation (V4.8.0)
+### 2. Reminder Restoration (New! V5.1.0)
+- **Full Availability**: ปลดล็อกให้สามารถตั้งแจ้งเตือน (Reminder) ได้ในทุกรูปแบบการส่งงาน รวมถึง "แจ้งงานสำเร็จ" (Success Flow) เพื่อให้ตัวแทนสามารถตั้งการเตือนต่ออายุในปีถัดไปได้ทันที
+- **UI Restoration**: แสดงส่วนวันหมดอายุประกันเดิมและเมนูการตั้งแจ้งเตือนกลับมาให้ใช้งานได้ปกติในทุกกรณี
+
+### 3. Data Integrity & Validation (V4.8.0)
 - **Additional Document Hardening**: เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" ระบบจะล็อกฟิลด์ "ชื่อผู้เอาประกัน" และ "ทะเบียนรถ" (Read-only) เพื่อป้องกันการแก้ไขข้อมูลที่ไม่ตรงกับรายการเดิมที่เลือกมา
 - **Smart Field Locking**: ใช้ระบบ Dynamic Locking ที่ทำงานร่วมกับ `submissionType` เพื่อรักษาความถูกต้องของข้อมูล (Data Consistency) ตลอด Workflow
 
@@ -67,4 +71,4 @@
 - **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
-*Last Updated: 2026-05-09 (V5.0.0: Quotation Flow Refactor)*
+*Last Updated: 2026-05-09 (V5.1.0: Reminder Restoration)*

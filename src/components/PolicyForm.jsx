@@ -48,6 +48,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [brokerChannelId, setBrokerChannelId] = useState('');
   const [brokerChannels, setBrokerChannels] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [commissionPercent, setCommissionPercent] = useState('');
   
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
   const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
@@ -94,6 +95,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.paymentMethodId) setPaymentMethodId(data.paymentMethodId);
         if (data.actualPaid) setActualPaid(data.actualPaid);
         if (data.brokerChannelId) setBrokerChannelId(data.brokerChannelId);
+        if (data.commissionPercent) setCommissionPercent(data.commissionPercent);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -124,10 +126,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       paymentMethodId,
       actualPaid,
       installmentMonths,
-      brokerChannelId
+      brokerChannelId,
+      commissionPercent
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId]);
+  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent]);
 
   // Automatically disable reminder if submission type is success
   useEffect(() => {
@@ -307,6 +310,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setBrokerChannelId('');
       setCompanyId('');
       setCompanyName('');
+      setCommissionPercent('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -461,6 +465,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (premiumAmount) formData.append('premium_amount', premiumAmount);
         if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
         if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
+        if (commissionPercent) formData.append('commission_percent', commissionPercent);
         
         if (isInstallment) {
           formData.append('installment_months', installmentMonths);
@@ -909,6 +914,26 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 labelKey="channelName"
                 showIdInList={false}
               />
+            </div>
+
+            <div class="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <label class="block text-sm font-bold text-brand-700 mb-1">🪙 คอมมิชชันตัวแทน (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={commissionPercent}
+                onInput={(e) => setCommissionPercent(e.target.value)}
+                placeholder="เช่น 15.00"
+                class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+              />
+              <p class="mt-1.5 text-[10px] text-brand-500 font-medium flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <span>% คอมมิชชันที่ {informerName || 'ตัวแทนผู้แจ้งงาน'} จะได้รับเมื่อปิดงานสำเร็จ</span>
+              </p>
             </div>
           </div>
         )}

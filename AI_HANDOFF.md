@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V4.8.0: Additional Document Flow Hardening)
+# AI Handoff: Insurance LIFF Project Status (V4.9.0: Commission Tracking)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -16,7 +16,11 @@
 - **Additional Document Hardening**: เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" ระบบจะล็อกฟิลด์ "ชื่อผู้เอาประกัน" และ "ทะเบียนรถ" (Read-only) เพื่อป้องกันการแก้ไขข้อมูลที่ไม่ตรงกับรายการเดิมที่เลือกมา
 - **Smart Field Locking**: ใช้ระบบ Dynamic Locking ที่ทำงานร่วมกับ `submissionType` เพื่อรักษาความถูกต้องของข้อมูล (Data Consistency) ตลอด Workflow
 
-### 3. Searchable Dropdowns
+### 3. Commission Tracking (New! V4.9.0)
+- **Agent Commission**: เพิ่มช่องกรอก `commission_percent` ในส่วนงานสำเร็จ เพื่อระบุ % คอมมิชชันที่ตัวแทนผู้แจ้งงานจะได้รับ
+- **Contextual Description**: แสดงชื่อตัวแทนในคำอธิบายฟิลด์เพื่อให้ผู้กรอกทราบชัดเจนว่าคอมมิชชันนี้เป็นของใคร
+
+### 4. Searchable Dropdowns
 - **SearchableSelect Component**: คอมโพเนนต์มาตรฐานสำหรับทุก Dropdown ในระบบ รองรับการค้นหาและHighlight ข้อความ
 - **Reporting Code Search**: ค้นหารหัสแจ้งงาน (Submit Agent) ได้ทันที
 
@@ -53,6 +57,7 @@
 | `paymentMethodId` | `payment_method_id` | ID ช่องทางการชำระเงิน (เฉพาะแจ้งงานสำเร็จ) |
 | `actualPaid` | `actual_paid` | ยอดเงินที่โอนจริง (ไม่ใช่การผ่อน) |
 | `installmentMonths` | `installment_months` | **(New)** จำนวนงวดที่ผ่อน (เฉพาะกรณีผ่อน) |
+| `commissionPercent` | `commission_percent` | **(New)** % คอมมิชชันที่ตัวแทนผู้แจ้งงานจะได้รับ |
 
 ---
 
@@ -63,4 +68,4 @@
 - **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
-*Last Updated: 2026-05-09 (V4.8.0: Additional Document Flow Hardening)*
+*Last Updated: 2026-05-09 (V4.9.0: Commission Tracking)*

@@ -57,6 +57,7 @@
 | `endDate` | `previous_policy_expiry_date` | วันหมดอายุกรมธรรม์เดิม |
 | `reminder_date` | `reminder_date` | วันที่ตั้งแจ้งเตือน |
 | `reminder_type` | `reminder_type` | ประเภทการแจ้งเตือน |
+| `notes` | `notes` | หมายเหตุ / ข้อมูลเพิ่มเติม (เฉพาะเช็คเบี้ยใหม่) |
 | `files` | `files` | ไฟล์เอกสารแนบทั้งหมด |
 
 > [!IMPORTANT]

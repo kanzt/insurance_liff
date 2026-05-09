@@ -438,6 +438,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       if (customerName) formData.append('customer_name', customerName);
       if (endDate) formData.append('previous_policy_expiry_date', endDate);
       
+      if (submissionType === 'new' && notes) {
+        formData.append('notes', notes);
+      }
+      
       if (enableReminder && reminderDate) {
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);

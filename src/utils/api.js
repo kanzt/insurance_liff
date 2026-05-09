@@ -51,14 +51,14 @@ export const fetchPaymentMethods = (baseUrl) => authenticatedFetch(`${baseUrl}/l
 export const fetchBrokerChannels = (baseUrl) => authenticatedFetch(`${baseUrl}/load-broker-channels`);
 
 /**
- * Server-side search for policies
+ * Server-side search for quotations
  */
-export const searchPolicies = (baseUrl, searchTerm = '', limit = 20) => {
+export const searchQuotations = (baseUrl, searchTerm = '', limit = 20) => {
   const params = new URLSearchParams();
   if (searchTerm) params.append('search', searchTerm);
   params.append('limit', limit.toString());
   
-  return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`);
+  return authenticatedFetch(`${baseUrl}/load-quotations?${params.toString()}`);
 };
 
 export const submitQuotation = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-quotation`, {

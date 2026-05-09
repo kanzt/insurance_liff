@@ -13,7 +13,7 @@
 - **UI Reordering**: จัดลำดับฟิลด์ในส่วนงานสำเร็จใหม่เพื่อให้สอดคล้องกับขั้นตอนการทำงานจริง (บริษัทประกัน -> ประเภทงาน -> การเงิน)
 
 ### 1. Submission Flow Refactor (New! V5.0.0)
-- **New Endpoint**: เปลี่ยนเส้นทางการส่งข้อมูลจาก `/submit-policy` เป็น `/submit-quotation`
+- **New Endpoint**: เปลี่ยนเส้นทางการส่งข้อมูลจาก `/submit-policy` เป็น `/submit-quotation` และ `/load-policies` เป็น `/load-quotations`
 - **Payload Optimization**: ลดจำนวนฟิลด์ที่ส่งไปยัง Backend ให้เหลือเฉพาะข้อมูลพื้นฐานสำหรับการขอใบเสนอราคา (Minimal Payload) เพื่อรองรับการปรับปรุงระบบครั้งใหญ่
 
 ### 2. Reminder Restoration (New! V5.1.0)
@@ -69,7 +69,8 @@
 
 ### การจัดการ API ใหม่
 - **GET `/load-categories`**: ต้องส่งกลับข้อมูลในรูปแบบ `{"results": [{ "category_id": "xxx", "categoryName": "xxx" }]}`
-- **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
+- **GET `/load-quotations`**: ค้นหารายการใบเสนอราคาเดิม
+- **POST `/submit-quotation`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
 *Last Updated: 2026-05-09 (V5.1.0: Reminder Restoration)*

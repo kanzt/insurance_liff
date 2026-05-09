@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { searchPolicies } from '../utils/api';
+import { searchQuotations } from '../utils/api';
 
 export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery = '' }) {
   const [policies, setPolicies] = useState([]);
@@ -23,7 +23,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
       setIsLoading(true);
       try {
-        const response = await searchPolicies(baseApiUrl, debouncedQuery, 20);
+        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20);
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {

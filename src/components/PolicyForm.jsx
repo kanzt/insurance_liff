@@ -12,7 +12,7 @@ import {
   fetchTemplates,
   fetchPaymentMethods,
   fetchBrokerChannels,
-  submitPolicy
+  submitQuotation
 } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
@@ -440,38 +440,14 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       const formData = new FormData();
       formData.append('quote_agent_id', informerId);
       formData.append('category_id', categoryId);
-      if (categoryId === '2' && productId) {
-        formData.append('product_id', productId);
-      }
-      formData.append('submission_type', submissionType);
+      
       if (plateNumber) formData.append('plate_number', plateNumber);
       if (customerName) formData.append('customer_name', customerName);
       if (endDate) formData.append('previous_policy_expiry_date', endDate);
+      
       if (enableReminder && reminderDate) {
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);
-      }
-      if (notes) formData.append('notes', notes);
-
-      if (submissionType === 'additional' && selectedPolicy) {
-        formData.append('original_policy_id', selectedPolicy.id);
-      }
-
-      if (submissionType === 'success') {
-        if (policyStartDate) formData.append('policy_start_date', policyStartDate);
-        if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
-        if (submitAgentCode) formData.append('submit_agent_id', submitAgentCode);
-        if (companyId) formData.append('company_id', companyId);
-        if (premiumAmount) formData.append('premium_amount', premiumAmount);
-        if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
-        if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
-        if (commissionPercent) formData.append('commission_percent', commissionPercent);
-        
-        if (isInstallment) {
-          formData.append('installment_months', installmentMonths);
-        } else if (!isCreditCard && actualPaid) {
-          formData.append('actual_paid', actualPaid);
-        }
       }
 
       const fileMappings = [
@@ -506,7 +482,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         }
       }
 
-      const response = await submitPolicy(baseApiUrl, formData);
+      const response = await submitQuotation(baseApiUrl, formData);
 
       const result = await response.json();
       if (response.ok) {

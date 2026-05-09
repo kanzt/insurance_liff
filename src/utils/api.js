@@ -61,7 +61,7 @@ export const searchPolicies = (baseUrl, searchTerm = '', limit = 20) => {
   return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`);
 };
 
-export const submitPolicy = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-policy`, {
+export const submitQuotation = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-quotation`, {
   method: 'POST',
   body: formData
 });

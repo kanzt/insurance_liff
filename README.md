@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-09 (V4.9.0: Commission Tracking)*
+*Last Updated: 2026-05-09 (V5.0.0: Quotation Flow Refactor)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -51,6 +51,7 @@
 - **V4.7.0: Agent ID Refactor & Installments**: ปรับปรุงโครงสร้าง API ให้ส่ง `agent_id` แทน `agent_code` และเพิ่มระบบรองรับการผ่อนชำระเงินสด (Installments)
 - **V4.8.0: Additional Document Flow Hardening**: เพิ่มระบบล็อกฟิลด์ชื่อผู้เอาประกันและทะเบียนรถอัตโนมัติเมื่อเลือกส่งเอกสารเพิ่ม เพื่อความถูกต้องของข้อมูลและป้องกันความผิดพลาดในการแก้ไขงานเดิม
 - **V4.9.0: Commission Tracking**: เพิ่มระบบบันทึกค่าคอมมิชชันตัวแทนผู้แจ้งงาน (%) ในส่วนงานสำเร็จ พร้อมคำอธิบายที่เชื่อมโยงกับชื่อตัวแทนจริง
+- **V5.0.0: Quotation Flow Refactor**: ปรับปรุงระบบการส่งข้อมูลใหม่ทั้งหมด โดยเปลี่ยนไปใช้ Endpoint `/submit-quotation` และส่งเฉพาะฟิลด์ที่จำเป็นสำหรับการขอใบเสนอราคา เพื่อเตรียมพร้อมสำหรับการยกเครื่องระบบครั้งใหญ่ (Major Refactor)
 
 ### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
@@ -67,5 +68,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-09 (V4.9.0: Commission Tracking)*
+*Last Updated: 2026-05-09 (V5.0.0: Quotation Flow Refactor)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

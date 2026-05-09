@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V4.7.0: Agent ID Refactor & Installments)
+# AI Handoff: Insurance LIFF Project Status (V4.8.0: Additional Document Flow Hardening)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -12,11 +12,15 @@
 - **Agent ID Refactor**: เปลี่ยนการส่งค่า `quote_agent_code` เป็น `quote_agent_id` และ `submit_agent_code` เป็น `submit_agent_id` เพื่อให้ตรงกับมาตรฐาน DB
 - **UI Reordering**: จัดลำดับฟิลด์ในส่วนงานสำเร็จใหม่เพื่อให้สอดคล้องกับขั้นตอนการทำงานจริง (บริษัทประกัน -> ประเภทงาน -> การเงิน)
 
-### 2. Searchable Dropdowns
-- **SearchableSelect Component**: คอมโพเนนต์มาตรฐานสำหรับทุก Dropdown ในระบบ รองรับการค้นหาและ Highlight ข้อความ
+### 2. Data Integrity & Validation (New! V4.8.0)
+- **Additional Document Hardening**: เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" ระบบจะล็อกฟิลด์ "ชื่อผู้เอาประกัน" และ "ทะเบียนรถ" (Read-only) เพื่อป้องกันการแก้ไขข้อมูลที่ไม่ตรงกับรายการเดิมที่เลือกมา
+- **Smart Field Locking**: ใช้ระบบ Dynamic Locking ที่ทำงานร่วมกับ `submissionType` เพื่อรักษาความถูกต้องของข้อมูล (Data Consistency) ตลอด Workflow
+
+### 3. Searchable Dropdowns
+- **SearchableSelect Component**: คอมโพเนนต์มาตรฐานสำหรับทุก Dropdown ในระบบ รองรับการค้นหาและHighlight ข้อความ
 - **Reporting Code Search**: ค้นหารหัสแจ้งงาน (Submit Agent) ได้ทันที
 
-### 3. API & Persistence
+### 4. API & Persistence
 - **fetchPaymentMethods**: เพิ่ม Helper ใน `api.js` สำหรับโหลดข้อมูลช่องทางชำระเงิน
 - **Draft Persistence**: อัปเดตระบบ LocalStorage ให้บันทึกค่าเบี้ยและช่องทางชำระเงินอัตโนมัติ ป้องกันข้อมูลหาย
 
@@ -59,4 +63,4 @@
 - **POST `/submit-policy`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
 
 ---
-*Last Updated: 2026-05-04 (V4.7.0: Agent ID Refactor & Installments)*
+*Last Updated: 2026-05-09 (V4.8.0: Additional Document Flow Hardening)*

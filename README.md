@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-04 (V4.7.0: Agent ID Refactor & Installments)*
+*Last Updated: 2026-05-09 (V4.8.0: Additional Document Flow Hardening)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -49,6 +49,7 @@
 - **V4.5.0: Searchable Dropdowns**: เพิ่มคอมโพเนนต์ `SearchableSelect` และ Refactor ระบบ API ให้เป็นศูนย์กลางที่ `api.js` เพื่อความเสถียรและดูแลรักษาง่าย
 - **V4.6.0: Success Flow Enhancements**: เพิ่มฟิลด์รายละเอียดการเงิน (เบี้ยประกัน, ยอดโอนจริง) และระบบเลือกช่องทางการชำระเงินจาก API
 - **V4.7.0: Agent ID Refactor & Installments**: ปรับปรุงโครงสร้าง API ให้ส่ง `agent_id` แทน `agent_code` และเพิ่มระบบรองรับการผ่อนชำระเงินสด (Installments)
+- **V4.8.0: Additional Document Flow Hardening**: เพิ่มระบบล็อกฟิลด์ชื่อผู้เอาประกันและทะเบียนรถอัตโนมัติเมื่อเลือกส่งเอกสารเพิ่ม เพื่อความถูกต้องของข้อมูลและป้องกันความผิดพลาดในการแก้ไขงานเดิม
 
 ### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
@@ -65,5 +66,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-04 (V4.7.0: Agent ID Refactor & Installments)*
+*Last Updated: 2026-05-09 (V4.8.0: Additional Document Flow Hardening)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-09 (V5.1.0: Reminder Restoration)*
+*Last Updated: 2026-05-10 (V5.2.0: Update Quotation Flow)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -53,6 +53,8 @@
 - **V4.9.0: Commission Tracking**: เพิ่มระบบบันทึกค่าคอมมิชชันตัวแทนผู้แจ้งงาน (%) ในส่วนงานสำเร็จ พร้อมคำอธิบายที่เชื่อมโยงกับชื่อตัวแทนจริง
 - **V5.0.0: Quotation Flow Refactor**: ปรับปรุงระบบการส่งข้อมูลใหม่ทั้งหมด โดยเปลี่ยนไปใช้ Endpoint `/submit-quotation` และส่งเฉพาะฟิลด์ที่จำเป็นสำหรับการขอใบเสนอราคา เพื่อเตรียมพร้อมสำหรับการยกเครื่องระบบครั้งใหญ่ (Major Refactor)
 - **V5.1.0: Reminder Restoration**: ปลดล็อกระบบการตั้งแจ้งเตือน (Reminder) ให้กลับมาใช้งานได้ตามปกติในทุกรูปแบบการส่งงาน รวมถึงส่วน "แจ้งงานสำเร็จ" เพื่อความยืดหยุ่นในการใช้งานของตัวแทน
+- **V5.2.0: Update Quotation Flow**: เพิ่มระบบส่งเอกสารเพิ่มเติม (Additional Documents) โดยแยก Endpoint ไปที่ `/update-quotation` เพื่อการจัดการข้อมูลที่แม่นยำยิ่งขึ้น พร้อมระบบ Rename ไฟล์เอกสารให้อัตโนมัติใน Workflow นี้
+
 
 ### 4. Automated CI/CD
 - **GitHub Actions**: ตั้งค่าไฟล์ `.github/workflows/deploy.yml` ไว้สำหรับการ Deploy ไปที่ GitHub Pages โดยอัตโนมัติเมื่อมีการ Push ไปที่ Branch `main`
@@ -69,5 +71,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-09 (V5.1.0: Reminder Restoration)*
+*Last Updated: 2026-05-10 (V5.2.0: Update Quotation Flow)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

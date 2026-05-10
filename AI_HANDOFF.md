@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.1.0: Reminder Restoration)
+# AI Handoff: Insurance LIFF Project Status (V5.2.0: Update Quotation Flow)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -12,8 +12,11 @@
 - **Agent ID Refactor**: เปลี่ยนการส่งค่า `quote_agent_code` เป็น `quote_agent_id` และ `submit_agent_code` เป็น `submit_agent_id` เพื่อให้ตรงกับมาตรฐาน DB
 - **UI Reordering**: จัดลำดับฟิลด์ในส่วนงานสำเร็จใหม่เพื่อให้สอดคล้องกับขั้นตอนการทำงานจริง (บริษัทประกัน -> ประเภทงาน -> การเงิน)
 
-### 1. Submission Flow Refactor (New! V5.0.0)
-- **New Endpoint**: เปลี่ยนเส้นทางการส่งข้อมูลจาก `/submit-policy` เป็น `/submit-quotation` และ `/load-policies` เป็น `/load-quotations`
+### 1. Submission Flow Refactor (New! V5.0.0 - V5.2.0)
+- **New Endpoints**: 
+  - `POST /submit-quotation`: สำหรับการขอใบเสนอราคาใหม่
+  - `POST /update-quotation`: สำหรับการส่งเอกสารเพิ่มเติม (Additional Documents)
+  - `GET /load-quotations`: สำหรับค้นหาประวัติงานเดิม
 - **Payload Optimization**: ลดจำนวนฟิลด์ที่ส่งไปยัง Backend ให้เหลือเฉพาะข้อมูลพื้นฐานสำหรับการขอใบเสนอราคา (Minimal Payload) เพื่อรองรับการปรับปรุงระบบครั้งใหญ่
 
 ### 2. Reminder Restoration (New! V5.1.0)
@@ -50,6 +53,7 @@
 
 | Frontend Field | API Field | Note |
 |---|---|---|
+| `quotationId` | `quotation_id` | ID รายการเดิม (เฉพาะส่งเอกสารเพิ่ม) |
 | `informerId` | `quote_agent_id` | รหัสตัวแทนผู้แจ้งงาน |
 | `categoryId` | `category_id` | ID หมวดหมู่หลัก |
 | `plate_number` | `plate_number` | ทะเบียนรถ |
@@ -57,7 +61,7 @@
 | `endDate` | `previous_policy_expiry_date` | วันหมดอายุกรมธรรม์เดิม |
 | `reminder_date` | `reminder_date` | วันที่ตั้งแจ้งเตือน |
 | `reminder_type` | `reminder_type` | ประเภทการแจ้งเตือน |
-| `notes` | `notes` | หมายเหตุ / ข้อมูลเพิ่มเติม (เฉพาะเช็คเบี้ยใหม่) |
+| `notes` | `notes` | หมายเหตุ / ข้อมูลเพิ่มเติม |
 | `files` | `files` | ไฟล์เอกสารแนบทั้งหมด |
 
 > [!IMPORTANT]
@@ -70,7 +74,8 @@
 ### การจัดการ API ใหม่
 - **GET `/load-categories`**: ต้องส่งกลับข้อมูลในรูปแบบ `{"results": [{ "category_id": "xxx", "categoryName": "xxx" }]}`
 - **GET `/load-quotations`**: ค้นหารายการใบเสนอราคาเดิม
-- **POST `/submit-quotation`**: เปลี่ยนการรับค่าจาก `sub_category_id` เป็น `category_id`
+- **POST `/submit-quotation`**: ส่งข้อมูลขอใบเสนอราคาใหม่
+- **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 
 ---
-*Last Updated: 2026-05-09 (V5.1.0: Reminder Restoration)*
+*Last Updated: 2026-05-10 (V5.2.0: Update Quotation Flow)*

@@ -65,3 +65,8 @@ export const submitQuotation = (baseUrl, formData) => authenticatedFetch(`${base
   method: 'POST',
   body: formData
 });
+
+export const updateQuotation = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/update-quotation`, {
+  method: 'POST',
+  body: formData
+});

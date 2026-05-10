@@ -416,10 +416,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       return;
     }
 
-    if (categoryId === '2' && !productId) {
-      setErrorMessage('กรุณาเลือกหมวดหมู่ย่อย');
-      return;
-    }
+
 
     setIsSubmitting(true);
 
@@ -671,32 +668,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             </select>
           </div>
 
-          {categoryId === '2' && (
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                ผลิตภัณฑ์ <span class="text-red-500">*</span>
-              </label>
-              <select
-                required={categoryId === '2'}
-                disabled={submissionType === 'additional' || submissionType === 'success'}
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-                  ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
-              >
-                <option value="" disabled>-- เลือกผลิตภัณฑ์ --</option>
-                {products.filter(s => s.categoryId?.toString() === '2').length > 0 ? (
-                  products.filter(s => s.categoryId?.toString() === '2').map(sub => (
-                    <option key={sub.productId} value={sub.productId}>
-                      {sub.productName}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>กำลังโหลดผลิตภัณฑ์...</option>
-                )}
-              </select>
-            </div>
-          )}
+
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -719,18 +691,16 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
                 ${(submissionType === 'success' || submissionType === 'additional') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80'}`}
             />
-            {categoryId === '1' && submissionType !== 'additional' && (
+            {categoryId === '1' && submissionType !== 'additional' && submissionType !== 'success' && (
               <div class="mt-2 pl-1">
                 <label class="flex items-center cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={isRedPlate}
-                    disabled={submissionType === 'success'}
                     onChange={(e) => setIsRedPlate(e.target.checked)}
-                    class={`w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 transition-all
-                      ${submissionType === 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    class="w-3.5 h-3.5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 transition-all cursor-pointer"
                   />
-                  <span class={`ml-2 text-xs font-medium transition-colors ${submissionType === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 group-hover:text-brand-600'}`}>รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
+                  <span class="ml-2 text-xs font-medium transition-colors text-gray-500 group-hover:text-brand-600">รถใหม่ป้ายแดง / ยังไม่ทราบทะเบียน</span>
                 </label>
               </div>
             )}

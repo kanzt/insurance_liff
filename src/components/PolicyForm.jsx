@@ -259,6 +259,14 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
     }
   }, [endDate, reminderType]);
 
+  // ปิดการแจ้งเตือนหากเลือกวัตถุประสงค์เป็นแจ้งงานสำเร็จ
+  useEffect(() => {
+    if (submissionType === 'success') {
+      setEnableReminder(false);
+      setReminderDate('');
+    }
+  }, [submissionType]);
+
   // const categoryId = ... logic removed
 
   // Auto-calculate expiry date (default +1 year)
@@ -937,7 +945,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             type="date"
             value={endDate}
             onInput={(e) => setEndDate(e.target.value)}
-            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm appearance-none cursor-pointer"
+            disabled={submissionType === 'success'}
+            class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white transition-all text-sm appearance-none ${submissionType === 'success' ? 'cursor-not-allowed bg-gray-50 text-gray-400' : 'cursor-pointer'}`}
           />
 
 
@@ -945,12 +954,22 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
               <label class="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={enableReminder}
-                  onChange={handleReminderToggle}
-                  class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+                  checked={submissionType !== 'success' && enableReminder}
+                  onChange={(e) => {
+                    if (submissionType !== 'success') {
+                      handleReminderToggle(e);
+                    }
+                  }}
+                  disabled={submissionType === 'success'}
+                  class={`w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 ${submissionType === 'success' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 />
-                <span class="ml-2 text-sm font-medium text-brand-800">ตั้งแจ้งเตือน</span>
+                <span class={`ml-2 text-sm font-medium ${submissionType === 'success' ? 'text-gray-400' : 'text-brand-800'}`}>ตั้งแจ้งเตือน</span>
               </label>
+              {submissionType === 'success' && (
+                <p class="mt-1 text-[10px] text-brand-500 font-medium italic">
+                  * วัตถุประสงค์แจ้งงานสำเร็จ จะไม่สามารถตั้งการติดตามจากหน้านี้ได้
+                </p>
+              )}
 
               {enableReminder && (
                 <div class="mt-4 space-y-4 animate-in slide-in-from-top-2 duration-300">
@@ -965,12 +984,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                             <label
                               key={t.slug}
                               onClick={(e) => {
-                                if (isDisabled) {
+                                if (isDisabled || submissionType === 'success') {
                                   e.preventDefault();
                                   return;
                                 }
                               }}
-                              class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled
+                              class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled || submissionType === 'success'
                                 ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
                                 : reminderType === t.slug
                                   ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
@@ -982,9 +1001,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                                 name="reminderType"
                                 value={t.slug}
                                 checked={reminderType === t.slug}
-                                onChange={() => !isDisabled && setReminderType(t.slug)}
-                                disabled={isDisabled}
-                                class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                                onChange={() => (!isDisabled && submissionType !== 'success') && setReminderType(t.slug)}
+                                disabled={isDisabled || submissionType === 'success'}
+                                class={`w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500 ${submissionType === 'success' ? 'cursor-not-allowed' : ''}`}
                               />
                               <div class="ml-3 flex flex-col">
                                 <span class={`text-sm font-medium ${reminderType === t.slug && !isDisabled ? 'text-brand-800' : 'text-gray-600'}`}>

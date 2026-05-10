@@ -950,26 +950,17 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
           />
 
 
-            <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3">
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={submissionType !== 'success' && enableReminder}
-                  onChange={(e) => {
-                    if (submissionType !== 'success') {
-                      handleReminderToggle(e);
-                    }
-                  }}
-                  disabled={submissionType === 'success'}
-                  class={`w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 ${submissionType === 'success' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                />
-                <span class={`ml-2 text-sm font-medium ${submissionType === 'success' ? 'text-gray-400' : 'text-brand-800'}`}>ตั้งแจ้งเตือน</span>
-              </label>
-              {submissionType === 'success' && (
-                <p class="mt-1 text-[10px] text-brand-500 font-medium italic">
-                  * วัตถุประสงค์แจ้งงานสำเร็จ จะไม่สามารถตั้งการติดตามจากหน้านี้ได้
-                </p>
-              )}
+            {submissionType !== 'success' && (
+              <div class="mt-3 bg-brand-50 border border-brand-100 rounded-lg p-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableReminder}
+                    onChange={handleReminderToggle}
+                    class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
+                  />
+                  <span class="ml-2 text-sm font-medium text-brand-800">ตั้งแจ้งเตือน (Follow-up)</span>
+                </label>
 
               {enableReminder && (
                 <div class="mt-4 space-y-4 animate-in slide-in-from-top-2 duration-300">
@@ -984,12 +975,12 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                             <label
                               key={t.slug}
                               onClick={(e) => {
-                                if (isDisabled || submissionType === 'success') {
+                                if (isDisabled) {
                                   e.preventDefault();
                                   return;
                                 }
                               }}
-                              class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled || submissionType === 'success'
+                              class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled
                                 ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
                                 : reminderType === t.slug
                                   ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
@@ -1001,9 +992,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                                 name="reminderType"
                                 value={t.slug}
                                 checked={reminderType === t.slug}
-                                onChange={() => (!isDisabled && submissionType !== 'success') && setReminderType(t.slug)}
-                                disabled={isDisabled || submissionType === 'success'}
-                                class={`w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500 ${submissionType === 'success' ? 'cursor-not-allowed' : ''}`}
+                                onChange={() => !isDisabled && setReminderType(t.slug)}
+                                disabled={isDisabled}
+                                class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
                               />
                               <div class="ml-3 flex flex-col">
                                 <span class={`text-sm font-medium ${reminderType === t.slug && !isDisabled ? 'text-brand-800' : 'text-gray-600'}`}>
@@ -1072,6 +1063,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 </div>
               )}
             </div>
+            )}
           </div>
 
 

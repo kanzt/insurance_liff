@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.3.0: Reminder Locking)
+# AI Handoff: Insurance LIFF Project Status (V5.4.0: Conditional UI)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -27,7 +27,7 @@
 - **Additional Document Hardening**: เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" ระบบจะล็อกฟิลด์ "ชื่อผู้เอาประกัน" และ "ทะเบียนรถ" (Read-only) เพื่อป้องกันการแก้ไขข้อมูลที่ไม่ตรงกับรายการเดิมที่เลือกมา
 - **Smart Field Locking**: 
   - ใช้ระบบ Dynamic Locking ที่ทำงานร่วมกับ `submissionType` เพื่อรักษาความถูกต้องของข้อมูล (Data Consistency) ตลอด Workflow
-  - **Reminder Locking (New!)**: เมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" ระบบจะล็อกการตั้งแจ้งเตือนทั้งหมดเพื่อลดความซับซ้อนของข้อมูล และป้องกันการตั้งเตือนติดตามซ้ำซ้อนในขั้นตอนการขายที่จบไปแล้ว
+  - **Reminder UI Hiding (New!)**: เมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" ระบบจะซ่อนส่วนการตั้งแจ้งเตือนไปเลย (Hide instead of Lock) เพื่อให้ UI กระชับและลดความซับซ้อนในขั้นตอนการขายที่จบไปแล้ว
 
 ### 3. Commission Tracking (New! V4.9.0)
 - **Agent Commission**: เพิ่มช่องกรอก `commission_percent` ในส่วนงานสำเร็จ เพื่อระบุ % คอมมิชชันที่ตัวแทนผู้แจ้งงานจะได้รับ
@@ -80,4 +80,4 @@
 - **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 
 ---
-*Last Updated: 2026-05-10 (V5.3.0: Reminder Locking)*
+*Last Updated: 2026-05-10 (V5.4.0: Conditional UI)*

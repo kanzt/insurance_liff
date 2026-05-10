@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-10 (V5.4.0: Conditional UI)*
+*Last Updated: 2026-05-10 (V5.4.1: UI Layout Update)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -56,6 +56,7 @@
 - **V5.2.0: Update Quotation Flow**: เพิ่มระบบส่งเอกสารเพิ่มเติม (Additional Documents) โดยแยก Endpoint ไปที่ `/update-quotation` เพื่อการจัดการข้อมูลที่แม่นยำยิ่งขึ้น พร้อมระบบ Rename ไฟล์เอกสารให้อัตโนมัติใน Workflow นี้
 - **V5.3.0: Reminder Locking**: ปรับปรุงระบบ Validation ให้ล็อกการตั้งแจ้งเตือนหากเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ"
 - **V5.4.0: Conditional UI**: เปลี่ยนจากการล็อก (Lock) เป็นการซ่อน (Hide) ส่วนตั้งแจ้งเตือนทั้งหมดเมื่อเลือก "แจ้งงานสำเร็จ" เพื่อความสะอาดของอินเตอร์เฟซ
+- **V5.4.1: UI Layout Update**: ปรับปรุงลำดับการแสดงผล โดยย้ายส่วน "หมายเหตุ / ข้อมูลเพิ่มเติม" ลงมาไว้ต่อจากส่วนการตั้งแจ้งเตือน เพื่อให้ Flow การกรอกข้อมูลลื่นไหลขึ้น
 
 
 ### 4. Automated CI/CD
@@ -73,5 +74,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-10 (V5.4.0: Conditional UI)*
+*Last Updated: 2026-05-10 (V5.4.1: UI Layout Update)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

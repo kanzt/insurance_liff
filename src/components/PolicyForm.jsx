@@ -718,7 +718,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             value={endDate}
             onInput={(e) => setEndDate(e.target.value)}
             disabled={submissionType === 'success'}
-            class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white transition-all text-sm appearance-none ${submissionType === 'success' ? 'cursor-not-allowed bg-gray-50 text-gray-400' : 'cursor-pointer'}`}
+            class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm appearance-none ${submissionType === 'success' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 cursor-pointer'}`}
           />
 
 

@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.4.5: UI Layout Reordering)
+# AI Handoff: Insurance LIFF Project Status (V5.4.6: UI Styling Standardization)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -27,7 +27,8 @@
 - **Additional Document Hardening**: เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม" ระบบจะล็อกฟิลด์ "ชื่อผู้เอาประกัน" และ "ทะเบียนรถ" (Read-only) เพื่อป้องกันการแก้ไขข้อมูลที่ไม่ตรงกับรายการเดิมที่เลือกมา
 - **Smart Field Locking**: 
   - ใช้ระบบ Dynamic Locking ที่ทำงานร่วมกับ `submissionType` เพื่อรักษาความถูกต้องของข้อมูล (Data Consistency) ตลอด Workflow
-  - **Reminder UI Hiding (New!)**: เมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" ระบบจะซ่อนส่วนการตั้งแจ้งเตือนไปเลย (Hide instead of Lock) เพื่อให้ UI กระชับและลดความซับซ้อนในขั้นตอนการขายที่จบไปแล้ว
+  - **V5.4.5: UI Layout Reordering**: ปรับปรุงลำดับการแสดงผลของส่วน "แจ้งงานสำเร็จ" (กรอบสีเขียว) โดยย้ายมาไว้ต่อจาก "วันที่ประกันเดิมหมดอายุ" เพื่อให้ Flow การกรอกข้อมูลเป็นไปตามลำดับความสำคัญและลดความซ้ำซ้อน
+  - **V5.4.6: UI Styling Standardization**: ปรับปรุงสไตล์ของฟิลด์ที่ถูกปิดใช้งาน (Disabled) ให้เป็นมาตรฐานเดียวกันทั้งระบบ โดยเปลี่ยนสีพื้นหลังฟิลด์วันหมดอายุให้เป็น bg-gray-100 ในขั้นตอนการขายที่จบไปแล้ว
 
 ### 3. Commission Tracking (New! V4.9.0)
 - **Agent Commission**: เพิ่มช่องกรอก `commission_percent` ในส่วนงานสำเร็จ เพื่อระบุ % คอมมิชชันที่ตัวแทนผู้แจ้งงานจะได้รับ
@@ -80,4 +81,4 @@
 - **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 
 ---
-*Last Updated: 2026-05-11 (V5.4.5: UI Layout Reordering)*
+*Last Updated: 2026-05-11 (V5.4.6: UI Styling Standardization)*

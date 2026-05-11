@@ -453,6 +453,26 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (qId) formData.append('quotation_id', qId);
         if (notes) formData.append('notes', notes);
       }
+
+      if (submissionType === 'success') {
+        const qId = selectedPolicy?.quotationId || selectedPolicy?.quotation_id;
+        if (qId) formData.append('quotation_id', qId);
+        
+        // Success specific fields (Un-suspended for V5.4.8)
+        if (policyStartDate) formData.append('policy_start_date', policyStartDate);
+        if (policyExpiryDate) formData.append('policy_expiry_date', policyExpiryDate);
+        if (submitAgentCode) formData.append('submit_agent_id', submitAgentCode);
+        if (companyId) formData.append('company_id', companyId);
+        if (premiumAmount) formData.append('premium_amount', premiumAmount);
+        if (paymentMethodId) formData.append('payment_method_id', paymentMethodId);
+        if (actualPaid) formData.append('actual_paid', actualPaid);
+        if (installmentMonths) formData.append('installment_months', installmentMonths);
+        if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
+        if (commissionPercent) formData.append('commission_percent', commissionPercent);
+        
+        // Notes for policies table instead of quotation table
+        if (notes) formData.append('policy_notes', notes);
+      }
       
       if (enableReminder && reminderDate) {
         formData.append('reminder_date', reminderDate);

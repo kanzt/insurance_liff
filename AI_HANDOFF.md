@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.4.4: UI Refining)
+# AI Handoff: Insurance LIFF Project Status (V5.4.5: UI Layout Reordering)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -80,4 +80,4 @@
 - **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 
 ---
-*Last Updated: 2026-05-10 (V5.4.4: UI Refining)*
+*Last Updated: 2026-05-11 (V5.4.5: UI Layout Reordering)*

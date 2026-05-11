@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-10 (V5.4.4: UI Refining)*
+*Last Updated: 2026-05-11 (V5.4.5: UI Layout Reordering)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -60,6 +60,8 @@
 - **V5.4.2: UI Refining**: ซ่อน Checkbox "รถใหม่ป้ายแดง" เมื่อเลือกวัตถุประสงค์เป็น "ส่งเอกสารเพิ่ม"
 - **V5.4.3: UI Refining**: ขยายการซ่อน Checkbox "รถใหม่ป้ายแดง" ให้ครอบคลุมถึงกรณี "แจ้งงานสำเร็จ"
 - **V5.4.4: UI Cleanup**: นำฟิลด์ "ผลิตภัณฑ์" (Product) ออกจากหน้าฟอร์มหลัก เนื่องจากไม่จำเป็นต้องระบุในขั้นตอนการขอเช็คเบี้ยเบื้องต้น
+- **V5.4.5: UI Layout Reordering**: ปรับปรุงลำดับการแสดงผลของส่วน "แจ้งงานสำเร็จ" (กรอบสีเขียว) โดยย้ายมาไว้ต่อจาก "วันที่ประกันเดิมหมดอายุ" เพื่อให้ Flow การกรอกข้อมูลเป็นไปตามลำดับความสำคัญและลดความซ้ำซ้อน
+
 
 
 ### 4. Automated CI/CD
@@ -77,5 +79,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-10 (V5.4.4: UI Refining)*
+*Last Updated: 2026-05-11 (V5.4.5: UI Layout Reordering)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

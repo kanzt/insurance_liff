@@ -1031,19 +1031,32 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 <span>% คอมมิชชันที่ {informerName || 'ตัวแทนผู้แจ้งงาน'} จะได้รับเมื่อปิดงานสำเร็จ</span>
               </p>
             </div>
+
+            <div class="mt-4">
+              <label class="block text-sm font-bold text-brand-700 mb-1">หมายเหตุ / ข้อมูลเพิ่มเติม</label>
+              <textarea
+                value={notes}
+                onInput={(e) => setNotes(e.target.value)}
+                rows={2}
+                placeholder="ระบุรายละเอียดเพิ่มเติม เช่น บริษัทเดิม, เลขกรมธรรม์เดิม หรือข้อความถึงแอดมิน..."
+                class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm resize-none"
+              />
+            </div>
           </div>
         )}
 
-        <div class="mt-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ / ข้อมูลเพิ่มเติม</label>
-          <textarea
-            value={notes}
-            onInput={(e) => setNotes(e.target.value)}
-            rows={2}
-            placeholder="ระบุรายละเอียดเพิ่มเติม เช่น บริษัทเดิม, เลขกรมธรรม์เดิม หรือข้อความถึงแอดมิน..."
-            class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm resize-none"
-          />
-        </div>
+        {submissionType !== 'success' && (
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ / ข้อมูลเพิ่มเติม</label>
+            <textarea
+              value={notes}
+              onInput={(e) => setNotes(e.target.value)}
+              rows={2}
+              placeholder="ระบุรายละเอียดเพิ่มเติม เช่น บริษัทเดิม, เลขกรมธรรม์เดิม หรือข้อความถึงแอดมิน..."
+              class="block w-full rounded-xl border-gray-200 shadow-sm p-3 border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80 transition-all text-sm resize-none"
+            />
+          </div>
+        )}
 
 
         <div>

@@ -50,6 +50,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [brokerChannels, setBrokerChannels] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [commissionPercent, setCommissionPercent] = useState('');
+  const [policyNotes, setPolicyNotes] = useState('');
   
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
   const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
@@ -97,6 +98,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.actualPaid) setActualPaid(data.actualPaid);
         if (data.brokerChannelId) setBrokerChannelId(data.brokerChannelId);
         if (data.commissionPercent) setCommissionPercent(data.commissionPercent);
+        if (data.policyNotes) setPolicyNotes(data.policyNotes);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -124,6 +126,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       companyId,
       companyName,
       premiumAmount,
+      policyNotes,
       paymentMethodId,
       actualPaid,
       installmentMonths,
@@ -131,7 +134,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       commissionPercent
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent]);
+  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyNotes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent]);
 
   // Load sub-categories
   useEffect(() => {
@@ -313,6 +316,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setCompanyId('');
       setCompanyName('');
       setCommissionPercent('');
+      setPolicyNotes('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -471,7 +475,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (commissionPercent) formData.append('commission_percent', commissionPercent);
         
         // Notes for policies table instead of quotation table
-        if (notes) formData.append('policy_notes', notes);
+        if (policyNotes) formData.append('policy_notes', policyNotes);
       }
       
       if (enableReminder && reminderDate) {
@@ -582,6 +586,8 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                     setSelectedPaymentMethod(null);
                     setActualPaid('');
                     setInstallmentMonths('1');
+                    setCommissionPercent('');
+                    setPolicyNotes('');
                     setFilesData({
                       registration: [],
                       oldPolicy: [],
@@ -1055,10 +1061,10 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
             <div class="mt-4">
               <label class="block text-sm font-bold text-brand-700 mb-1">หมายเหตุ / ข้อมูลเพิ่มเติม</label>
               <textarea
-                value={notes}
-                onInput={(e) => setNotes(e.target.value)}
+                value={policyNotes}
+                onInput={(e) => setPolicyNotes(e.target.value)}
                 rows={2}
-                placeholder="ระบุรายละเอียดเพิ่มเติม เช่น บริษัทเดิม, เลขกรมธรรม์เดิม หรือข้อความถึงแอดมิน..."
+                placeholder="ระบุรายละเอียดเพิ่มเติม เช่น เลขกรมธรรม์ที่ออกใหม่ หรือข้อมูลสำหรับแอดมิน..."
                 class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm resize-none"
               />
             </div>

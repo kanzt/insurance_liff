@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.4.8: Data Mapping Refactor)
+# AI Handoff: Insurance LIFF Project Status (V5.4.9: State Separation for Policy Notes)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -31,6 +31,7 @@
   - **V5.4.6: UI Styling Standardization**: ปรับปรุงสไตล์ของฟิลด์ที่ถูกปิดใช้งาน (Disabled) ให้เป็นมาตรฐานเดียวกันทั้งระบบ โดยเปลี่ยนสีพื้นหลังฟิลด์วันหมดอายุให้เป็น bg-gray-100
 - **V5.4.7: UI Layout Refinement**: ย้ายฟิลด์ "หมายเหตุ / ข้อมูลเพิ่มเติม" เข้าไปอยู่ภายในกรอบสีเขียวเมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" เพื่อความเป็นระเบียบและ Flow ข้อมูลที่ชัดเจน
 - **V5.4.8: Data Mapping Refactor**: ปรับปรุงการส่งข้อมูลใน `handleSubmit` โดยเปลี่ยน Key ของฟิลด์หมายเหตุจาก `notes` เป็น `policy_notes` เมื่อเลือก "แจ้งงานสำเร็จ" เพื่อให้ข้อมูลถูกบันทึกลงตาราง policies โดยตรงตามโครงสร้าง DB ใหม่ พร้อมเปิดการส่งฟิลด์ข้อมูลการเงินทั้งหมดที่เคยระงับไว้
+- **V5.4.9: State Separation for Policy Notes**: แยก State ของหมายเหตุออกจากกันระหว่าง `notes` (Quotation) และ `policyNotes` (Policy) เพื่อป้องกันการเขียนทับข้อมูลเดิมเมื่อเลือกรายการจากประวัติ พร้อมปรับปรุงการบันทึกลง LocalStorage และการส่ง API ให้แยกคีย์กันชัดเจน
  ในขั้นตอนการขายที่จบไปแล้ว
 
 ### 3. Commission Tracking (New! V4.9.0)
@@ -84,4 +85,4 @@
 - **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 
 ---
-*Last Updated: 2026-05-11 (V5.4.8: Data Mapping Refactor)*
+*Last Updated: 2026-05-12 (V5.4.9: State Separation for Policy Notes)*

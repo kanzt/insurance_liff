@@ -564,42 +564,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                   onChange={(e) => {
                     const nextType = e.target.value;
                     // Reset all fields to ensure clean state for new purpose
-                    setInformerId(null);
-                    setInformerName('');
-                    setCategoryId(nextType === 'new' ? '1' : '');
-                    setProductId('');
-                    setIsRedPlate(false);
-                    setReferenceInput('');
-                    setEndDate('');
-                    setEnableReminder(false);
-                    setReminderDate('');
-                    setReminderType('quotation_confirm');
-                    setSelectedPolicy(null);
-                    setNotes('');
-                    setPolicyStartDate('');
-                    setPolicyExpiryDate('');
-                    setSubmitAgentCode('');
-                    setCompanyId('');
-                    setCompanyName('');
-                    setPremiumAmount('');
-                    setPaymentMethodId('');
-                    setSelectedPaymentMethod(null);
-                    setActualPaid('');
-                    setInstallmentMonths('1');
-                    setCommissionPercent('');
-                    setPolicyNotes('');
-                    setFilesData({
-                      registration: [],
-                      oldPolicy: [],
-                      quotation: [],
-                      compQuotation: [],
-                      renewalNotice: [],
-                      workOrder: [],
-                      others: []
-                    });
-
+                    handleReset(false);
                     // Update type
                     setSubmissionType(nextType);
+                    // Default to category 1 (Motor) for new quotes
+                    if (nextType === 'new') {
+                      setCategoryId('1');
+                    }
                   }}
                   class="sr-only"
                 />

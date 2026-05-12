@@ -8,7 +8,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-12 (V5.4.9: State Separation for Policy Notes)*
+*Last Updated: 2026-05-12 (V5.5.0: Purpose Switch Refactor)*
 
 ## ✨ ฟีเจอร์หลัก
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
@@ -65,6 +65,7 @@
 - **V5.4.7: UI Layout Refinement**: ย้ายฟิลด์ "หมายเหตุ / ข้อมูลเพิ่มเติม" เข้าไปอยู่ภายในกรอบสีเขียวเมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" เพื่อความเป็นระเบียบและ Flow ข้อมูลที่ชัดเจน
 - **V5.4.8: Data Mapping Refactor**: ปรับปรุงการส่งข้อมูลใน `handleSubmit` โดยเปลี่ยน Key ของฟิลด์หมายเหตุจาก `notes` เป็น `policy_notes` เมื่อเลือก "แจ้งงานสำเร็จ" เพื่อให้ข้อมูลถูกบันทึกลงตาราง policies โดยตรงตามโครงสร้าง DB ใหม่
 - **V5.4.9: State Separation for Policy Notes**: แยก State ของหมายเหตุออกจากกันระหว่าง `notes` (Quotation) และ `policyNotes` (Policy) เพื่อป้องกันการเขียนทับข้อมูลเดิมเมื่อเลือกรายการจากประวัติ
+- **V5.5.0: Purpose Switch Refactor**: ล้างข้อมูลในฟอร์มทั้งหมด (Reset) ทุกครั้งที่มีการสลับ "วัตถุประสงค์การแจ้งงาน" เพื่อความถูกต้องของข้อมูลในแต่ละ Workflow
 
 
 

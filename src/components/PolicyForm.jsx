@@ -13,7 +13,8 @@ import {
   fetchPaymentMethods,
   fetchBrokerChannels,
   submitQuotation,
-  updateQuotation
+  updateQuotation,
+  submitPolicy
 } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
@@ -474,11 +475,13 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
         if (commissionPercent) formData.append('commission_percent', commissionPercent);
         
+        if (productId) formData.append('product_id', productId);
+        
         // Notes for policies table instead of quotation table
         if (policyNotes) formData.append('policy_notes', policyNotes);
       }
       
-      if (enableReminder && reminderDate) {
+      if (submissionType !== 'success' && enableReminder && reminderDate) {
         formData.append('reminder_date', reminderDate);
         formData.append('reminder_type', reminderType);
       }
@@ -517,7 +520,9 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
 
       const response = submissionType === 'additional' 
         ? await updateQuotation(baseApiUrl, formData)
-        : await submitQuotation(baseApiUrl, formData);
+        : submissionType === 'success'
+          ? await submitPolicy(baseApiUrl, formData)
+          : await submitQuotation(baseApiUrl, formData);
 
       const result = await response.json();
       if (response.ok) {

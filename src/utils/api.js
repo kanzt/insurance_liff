@@ -70,3 +70,8 @@ export const updateQuotation = (baseUrl, formData) => authenticatedFetch(`${base
   method: 'POST',
   body: formData
 });
+
+export const submitPolicy = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-policy`, {
+  method: 'POST',
+  body: formData
+});

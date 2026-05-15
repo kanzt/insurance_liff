@@ -9,6 +9,11 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const containerRef = useRef(null);
+  
+  // Sync internal query with prop when it changes (e.g. on reset)
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   useEffect(() => {
     const handler = setTimeout(() => {

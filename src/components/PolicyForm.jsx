@@ -51,6 +51,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [brokerChannels, setBrokerChannels] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [commissionPercent, setCommissionPercent] = useState('');
+  const [taxRate, setTaxRate] = useState('');
   const [policyNotes, setPolicyNotes] = useState('');
   
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
@@ -99,6 +100,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (data.actualPaid) setActualPaid(data.actualPaid);
         if (data.brokerChannelId) setBrokerChannelId(data.brokerChannelId);
         if (data.commissionPercent) setCommissionPercent(data.commissionPercent);
+        if (data.taxRate) setTaxRate(data.taxRate);
         if (data.policyNotes) setPolicyNotes(data.policyNotes);
       } catch (e) {
         console.error("Failed to restore form state:", e);
@@ -132,10 +134,11 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       actualPaid,
       installmentMonths,
       brokerChannelId,
-      commissionPercent
+      commissionPercent,
+      taxRate
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyNotes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent]);
+  }, [informerId, informerName, categoryId, productId, submissionType, referenceInput, endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyNotes, policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, commissionPercent, taxRate]);
 
   // Load sub-categories
   useEffect(() => {
@@ -317,6 +320,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setCompanyId('');
       setCompanyName('');
       setCommissionPercent('');
+      setTaxRate('');
       setPolicyNotes('');
       setFilesData({
         registration: [],
@@ -474,6 +478,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
         if (installmentMonths) formData.append('installment_months', installmentMonths);
         if (brokerChannelId) formData.append('broker_channel_id', brokerChannelId);
         if (commissionPercent) formData.append('commission_percent', commissionPercent);
+        if (taxRate) formData.append('tax_rate', taxRate);
         
         if (productId) formData.append('product_id', productId);
         
@@ -1032,6 +1037,25 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
                 </svg>
                 <span>% คอมมิชชันที่ {informerName || 'ตัวแทนผู้แจ้งงาน'} จะได้รับเมื่อปิดงานสำเร็จ</span>
               </p>
+            </div>
+
+            <div class="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-sm font-bold text-brand-700">📑 % หักภาษี (tax_rate)</label>
+                <div class="text-[10px] bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full border border-brand-100 font-bold">
+                  {taxRate || '0.00'}%
+                </div>
+              </div>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={taxRate}
+                onInput={(e) => setTaxRate(e.target.value)}
+                placeholder="เช่น 1.00 หรือ 3.00"
+                class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm"
+              />
             </div>
 
             <div class="mt-4">

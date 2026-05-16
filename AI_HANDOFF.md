@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V5.6.0: Success Flow Optimization)
+# AI Handoff: Insurance LIFF Project Status (V5.7.0: Tax Withholding & Note Integrity)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
@@ -33,15 +33,15 @@
 - **V5.4.8: Data Mapping Refactor**: ปรับปรุงการส่งข้อมูลใน `handleSubmit` โดยเปลี่ยน Key ของฟิลด์หมายเหตุจาก `notes` เป็น `policy_notes` เมื่อเลือก "แจ้งงานสำเร็จ" เพื่อให้ข้อมูลถูกบันทึกลงตาราง policies โดยตรงตามโครงสร้าง DB ใหม่ พร้อมเปิดการส่งฟิลด์ข้อมูลการเงินทั้งหมดที่เคยระงับไว้
 - **V5.4.9: State Separation for Policy Notes**: แยก State ของหมายเหตุออกจากกันระหว่าง `notes` (Quotation) และ `policyNotes` (Policy) เพื่อป้องกันการเขียนทับข้อมูลเดิมเมื่อเลือกรายการจากประวัติ พร้อมปรับปรุงการบันทึกลง LocalStorage และการส่ง API ให้แยกคีย์กันชัดเจน
 - **V5.5.0: Purpose Switch Refactor**: ปรับปรุง Logic การเปลี่ยน "วัตถุประสงค์การแจ้งงาน" ให้ทำการล้างข้อมูล (Full Reset) ทุกครั้งที่มีการสลับโหมด เพื่อป้องกันข้อมูลตกค้างข้าม Workflow โดยใช้มาตรฐานเดียวกับปุ่มล้างข้อมูล
-- **V5.6.0: Success Flow Optimization**:
-  - **Endpoint Split**: แยกเส้นการส่งงานสำเร็จ (Success) ไปที่ `/submit-policy` แทน `/submit-quotation` เพื่อความชัดเจนในการบันทึกข้อมูลกรมธรรม์
-  - **Reminder Suppression**: ยกเลิกการส่ง `reminder_date` และ `reminder_type` เมื่อเลือกวัตถุประสงค์เป็น "แจ้งงานสำเร็จ" เนื่องจากข้อมูลความคุ้มครองถูกบันทึกเข้าระบบหลักแล้ว
-  - **Product ID Mapping**: เพิ่มการส่ง `product_id` (ประเภทงานย่อย) เฉพาะในกรณีแจ้งงานสำเร็จ เพื่อระบุประเภทประกันที่ปิดการขายได้จริง
- ในขั้นตอนการขายที่จบไปแล้ว
+  - **V5.7.0: Tax Withholding & Note Integrity**:
+    - **Tax Rate Field**: เพิ่มช่องกรอก `% หักภาษี (tax_rate)` ต่อจากคอมมิชชัน เพื่อรองรับการคำนวณภาษีหัก ณ ที่จ่าย
+    - **Note Separation**: แยก State ของ `policy_notes` ออกจาก `notes` อย่างเด็ดขาด ป้องกันข้อมูลจากประวัติงานเดิมเขียนทับหมายเหตุที่กรอกใหม่ในงานสำเร็จ
+    - **UI Flow Reordering**: ย้ายกรอบสีเขียว (Success Container) มาแสดงต่อจาก "วันที่ประกันเดิมหมดอายุ" เพื่อลำดับการกรอกที่เป็นธรรมชาติมากขึ้น
 
-### 3. Commission Tracking (New! V4.9.0)
-- **Agent Commission**: เพิ่มช่องกรอก `commission_percent` ในส่วนงานสำเร็จ เพื่อระบุ % คอมมิชชันที่ตัวแทนผู้แจ้งงานจะได้รับ
-- **Contextual Description**: แสดงชื่อตัวแทนในคำอธิบายฟิลด์เพื่อให้ผู้กรอกทราบชัดเจนว่าคอมมิชชันนี้เป็นของใคร
+### 3. Financial & Commission Tracking (New! V5.7.0)
+- **Agent Commission**: ช่องกรอก `commission_percent` สำหรับระบุค่าตอบแทนตัวแทน
+- **Tax Withholding**: ช่องกรอก `tax_rate` สำหรับระบุ % หักภาษี ณ ที่จ่าย (เช่น 1% หรือ 3%)
+- **Contextual Description**: แสดงชื่อตัวแทนในคำอธิบายฟิลด์เพื่อให้ผู้กรอกทราบชัดเจน
 
 ### 4. Searchable Dropdowns
 - **SearchableSelect Component**: คอมโพเนนต์มาตรฐานสำหรับทุก Dropdown ในระบบ รองรับการค้นหาและHighlight ข้อความ
@@ -75,6 +75,8 @@
 | `reminder_type` | `reminder_type` | ประเภทการแจ้งเตือน |
 | `notes` | `notes` | หมายเหตุ / ข้อมูลเพิ่มเติม |
 | `policy_notes` | `policy_notes` | หมายเหตุสำหรับงานสำเร็จ (เฉพาะ Success) |
+| `commission_percent` | `commission_percent` | % คอมมิชชันตัวแทน (เฉพาะ Success) |
+| `tax_rate` | `tax_rate` | % หักภาษี (เฉพาะ Success) |
 | `product_id` | `product_id` | ID ประเภทงานย่อย (เฉพาะ Success) |
 | `files` | `files` | ไฟล์เอกสารแนบทั้งหมด |
 
@@ -93,4 +95,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-05-15 (V5.6.0: Success Flow Optimization)*
+*Last Updated: 2026-05-16 (V5.7.0: Tax Withholding & Note Integrity)*

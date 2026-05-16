@@ -67,7 +67,7 @@
 - **V5.4.9: State Separation for Policy Notes**: แยก State ของหมายเหตุออกจากกันระหว่าง `notes` (Quotation) และ `policyNotes` (Policy) เพื่อป้องกันการเขียนทับข้อมูลเดิมเมื่อเลือกรายการจากประวัติ
 - **V5.5.0: Purpose Switch Refactor**: ล้างข้อมูลในฟอร์มทั้งหมด (Reset) ทุกครั้งที่มีการสลับ "วัตถุประสงค์การแจ้งงาน" เพื่อความถูกต้องของข้อมูลในแต่ละ Workflow
 - **V5.6.0: Success Flow Optimization**: แยก Endpoint งานสำเร็จไปที่ `/submit-policy`, ยกเลิกการส่ง Reminder ในงานสำเร็จ และส่ง `product_id` เพื่อความแม่นยำของข้อมูล
-- **V5.7.0: Tax Withholding & Note Integrity**: เพิ่มฟิลด์ `% หักภาษี (tax_rate)`, แยก State หมายเหตุกรมธรรม์ (`policy_notes`) และปรับปรุง UI Flow ของงานสำเร็จ
+- **V5.7.0: Tax Withholding & Note Integrity**: เพิ่มฟิลด์ `% หักภาษี (tax_rate)` พร้อมค่าเริ่มต้น 10%, แยก State หมายเหตุกรมธรรม์ (`policy_notes`) และปรับปรุง UI Flow ของงานสำเร็จ
 
 
 

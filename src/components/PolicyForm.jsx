@@ -51,7 +51,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
   const [brokerChannels, setBrokerChannels] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [commissionPercent, setCommissionPercent] = useState('');
-  const [taxRate, setTaxRate] = useState('');
+  const [taxRate, setTaxRate] = useState('10');
   const [policyNotes, setPolicyNotes] = useState('');
   
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
@@ -320,7 +320,7 @@ export function PolicyForm({ idToken, baseApiUrl, isSubmitting, setIsSubmitting,
       setCompanyId('');
       setCompanyName('');
       setCommissionPercent('');
-      setTaxRate('');
+      setTaxRate('10');
       setPolicyNotes('');
       setFilesData({
         registration: [],

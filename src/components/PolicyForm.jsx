@@ -59,98 +59,47 @@ export function PolicyForm({
       <form class={`space-y-4 transition-all duration-300 ${isSubmitting ? 'opacity-20 pointer-events-none scale-[0.98]' : 'opacity-100'}`} onSubmit={handleSubmit}>
         
         <PurposeSelector 
-          submissionType={state.submissionType}
-          setSubmissionType={setters.setSubmissionType}
-          handleReset={actions.handleReset}
-          setCategoryId={setters.setCategoryId}
+          state={state}
+          setters={setters}
+          actions={actions}
         />
 
         <PolicySearchSection 
-          submissionType={state.submissionType}
+          state={state}
+          actions={actions}
           baseApiUrl={baseApiUrl}
           idToken={idToken}
-          selectedPolicy={state.selectedPolicy}
-          handleSelectPolicy={actions.handleSelectPolicy}
         />
 
         <BasicInfoSection 
-          submissionType={state.submissionType}
+          state={state}
+          setters={setters}
           baseApiUrl={baseApiUrl}
           idToken={idToken}
-          informerName={state.informerName}
-          setInformerId={setters.setInformerId}
-          setInformerName={setters.setInformerName}
-          categoryId={state.categoryId}
-          setCategoryId={setters.setCategoryId}
           categories={categories}
-          referenceInput={state.referenceInput}
-          setReferenceInput={setters.setReferenceInput}
-          isRedPlate={state.isRedPlate}
-          setIsRedPlate={setters.setIsRedPlate}
-          notes={state.notes}
-          setNotes={setters.setNotes}
         />
 
         <ReminderSection 
-          submissionType={state.submissionType}
-          endDate={state.endDate}
-          setEndDate={setters.setEndDate}
-          enableReminder={state.enableReminder}
-          handleReminderToggle={actions.handleReminderToggle}
+          state={state}
+          setters={setters}
+          actions={actions}
           templates={templates}
-          reminderType={state.reminderType}
-          setReminderType={setters.setReminderType}
-          reminderDate={state.reminderDate}
-          setReminderDate={setters.setReminderDate}
-          categoryId={state.categoryId}
-          isRedPlate={state.isRedPlate}
-          referenceInput={state.referenceInput}
           formatThaiDate={formatThaiDate}
         />
 
         <SuccessFlowSection 
-          submissionType={state.submissionType}
-          policyStartDate={state.policyStartDate}
-          setPolicyStartDate={setters.setPolicyStartDate}
-          policyExpiryDate={state.policyExpiryDate}
-          setPolicyExpiryDate={setters.setPolicyExpiryDate}
+          state={state}
+          setters={setters}
           companies={companies}
-          companyId={state.companyId}
-          setCompanyId={setters.setCompanyId}
-          setCompanyName={setters.setCompanyName}
-          productId={state.productId}
-          setProductId={setters.setProductId}
           products={products}
           paymentMethods={paymentMethods}
-          paymentMethodId={state.paymentMethodId}
-          setPaymentMethodId={setters.setPaymentMethodId}
-          setSelectedPaymentMethod={setters.setSelectedPaymentMethod}
-          selectedPaymentMethod={state.selectedPaymentMethod}
-          premiumAmount={state.premiumAmount}
-          setPremiumAmount={setters.setPremiumAmount}
-          actualPaid={state.actualPaid}
-          setActualPaid={setters.setActualPaid}
-          installmentMonths={state.installmentMonths}
-          setInstallmentMonths={setters.setInstallmentMonths}
           allAgents={allAgents}
-          submitAgentCode={state.submitAgentCode}
-          setSubmitAgentCode={setters.setSubmitAgentCode}
           brokerChannels={brokerChannels}
-          brokerChannelId={state.brokerChannelId}
-          setBrokerChannelId={setters.setBrokerChannelId}
-          commissionPercent={state.commissionPercent}
-          setCommissionPercent={setters.setCommissionPercent}
-          taxRate={state.taxRate}
-          setTaxRate={setters.setTaxRate}
-          policyNotes={state.policyNotes}
-          setPolicyNotes={setters.setPolicyNotes}
-          informerName={state.informerName}
         />
 
         <AttachmentSection 
-          submissionType={state.submissionType}
-          filesData={state.filesData}
-          setFilesData={setters.setFilesData}
+          state={state}
+          setters={setters}
           onOpenGallery={onOpenGallery}
         />
 

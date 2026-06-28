@@ -1,21 +1,20 @@
 import { h } from 'preact';
 
 export function ReminderSection({
-  submissionType,
-  endDate,
-  setEndDate,
-  enableReminder,
-  handleReminderToggle,
+  state,
+  setters,
+  actions,
   templates,
-  reminderType,
-  setReminderType,
-  reminderDate,
-  setReminderDate,
-  categoryId,
-  isRedPlate,
-  referenceInput,
   formatThaiDate
 }) {
+  const {
+    submissionType, endDate, enableReminder, reminderType, reminderDate, categoryId, isRedPlate, referenceInput
+  } = state;
+  const {
+    setEndDate, setReminderType, setReminderDate
+  } = setters;
+  const { handleReminderToggle } = actions;
+
   return (
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>

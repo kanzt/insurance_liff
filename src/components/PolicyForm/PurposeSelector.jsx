@@ -1,6 +1,9 @@
 import { h } from 'preact';
 
-export function PurposeSelector({ submissionType, setSubmissionType, handleReset, setCategoryId }) {
+export function PurposeSelector({ state, setters, actions }) {
+  const { submissionType } = state;
+  const { setSubmissionType, setCategoryId } = setters;
+  const { handleReset } = actions;
   return (
     <div class="bg-brand-50/30 p-4 rounded-xl border border-brand-100/50 shadow-sm mb-6">
       <label class="block text-sm font-bold text-brand-800 mb-2">วัตถุประสงค์การแจ้งงาน <span class="text-red-500">*</span></label>

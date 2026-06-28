@@ -2,22 +2,28 @@ import { h } from 'preact';
 import { SearchableSelect } from '../SearchableSelect';
 
 export function SuccessFlowSection({
-  submissionType,
-  policyStartDate, setPolicyStartDate,
-  policyExpiryDate, setPolicyExpiryDate,
-  companies, companyId, setCompanyId, setCompanyName,
-  productId, setProductId, products,
-  paymentMethods, paymentMethodId, setPaymentMethodId, setSelectedPaymentMethod, selectedPaymentMethod,
-  premiumAmount, setPremiumAmount,
-  actualPaid, setActualPaid,
-  installmentMonths, setInstallmentMonths,
-  allAgents, submitAgentCode, setSubmitAgentCode,
-  brokerChannels, brokerChannelId, setBrokerChannelId,
-  commissionPercent, setCommissionPercent,
-  taxRate, setTaxRate,
-  policyNotes, setPolicyNotes,
-  informerName
+  state,
+  setters,
+  companies,
+  products,
+  paymentMethods,
+  allAgents,
+  brokerChannels
 }) {
+  const {
+    submissionType, policyStartDate, policyExpiryDate, companyId, productId,
+    paymentMethodId, selectedPaymentMethod, premiumAmount, actualPaid,
+    installmentMonths, submitAgentCode, brokerChannelId, commissionPercent,
+    taxRate, policyNotes, informerName
+  } = state;
+
+  const {
+    setPolicyStartDate, setPolicyExpiryDate, setCompanyId, setCompanyName,
+    setProductId, setPaymentMethodId, setSelectedPaymentMethod,
+    setPremiumAmount, setActualPaid, setInstallmentMonths, setSubmitAgentCode,
+    setBrokerChannelId, setCommissionPercent, setTaxRate, setPolicyNotes
+  } = setters;
+
   if (submissionType !== 'success') return null;
 
   const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');

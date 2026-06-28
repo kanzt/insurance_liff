@@ -2,11 +2,13 @@ import { h } from 'preact';
 import { Dropzone } from '../Dropzone';
 
 export function AttachmentSection({
-  submissionType,
-  filesData,
-  setFilesData,
+  state,
+  setters,
   onOpenGallery
 }) {
+  const { submissionType, filesData } = state;
+  const { setFilesData } = setters;
+
   return (
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">

@@ -2,22 +2,19 @@ import { h } from 'preact';
 import { AgentSearch } from '../AgentSearch';
 
 export function BasicInfoSection({
-  submissionType,
+  state,
+  setters,
   baseApiUrl,
   idToken,
-  informerName,
-  setInformerId,
-  setInformerName,
-  categoryId,
-  setCategoryId,
-  categories,
-  referenceInput,
-  setReferenceInput,
-  isRedPlate,
-  setIsRedPlate,
-  notes,
-  setNotes
+  categories
 }) {
+  const {
+    submissionType, informerName, categoryId, referenceInput, isRedPlate, notes
+  } = state;
+  const {
+    setInformerId, setInformerName, setCategoryId, setReferenceInput, setIsRedPlate, setNotes
+  } = setters;
+
   return (
     <>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">

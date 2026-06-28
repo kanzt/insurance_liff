@@ -2,12 +2,14 @@ import { h } from 'preact';
 import { PolicySearch } from '../PolicySearch';
 
 export function PolicySearchSection({
-  submissionType,
+  state,
+  actions,
   baseApiUrl,
-  idToken,
-  selectedPolicy,
-  handleSelectPolicy
+  idToken
 }) {
+  const { submissionType, selectedPolicy } = state;
+  const { handleSelectPolicy } = actions;
+
   if (submissionType !== 'additional' && submissionType !== 'success') return null;
 
   return (

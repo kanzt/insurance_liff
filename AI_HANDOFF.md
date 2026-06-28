@@ -13,6 +13,7 @@
 - **UI Component Splitting**: แยกส่วน UI ที่ยาวมากใน `PolicyForm.jsx` ออกเป็น Component ย่อยตาม Section:
   - `PurposeSelector`, `PolicySearchSection`, `BasicInfoSection`, `ReminderSection`, `SuccessFlowSection`, `AttachmentSection`
 - **Main Component Cleanup**: `PolicyForm.jsx` เปลี่ยนหน้าที่เป็นเพียง Orchestrator ที่เรียกใช้ Hooks และ Render UI Components เท่านั้น
+  - **Prop Reduction**: ลดความซ้ำซ้อนของการส่ง Props โดยส่ง `state`, `setters`, และ `actions` เป็น Object เข้าไปใน Component ย่อยแทนการส่งตัวแปรเดี่ยวแยกบรรทัด ทำให้โค้ดฝั่ง Render สะอาดและอ่านง่ายขึ้นมาก
 
 ---
 

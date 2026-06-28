@@ -1,7 +1,18 @@
-# AI Handoff: Insurance LIFF Project Status (V5.7.0: Tax Withholding & Note Integrity)
+# AI Handoff: Insurance LIFF Project Status (V6.0.0: Structural Component Refactoring)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V4.6.0 เน้นการขยายข้อมูลในส่วน "แจ้งงานสำเร็จ" (Success Flow) ให้ครอบคลุมด้านการเงินและช่องทางการชำระเงิน
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
+
+---
+
+### 🌟 0. Structural Component Refactoring (New! V6.0.0)
+- **Logic Extraction (Custom Hooks)**: ดึง Logic ที่ซับซ้อนใน `PolicyForm.jsx` ออกมาเป็น 3 Hooks หลัก:
+  - `useReferenceData`: จัดการการดึงข้อมูล Master Data ทั้งหมดผ่าน API (Categories, Products, Agents, Companies)
+  - `usePolicyFormState`: จัดการ State ของฟอร์ม, การเชื่อมต่อ LocalStorage (Draft), และฟังก์ชัน Reset
+  - `usePolicySubmit`: จัดการการสร้าง `FormData` และการยิง API `submitPolicy` ตามประเภทการทำรายการ (New, Additional, Success)
+- **UI Component Splitting**: แยกส่วน UI ที่ยาวมากใน `PolicyForm.jsx` ออกเป็น Component ย่อยตาม Section:
+  - `PurposeSelector`, `PolicySearchSection`, `BasicInfoSection`, `ReminderSection`, `SuccessFlowSection`, `AttachmentSection`
+- **Main Component Cleanup**: `PolicyForm.jsx` เปลี่ยนหน้าที่เป็นเพียง Orchestrator ที่เรียกใช้ Hooks และ Render UI Components เท่านั้น
 
 ---
 

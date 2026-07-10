@@ -46,7 +46,7 @@ export function usePolicySubmit({
       const formData = new FormData();
       
       if (state.submissionType !== 'success') {
-        formData.append('quote_agent_id', state.informerId);
+        formData.append('quoted_by', state.informerId);
         formData.append('category_id', state.categoryId);
         
         if (plateNumber) formData.append('plate_number', plateNumber);

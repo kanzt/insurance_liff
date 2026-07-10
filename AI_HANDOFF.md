@@ -21,7 +21,7 @@
 - **Financial Fields**: เพิ่มช่องกรอก `premium_amount` (เบี้ยประกันตามใบเสนอราคา) และระบบเลือกโหมดระหว่าง `actual_paid` (ยอดโอนจริง) หรือ `installment_months` (ผ่อนชำระ)
 - **Installment Support**: หากเลือกช่องทาง "ผ่อนเงินสด" ระบบจะแสดงช่องเลือกจำนวนงวด (1-12 เดือน) แทนช่องยอดโอนเงิน
 - **Payment Methods Integration**: เพิ่ม Dropdown เลือกช่องทางการชำระเงินที่ดึงข้อมูลจาก API `/load-payment-methods` แบบ Searchable
-- **Agent ID Refactor**: เปลี่ยนการส่งค่า `quote_agent_code` เป็น `quote_agent_id` และ `submit_agent_code` เป็น `submitted_by` เพื่อให้ตรงกับมาตรฐาน DB
+- **Agent ID Refactor**: เปลี่ยนการส่งค่า `quote_agent_code` เป็น `quoted_by` และ `submit_agent_code` เป็น `submitted_by` เพื่อให้ตรงกับมาตรฐาน DB
 - **UI Reordering**: จัดลำดับฟิลด์ในส่วนงานสำเร็จใหม่เพื่อให้สอดคล้องกับขั้นตอนการทำงานจริง (บริษัทประกัน -> ประเภทงาน -> การเงิน)
 
 ### 1. Submission Flow Refactor (New! V5.0.0 - V5.2.0)
@@ -78,7 +78,7 @@
 | Frontend Field | API Field | Note |
 |---|---|---|
 | `quotationId` | `quotation_id` | ID รายการเดิม (เฉพาะส่งเอกสารเพิ่ม) |
-| `informerId` | `quote_agent_id` | รหัสตัวแทนผู้แจ้งงาน |
+| `informerId` | `quoted_by` | รหัสตัวแทนผู้แจ้งงาน |
 | `categoryId` | `category_id` | ID หมวดหมู่หลัก |
 | `plate_number` | `plate_number` | ทะเบียนรถ |
 | `customer_name` | `customer_name` | ชื่อผู้เอาประกัน |

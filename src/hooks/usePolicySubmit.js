@@ -70,7 +70,7 @@ export function usePolicySubmit({
         
         if (state.policyStartDate) formData.append('policy_start_date', state.policyStartDate);
         if (state.policyExpiryDate) formData.append('policy_expiry_date', state.policyExpiryDate);
-        if (state.submitAgentCode) formData.append('submit_agent_id', state.submitAgentCode);
+        if (state.submitAgentCode) formData.append('submitted_by', state.submitAgentCode);
         if (state.companyId) formData.append('company_id', state.companyId);
         if (state.premiumAmount) formData.append('premium_amount', state.premiumAmount);
         if (state.paymentMethodId) formData.append('payment_method_id', state.paymentMethodId);

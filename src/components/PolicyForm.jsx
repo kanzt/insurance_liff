@@ -1,4 +1,5 @@
 import { h } from 'preact';
+import { useState, useEffect } from 'preact/hooks';
 
 import { usePolicyFormState } from '../hooks/usePolicyFormState';
 import { useReferenceData } from '../hooks/useReferenceData';
@@ -21,6 +22,22 @@ export function PolicyForm({
   setConfirmModal,
   onOpenGallery
 }) {
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      setElapsedTime(0);
+      const startTime = Date.now();
+      interval = setInterval(() => {
+        setElapsedTime((Date.now() - startTime) / 1000);
+      }, 100);
+    } else {
+      setElapsedTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
+
   const { state, setters, actions } = usePolicyFormState(setConfirmModal);
   
   const {
@@ -122,6 +139,18 @@ export function PolicyForm({
           </button>
         </div>
       </form>
+
+      {isSubmitting && (
+        <div class="absolute inset-0 bg-white/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center rounded-2xl">
+          <div class="bg-white p-6 rounded-2xl shadow-xl border border-brand-100 flex flex-col items-center gap-3 text-center">
+            <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+            <div>
+              <p class="font-bold text-brand-800 text-sm">กำลังบันทึกข้อมูล...</p>
+              <p class="text-xs text-slate-500 mt-1">ใช้เวลาประมวลผล {elapsedTime.toFixed(1)} วินาที</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

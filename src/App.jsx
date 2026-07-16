@@ -10,10 +10,25 @@ export function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
   const [galleryData, setGalleryData] = useState(null); // { items: [{url, type, name}], index: 0 }
+
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      setElapsedTime(0);
+      const startTime = Date.now();
+      interval = setInterval(() => {
+        setElapsedTime((Date.now() - startTime) / 1000);
+      }, 100);
+    } else {
+      setElapsedTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -188,6 +203,9 @@ export function App() {
             <h3 class="text-xl font-bold text-brand-800 animate-pulse">กำลังส่งข้อมูล...</h3>
             <p class="text-sm text-gray-500 max-w-[250px] mx-auto px-4">
               กรุณารอสักครู่ ระบบกำลังอัปโหลดเอกสารและประมวลผลข้อมูลกรมธรรม์ของคุณ
+            </p>
+            <p class="text-xs text-brand-600 font-bold mt-1 bg-brand-50/50 px-3 py-1 rounded-full border border-brand-100/50 inline-block">
+              ⏳ ใช้เวลาประมวลผล {elapsedTime.toFixed(1)} วินาที
             </p>
           </div>
           <div class="mt-8 flex gap-1">

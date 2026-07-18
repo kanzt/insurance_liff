@@ -24,8 +24,6 @@ export function App() {
       interval = setInterval(() => {
         setElapsedTime((Date.now() - startTime) / 1000);
       }, 100);
-    } else {
-      setElapsedTime(0);
     }
     return () => clearInterval(interval);
   }, [isSubmitting]);
@@ -224,7 +222,12 @@ export function App() {
               ✅
             </div>
             <h3 class="text-xl font-bold text-slate-800 mb-2">{successMessage.title}</h3>
-            <p class="text-slate-600 mb-6 whitespace-pre-line text-sm">{successMessage.description}</p>
+            <p class="text-slate-600 mb-4 whitespace-pre-line text-sm">{successMessage.description}</p>
+            <div class="mb-6">
+              <p class="text-xs text-brand-600 font-bold bg-brand-50/50 px-3 py-1 rounded-full border border-brand-100/50 inline-block">
+                ⏳ ใช้เวลาประมวลผล {elapsedTime.toFixed(1)} วินาที
+              </p>
+            </div>
             <button 
               type="button"
               onClick={() => setSuccessMessage(null)}

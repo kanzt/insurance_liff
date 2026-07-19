@@ -429,6 +429,14 @@ export function App() {
                       </p>
                       <p class="text-xs text-slate-500 mt-1 line-clamp-2">{job.message}</p>
                       
+                      {job.status === 'success' && job.elapsedTime && (
+                        <div class="mt-2">
+                          <span class="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 inline-block">
+                            ⏳ ใช้เวลา {job.elapsedTime.toFixed(1)} วินาที
+                          </span>
+                        </div>
+                      )}
+
                       {job.status === 'error' && job.onRetry && (
                         <button 
                           onClick={job.onRetry}

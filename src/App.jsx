@@ -35,6 +35,17 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [galleryData]);
 
+  // Warn before refresh/leave to prevent accidental data loss
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = ''; // Standard way to show native browser warning
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   const nextImage = () => {
     if (!galleryData) return;
     setGalleryData(prev => ({

@@ -8,7 +8,7 @@ export function usePolicyFormState(setConfirmModal) {
   const [categoryId, setCategoryId] = useState('1');
   const [productId, setProductId] = useState('');
   const [selectedPolicy, setSelectedPolicy] = useState(null);
-  const [submissionType, setSubmissionType] = useState('new');
+  const [submissionType, setSubmissionType] = useState('quotation');
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
   const [enableReminder, setEnableReminder] = useState(false);
@@ -160,7 +160,7 @@ export function usePolicyFormState(setConfirmModal) {
       setInformerName('');
       setCategoryId(defaultCategoryId);
       setProductId('');
-      setSubmissionType('new');
+      setSubmissionType('quotation');
       setDuplicatePolicy(null);
       setIsRedPlate(false);
       setReferenceInput('');

@@ -5,7 +5,6 @@ import { useReferenceData } from '../hooks/useReferenceData';
 import { usePolicySubmit } from '../hooks/usePolicySubmit';
 
 import { PurposeSelector } from './PolicyForm/PurposeSelector';
-import { PolicySearchSection } from './PolicyForm/PolicySearchSection';
 import { BasicInfoSection } from './PolicyForm/BasicInfoSection';
 import { ReminderSection } from './PolicyForm/ReminderSection';
 import { SuccessFlowSection } from './PolicyForm/SuccessFlowSection';
@@ -68,12 +67,6 @@ export function PolicyForm({
           actions={actions}
         />
 
-        <PolicySearchSection 
-          state={state}
-          actions={actions}
-          baseApiUrl={baseApiUrl}
-          idToken={idToken}
-        />
 
         <BasicInfoSection 
           state={state}
@@ -118,9 +111,9 @@ export function PolicyForm({
           </button>
           <button
             type="submit"
-            disabled={state.submissionType === 'new' && state.duplicatePolicy}
+            disabled={state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy}
             class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 
-              ${(state.submissionType === 'new' && state.duplicatePolicy) 
+              ${(state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy) 
                 ? 'bg-gray-400 cursor-not-allowed opacity-50 shadow-none' 
                 : 'active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
           >

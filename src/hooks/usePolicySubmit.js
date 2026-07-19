@@ -71,7 +71,7 @@ export function usePolicySubmit({
     }
 
     const hasFiles = Object.values(state.filesData).some(arr => arr.length > 0);
-    if (!hasFiles && state.submissionType !== 'additional') {
+    if (!hasFiles && !(state.submissionType === 'quotation' && state.selectedPolicy)) {
       setErrorMessage('กรุณาแนบเอกสารอย่างน้อย 1 รายการ');
       return;
     }
@@ -157,11 +157,11 @@ export function usePolicySubmit({
           if (submissionState.endDate) formData.append('previous_policy_expiry_date', submissionState.endDate);
         }
         
-        if (submissionState.submissionType === 'new' && submissionState.notes) {
+        if (submissionState.submissionType === 'quotation' && !submissionState.selectedPolicy && submissionState.notes) {
           formData.append('notes', submissionState.notes);
         }
         
-        if (submissionState.submissionType === 'additional') {
+        if (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy) {
           const qId = submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id;
           if (qId) formData.append('quotation_id', qId);
           if (submissionState.notes) formData.append('notes', submissionState.notes);
@@ -211,7 +211,7 @@ export function usePolicySubmit({
               const ext = file.name.split('.').pop() || 'pdf';
               let newFileName = `${safeRef}_${map.docType}`;
 
-              if (submissionState.submissionType === 'additional') {
+              if (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy) {
                 newFileName += `_เพิ่มเติม_${Date.now()}`;
               }
               if (fileArr.length > 1) {
@@ -225,7 +225,7 @@ export function usePolicySubmit({
           }
         }
 
-        const response = submissionState.submissionType === 'additional' 
+        const response = (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy)
           ? await updateQuotation(baseApiUrl, formData)
           : submissionState.submissionType === 'success'
             ? await submitPolicy(baseApiUrl, formData)

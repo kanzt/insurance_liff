@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { searchQuotations } from '../utils/api';
 
-export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery = '' }) {
+export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..." }) {
   const [policies, setPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -34,8 +34,10 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
         if (json.results && Array.isArray(json.results)) {
           setPolicies(json.results);
+          if (onResultsFetched) onResultsFetched(json.results);
         } else {
           setPolicies([]);
+          if (onResultsFetched) onResultsFetched([]);
         }
       } catch (error) {
         console.error("Search error:", error);
@@ -61,6 +63,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
   const handleInput = (e) => {
     setQuery(e.target.value);
+    if (onQueryChange) onQueryChange(e.target.value);
     setShowDropdown(true);
   };
 
@@ -75,14 +78,17 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
       : `${plate} ${customer}`.trim();
       
     setQuery(displayValue);
+    if (onQueryChange) onQueryChange(displayValue);
     onSelectPolicy(policy);
     setShowDropdown(false);
   };
 
   const handleClear = () => {
     setQuery('');
+    if (onQueryChange) onQueryChange('');
     onSelectPolicy(null);
     setPolicies([]);
+    if (onResultsFetched) onResultsFetched([]);
     setHasSearched(false);
   };
 
@@ -102,7 +108,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
           value={query}
           onInput={handleInput}
           onFocus={() => setShowDropdown(true)}
-          placeholder="🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..."
+          placeholder={placeholder}
           class="block w-full rounded-xl border-brand-200 shadow-sm p-3 border-2 focus:ring-4 focus:ring-brand-100 focus:border-brand-500 bg-white transition-all text-sm pr-10"
           autocomplete="off"
         />

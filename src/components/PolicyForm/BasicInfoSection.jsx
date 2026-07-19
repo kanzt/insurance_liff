@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { AgentSearch } from '../AgentSearch';
-import { searchQuotations } from '../../utils/api';
+import { PolicySearch } from '../PolicySearch';
 
 export function BasicInfoSection({
   state,
@@ -18,48 +18,32 @@ export function BasicInfoSection({
     setInformerId, setInformerName, setCategoryId, setReferenceInput, setIsRedPlate, setNotes, setDuplicatePolicy, setSubmissionType
   } = setters;
 
-  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
-
-  // Debounced check for existing plate numbers
-  useEffect(() => {
-    if (submissionType !== 'new' || !referenceInput || referenceInput.length < 2) {
+  const handleResultsFetched = (results) => {
+    if (submissionType !== 'quotation' || !referenceInput || referenceInput.length < 2) {
       setDuplicatePolicy(null);
-      setIsCheckingDuplicate(false);
       return;
     }
 
-    const handler = setTimeout(async () => {
-      setIsCheckingDuplicate(true);
-      try {
-        const currentYear = new Date().getFullYear().toString();
-        const response = await searchQuotations(baseApiUrl, referenceInput, 10, currentYear);
-        const json = await response.json();
-        
-        if (json.results && json.results.length > 0) {
-          // Exact match check
-          const exactMatch = json.results.find(policy => {
-            const plate = policy.plateNumber || policy.plate_number || '';
-            const customer = policy.customerName || policy.customer_name || '';
-            return plate.toLowerCase() === referenceInput.toLowerCase() || customer.toLowerCase() === referenceInput.toLowerCase();
-          });
-          
-          if (exactMatch) {
-            setDuplicatePolicy(exactMatch);
-          } else {
-            setDuplicatePolicy(null);
-          }
-        } else {
-          setDuplicatePolicy(null);
+    if (results && results.length > 0) {
+      const exactMatch = results.find(policy => {
+        const plate = policy.plateNumber || policy.plate_number || '';
+        const customer = policy.customerName || policy.customer_name || '';
+        return plate.toLowerCase() === referenceInput.toLowerCase() || customer.toLowerCase() === referenceInput.toLowerCase();
+      });
+      
+      if (exactMatch) {
+        setDuplicatePolicy(exactMatch);
+        // Auto-select if it's an exact match and user hasn't selected it yet
+        if (actions && actions.handleSelectPolicy && (!state.selectedPolicy || (state.selectedPolicy.id !== exactMatch.id && state.selectedPolicy.policy_id !== exactMatch.policy_id))) {
+          actions.handleSelectPolicy(exactMatch);
         }
-      } catch (error) {
-        console.error("Duplicate check error:", error);
-      } finally {
-        setIsCheckingDuplicate(false);
+      } else {
+        setDuplicatePolicy(null);
       }
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [referenceInput, submissionType, baseApiUrl]);
+    } else {
+      setDuplicatePolicy(null);
+    }
+  };
 
   return (
     <>
@@ -71,53 +55,51 @@ export function BasicInfoSection({
               : 'ชื่อผู้เอาประกัน'}
             <span class="text-red-500">*</span>
           </label>
-          <div class="relative">
-            <input
-              type="text"
-              value={referenceInput}
-              onInput={(e) => setReferenceInput(e.target.value)}
-              required
-              disabled={submissionType === 'success' || submissionType === 'additional'}
+            <PolicySearch
+              baseApiUrl={baseApiUrl}
+              idToken={idToken}
+              onSelectPolicy={(policy) => {
+                if (actions && actions.handleSelectPolicy) {
+                  actions.handleSelectPolicy(policy);
+                }
+              }}
+              onQueryChange={setReferenceInput}
+              onResultsFetched={handleResultsFetched}
+              initialQuery={referenceInput}
               placeholder={categoryId === '1'
-                ? (isRedPlate ? 'ระบุชื่อลูกค้า' : 'เช่น 1กข-1234 กทม')
-                : 'เช่น สมชาย ใจดี'}
-              class={`block w-full rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-                ${(submissionType === 'success' || submissionType === 'additional') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white/80'}
-                ${duplicatePolicy && submissionType === 'new' ? 'border-red-400 ring-4 ring-red-50' : ''}`}
+                ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
+                : '🔍 เช่น สมชาย ใจดี'}
             />
-            {isCheckingDuplicate && (
-              <div class="absolute right-3 top-3.5">
-                <div class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
           
-          {duplicatePolicy && submissionType === 'new' && (
-            <div class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-in fade-in zoom-in-95 duration-200">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div class="flex items-start sm:items-center gap-2 text-red-700 text-xs sm:text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          {state.selectedPolicy && (state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
+            <div class="mt-3 p-3 bg-brand-50 border border-brand-100 rounded-xl flex items-center justify-between animate-in fade-in zoom-in-95 duration-300">
+              <div class="flex items-center gap-2">
+                <div class="p-2 bg-white rounded-full text-brand-600 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                   </svg>
-                  <span><strong>เคยขอใบเสนอราคาในปีนี้แล้ว!</strong> ไม่สามารถสร้างเช็คเบี้ยใหม่ซ้ำได้</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSubmissionType('additional');
-                    if (actions && actions.handleSelectPolicy) {
-                      actions.handleSelectPolicy(duplicatePolicy);
-                    }
-                  }}
-                  class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-red-700 active:scale-95 transition-all whitespace-nowrap self-start sm:self-auto"
-                >
-                  เปลี่ยนเป็นส่งเอกสารเพิ่มเติม
-                </button>
+                <div>
+                  <div class="text-[11px] font-bold text-brand-800 uppercase tracking-tight">เอกสารเดิมที่เคยยื่นไว้</div>
+                  <div class="text-[10px] text-brand-600">เปิดดูใน Google Drive เพื่อตรวจสอบข้อมูล</div>
+                </div>
               </div>
+              <a
+                href={state.selectedPolicy.documentLink || state.selectedPolicy.document_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-4 py-2 bg-brand-600 text-white rounded-lg text-xs font-bold shadow-md hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <span>📂 เปิดดูไฟล์</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg>
+              </a>
             </div>
           )}
 
-          {categoryId === '1' && submissionType !== 'additional' && submissionType !== 'success' && (
+          {categoryId === '1' && submissionType !== 'success' && !state.selectedPolicy && (
             <div class="mt-2 pl-1">
               <label class="flex items-center cursor-pointer group">
                 <input
@@ -141,7 +123,7 @@ export function BasicInfoSection({
           <AgentSearch
             baseApiUrl={baseApiUrl}
             idToken={idToken}
-            disabled={submissionType === 'additional' || submissionType === 'success'}
+            disabled={submissionType === 'success'}
             onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
             initialQuery={informerName}
           />
@@ -153,11 +135,11 @@ export function BasicInfoSection({
           </label>
           <select
             required
-            disabled={submissionType === 'additional' || submissionType === 'success'}
+            disabled={submissionType === 'success'}
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-              ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
+              ${(submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
           >
             <option value="" disabled>-- เลือกหมวดหมู่ --</option>
             {categories.length > 0 ? (

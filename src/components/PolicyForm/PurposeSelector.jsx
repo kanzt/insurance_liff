@@ -7,10 +7,9 @@ export function PurposeSelector({ state, setters, actions }) {
   return (
     <div class="bg-brand-50/30 p-4 rounded-xl border border-brand-100/50 shadow-sm mb-6">
       <label class="block text-sm font-bold text-brand-800 mb-2">วัตถุประสงค์การแจ้งงาน <span class="text-red-500">*</span></label>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {[
-          { id: 'new', label: '🆕 เช็คเบี้ยใหม่', desc: 'ยื่นคำขอใหม่' },
-          { id: 'additional', label: '📎 ส่งเอกสารเพิ่ม', desc: 'อัปเดตงานเดิม' },
+          { id: 'quotation', label: '📄 เช็คเบี้ยประกัน / ส่งเอกสาร', desc: 'ยื่นเช็คเบี้ยหรือเพิ่มเอกสาร' },
           { id: 'success', label: '✅ แจ้งงานสำเร็จ', desc: 'แนบใบแจ้งงาน' }
         ].map((type) => (
           <label
@@ -29,7 +28,7 @@ export function PurposeSelector({ state, setters, actions }) {
                 const nextType = e.target.value;
                 handleReset(false);
                 setSubmissionType(nextType);
-                if (nextType === 'new') {
+                if (nextType === 'quotation') {
                   setCategoryId('1');
                 }
               }}

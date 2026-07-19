@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 
-export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [], multiple = false, onOpenGallery }) {
+export function Dropzone({ label, fileTypeIcon, onFilesChanged, initialFiles = [], multiple = true, onOpenGallery }) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [files, setFiles] = useState(initialFiles);
   const fileInputRef = useRef(null);

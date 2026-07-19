@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V6.1.11: Smart Form & Purpose Selector Redesign)
+# AI Handoff: Insurance LIFF Project Status (V6.1.12: Concurrency & Duplicate Protection)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
@@ -34,6 +34,9 @@
 - **Warning Message Copy Update (New! V6.1.9)**: เปลี่ยนข้อความในป้ายเตือนซ้ำเป็น "เคยขอใบเสนอราคาในปีนี้แล้ว! ไม่สามารถสร้างเช็คเบี้ยใหม่ซ้ำได้" เพื่อให้สื่อความหมายและสอดคล้องกับการตรวจเช็คด้วยตัวกรองปีปัจจุบันได้ดียิ่งขึ้น
 - **Form Layout Refinement (New! V6.1.10)**: ปรับตำแหน่งของช่องกรอก **"ทะเบียนรถ / ชื่อผู้เอาประกัน"** ขึ้นมาไว้ด้านบนสุดของฟอร์ม (เหนือช่อง "ตัวแทนผู้แจ้งงาน" และ "หมวดหมู่") เพื่อให้เข้ากับ Flow การพิมพ์ค้นหาข้อมูลและเช็คข้อมูลซ้ำเป็นลำดับแรกสุดของผู้ใช้งาน
 - **Smart Form & Purpose Selector Redesign (New! V6.1.11)**: ยุบรวมหน้าฟอร์มโดยเอาปุ่มเลือก "เช็คเบี้ยใหม่" และ "ส่งเอกสารเพิ่ม" ออกไป แล้วเปลี่ยนช่องกรอกทะเบียนให้เป็น Smart Search (Combobox) แทน หากผู้ใช้พิมพ์ทะเบียนเก่าแล้วเลือกจาก Dropdown (หรือพิมพ์ตรงกันเป๊ะๆ) ระบบจะ Auto-select เปลี่ยนเป็นโหมดส่งเอกสารเพิ่มให้อัตโนมัติ ทำให้ขั้นตอนการทำงานลื่นไหลและสะอาดตาขึ้น
+- **Processing State & Concurrency Protection (New! V6.1.12)**: ป้องกันปัญหาการส่งข้อมูลซ้ำซ้อน (Duplicate Submission / Race Condition) ในขณะที่งานกำลังประมวลผลอยู่เบื้องหลัง โดยการทำงานเชื่อมโยงกับ `uploadHistory`:
+  - **Submit Button Lock**: ปุ่ม "ส่งข้อมูลเช็คเบี้ย" จะถูก Disable อัตโนมัติ หากพิมพ์ทะเบียนที่กำลังอยู่ในคิวอัปโหลด (`status === 'loading'`) พร้อมแสดงข้อความ "ระบบกำลังประมวลผลทะเบียนนี้..."
+  - **Search Dropdown Lock**: ในช่องค้นหาทะเบียน (Smart Combobox) ทะเบียนที่กำลังประมวลผลอยู่จะถูกบล็อกไม่ให้กดเลือกได้ (Disabled) และแสดงป้ายกำกับ "⏳ กำลังประมวลผล" อย่างชัดเจน
 
 ---
 
@@ -128,4 +131,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-07-19 (V6.1.11: Smart Form & Purpose Selector Redesign)*
+*Last Updated: 2026-07-19 (V6.1.12: Concurrency & Duplicate Protection)*

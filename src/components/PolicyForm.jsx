@@ -14,9 +14,7 @@ import { AttachmentSection } from './PolicyForm/AttachmentSection';
 export function PolicyForm({
   idToken,
   baseApiUrl,
-  isSubmitting,
-  setIsSubmitting,
-  setSuccessMessage,
+  setUploadToast,
   setErrorMessage,
   setConfirmModal,
   onOpenGallery
@@ -37,9 +35,8 @@ export function PolicyForm({
     baseApiUrl,
     state,
     actions,
-    setSuccessMessage,
-    setErrorMessage,
-    setIsSubmitting
+    setUploadToast,
+    setErrorMessage
   });
 
   const formatThaiDate = (dateStr) => {
@@ -56,7 +53,7 @@ export function PolicyForm({
 
   return (
     <div class="relative min-h-[400px]">
-      <form class={`space-y-4 transition-all duration-300 ${isSubmitting ? 'opacity-20 pointer-events-none scale-[0.98]' : 'opacity-100'}`} onSubmit={handleSubmit}>
+      <form class="space-y-4 transition-all duration-300 opacity-100" onSubmit={handleSubmit}>
         
         <PurposeSelector 
           state={state}
@@ -106,7 +103,6 @@ export function PolicyForm({
         <div class="grid grid-cols-3 gap-3 mt-6">
           <button
             type="button"
-            disabled={isSubmitting}
             onClick={() => actions.handleReset(true)}
             class="col-span-1 border-2 border-slate-200 text-slate-500 font-bold py-3 px-2 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98] disabled:opacity-50 text-sm flex items-center justify-center gap-1"
           >
@@ -114,11 +110,9 @@ export function PolicyForm({
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
-            class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] 
-              ${isSubmitting ? 'bg-brand-300 cursor-not-allowed' : 'bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
+            class="col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5"
           >
-            {isSubmitting ? '⏳ กำลังส่ง...' : 'ส่งข้อมูลเช็คเบี้ย'}
+            ส่งข้อมูลเช็คเบี้ย
           </button>
         </div>
       </form>

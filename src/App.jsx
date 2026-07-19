@@ -9,24 +9,19 @@ export function App() {
   const [idToken, setIdToken] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [uploadToast, setUploadToast] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
   const [galleryData, setGalleryData] = useState(null); // { items: [{url, type, name}], index: 0 }
 
   useEffect(() => {
-    let interval;
-    if (isSubmitting) {
-      setElapsedTime(0);
-      const startTime = Date.now();
-      interval = setInterval(() => {
-        setElapsedTime((Date.now() - startTime) / 1000);
-      }, 100);
+    if (uploadToast?.status === 'success') {
+      const timer = setTimeout(() => {
+        setUploadToast(null);
+      }, 4000);
+      return () => clearTimeout(timer);
     }
-    return () => clearInterval(interval);
-  }, [isSubmitting]);
+  }, [uploadToast?.status]);
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -177,9 +172,7 @@ export function App() {
           <PolicyForm 
             idToken={idToken} 
             baseApiUrl={baseApiUrl} 
-            isSubmitting={isSubmitting}
-            setIsSubmitting={setIsSubmitting}
-            setSuccessMessage={setSuccessMessage}
+            setUploadToast={setUploadToast}
             setErrorMessage={setErrorMessage}
             setConfirmModal={setConfirmModal}
             onOpenGallery={(data) => setGalleryData(data)} 
@@ -187,54 +180,59 @@ export function App() {
         )}
       </div>
 
-      {/* Full-screen Loading Overlay */}
-      {isSubmitting && (
-        <div class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/60 backdrop-blur-md transition-all duration-300">
-          <div class="relative flex items-center justify-center mb-6">
-            <div class="absolute inset-0 bg-brand-500/20 rounded-full blur-2xl animate-pulse-slow"></div>
-            <div class="w-20 h-20 border-4 border-brand-100 border-t-brand-500 rounded-full animate-spin"></div>
-            <div class="absolute w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <span class="text-2xl">⚡</span>
+      {/* Upload Toast Notification */}
+      {uploadToast && (
+        <div class="fixed bottom-4 right-4 z-[10000] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div class={`bg-white rounded-xl shadow-xl border-l-4 p-4 min-w-[300px] flex items-start gap-3
+            ${uploadToast.status === 'loading' ? 'border-brand-500' : 
+              uploadToast.status === 'success' ? 'border-green-500' : 'border-red-500'}`}
+          >
+            {uploadToast.status === 'loading' && (
+              <div class="w-6 h-6 border-2 border-slate-200 border-t-brand-500 rounded-full animate-spin shrink-0 mt-0.5"></div>
+            )}
+            {uploadToast.status === 'success' && (
+              <div class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner">✅</div>
+            )}
+            {uploadToast.status === 'error' && (
+              <div class="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner border border-red-100">❌</div>
+            )}
+            
+            <div class="flex-1">
+              <h4 class={`font-bold text-sm ${
+                uploadToast.status === 'loading' ? 'text-brand-700' : 
+                uploadToast.status === 'success' ? 'text-green-700' : 'text-red-700'
+              }`}>
+                {uploadToast.status === 'loading' ? 'กำลังอัปโหลดเอกสาร...' : 
+                 uploadToast.status === 'success' ? 'บันทึกข้อมูลสำเร็จเรียบร้อย' : 'การอัปโหลดขัดข้อง'}
+              </h4>
+              <p class="text-xs text-slate-500 mt-1">{uploadToast.message}</p>
+              
+              {uploadToast.status === 'success' && uploadToast.elapsedTime && (
+                <div class="mt-2">
+                  <span class="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 inline-block">
+                    ⏳ ใช้เวลา {uploadToast.elapsedTime.toFixed(1)} วินาที
+                  </span>
+                </div>
+              )}
+              
+              {uploadToast.status === 'error' && uploadToast.onRetry && (
+                <button 
+                  onClick={uploadToast.onRetry}
+                  class="mt-3 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  🔄 ลองใหม่อีกครั้ง
+                </button>
+              )}
             </div>
-          </div>
-          <div class="text-center space-y-2">
-            <h3 class="text-xl font-bold text-brand-800 animate-pulse">กำลังส่งข้อมูล...</h3>
-            <p class="text-sm text-gray-500 max-w-[250px] mx-auto px-4">
-              กรุณารอสักครู่ ระบบกำลังอัปโหลดเอกสารและประมวลผลข้อมูลกรมธรรม์ของคุณ
-            </p>
-            <p class="text-xs text-brand-600 font-bold mt-1 bg-brand-50/50 px-3 py-1 rounded-full border border-brand-100/50 inline-block">
-              ⏳ ใช้เวลาประมวลผล {elapsedTime.toFixed(1)} วินาที
-            </p>
-          </div>
-          <div class="mt-8 flex gap-1">
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce"></div>
-          </div>
-        </div>
-      )}
-
-      {/* Success Modal */}
-      {successMessage && (
-        <div class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
-            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
-              ✅
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">{successMessage.title}</h3>
-            <p class="text-slate-600 mb-4 whitespace-pre-line text-sm">{successMessage.description}</p>
-            <div class="mb-6">
-              <p class="text-xs text-brand-600 font-bold bg-brand-50/50 px-3 py-1 rounded-full border border-brand-100/50 inline-block">
-                ⏳ ใช้เวลาประมวลผล {elapsedTime.toFixed(1)} วินาที
-              </p>
-            </div>
-            <button 
-              type="button"
-              onClick={() => setSuccessMessage(null)}
-              class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-green-500/30 active:scale-[0.98]"
-            >
-              ตกลง / กรอกรายการถัดไป
-            </button>
+            
+            {uploadToast.status !== 'loading' && (
+              <button 
+                onClick={() => setUploadToast(null)}
+                class="text-slate-400 hover:text-slate-600 p-1 shrink-0"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
       )}

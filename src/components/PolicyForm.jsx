@@ -15,6 +15,7 @@ export function PolicyForm({
   idToken,
   baseApiUrl,
   setUploadToasts,
+  setUploadHistory,
   setErrorMessage,
   setConfirmModal,
   onOpenGallery
@@ -36,6 +37,7 @@ export function PolicyForm({
     state,
     actions,
     setUploadToasts,
+    setUploadHistory,
     setErrorMessage
   });
 

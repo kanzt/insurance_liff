@@ -10,6 +10,8 @@ export function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [uploadToasts, setUploadToasts] = useState([]);
+  const [uploadHistory, setUploadHistory] = useState([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
   const [galleryData, setGalleryData] = useState(null); // { items: [{url, type, name}], index: 0 }
@@ -166,6 +168,7 @@ export function App() {
             idToken={idToken} 
             baseApiUrl={baseApiUrl} 
             setUploadToasts={setUploadToasts}
+            setUploadHistory={setUploadHistory}
             setErrorMessage={setErrorMessage}
             setConfirmModal={setConfirmModal}
             onOpenGallery={(data) => setGalleryData(data)} 
@@ -373,6 +376,89 @@ export function App() {
           </div>
         </div>
       )}
-    </>
+      {/* History Modal */}
+      {isHistoryOpen && (
+        <div class="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center">
+          <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setIsHistoryOpen(false)}></div>
+          <div class="relative bg-slate-50 w-full sm:w-[400px] h-[75vh] sm:h-[600px] sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-300">
+            {/* Header */}
+            <div class="p-4 border-b border-slate-200 bg-white rounded-t-2xl flex justify-between items-center shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">📋</span>
+                <h3 class="font-bold text-slate-800 text-lg">ประวัติการอัปโหลด (Session นี้)</h3>
+              </div>
+              <button 
+                onClick={() => setIsHistoryOpen(false)}
+                class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Body */}
+            <div class="p-4 overflow-y-auto flex-1 flex flex-col gap-3">
+              {uploadHistory.length === 0 ? (
+                <div class="flex-1 flex flex-col items-center justify-center text-slate-400">
+                  <span class="text-4xl mb-2">📭</span>
+                  <p>ยังไม่มีประวัติการส่งข้อมูล</p>
+                </div>
+              ) : (
+                uploadHistory.slice().reverse().map(job => (
+                  <div key={job.id} class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex gap-3">
+                    <div class="shrink-0 mt-0.5">
+                      {job.status === 'loading' && <div class="w-6 h-6 border-2 border-slate-200 border-t-brand-500 rounded-full animate-spin"></div>}
+                      {job.status === 'success' && <div class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-xs shadow-inner">✅</div>}
+                      {job.status === 'error' && <div class="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-xs shadow-inner">❌</div>}
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                      <div class="flex justify-between items-start mb-1">
+                        <div class="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 truncate max-w-[150px]">
+                          {job.title}
+                        </div>
+                        <span class="text-[10px] text-slate-400 whitespace-nowrap">
+                          {new Date(job.timestamp).toLocaleTimeString('th-TH')}
+                        </span>
+                      </div>
+                      <p class={`text-sm font-bold ${
+                        job.status === 'loading' ? 'text-brand-600' : 
+                        job.status === 'success' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {job.status === 'loading' ? 'กำลังดำเนินการ...' : 
+                         job.status === 'success' ? 'สำเร็จเรียบร้อย' : 'ล้มเหลว'}
+                      </p>
+                      <p class="text-xs text-slate-500 mt-1 line-clamp-2">{job.message}</p>
+                      
+                      {job.status === 'error' && job.onRetry && (
+                        <button 
+                          onClick={job.onRetry}
+                          class="mt-2 w-full text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1"
+                        >
+                          🔄 ลองใหม่อีกครั้ง
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating History Button */}
+      <button
+        onClick={() => setIsHistoryOpen(true)}
+        class="fixed bottom-4 left-4 z-[9999] w-12 h-12 bg-white rounded-full shadow-lg border border-slate-200 flex items-center justify-center text-xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95"
+      >
+        📋
+        {uploadHistory.length > 0 && (
+          <div class="absolute -top-1 -right-1 min-w-[20px] h-5 bg-brand-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1 shadow-sm border-2 border-white">
+            {uploadHistory.length}
+          </div>
+        )}
+      </button>
+
+    </div>
   );
 }

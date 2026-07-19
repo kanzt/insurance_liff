@@ -59,6 +59,7 @@ export function usePolicySubmit({
   state,
   actions,
   setUploadToasts,
+  setUploadHistory,
   setErrorMessage
 }) {
   const handleSubmit = async (e) => {
@@ -92,12 +93,15 @@ export function usePolicySubmit({
       }
       const jobTitle = tempCustomerName || 'รายการใหม่';
 
-      setUploadToasts(prev => [...prev, { 
+      const newJob = { 
         id: jobId, 
         status: 'loading', 
         title: jobTitle,
-        message: 'กำลังอัปโหลดเอกสาร... คุณสามารถเพิ่มรายการถัดไปได้เลย' 
-      }]);
+        message: 'กำลังอัปโหลดเอกสาร... คุณสามารถเพิ่มรายการถัดไปได้เลย',
+        timestamp: Date.now()
+      };
+      setUploadToasts(prev => [...prev, newJob]);
+      setUploadHistory(prev => [...prev, newJob]);
       
       const startTime = Date.now();
 
@@ -206,32 +210,35 @@ export function usePolicySubmit({
         const elapsedTime = (Date.now() - startTime) / 1000;
 
         if (response.ok) {
-          setUploadToasts(prev => prev.map(t => t.id === jobId ? {
-            ...t,
+          const successUpdate = {
             status: 'success',
             message: 'บันทึกข้อมูลสำเร็จเรียบร้อย',
             elapsedTime: elapsedTime
-          } : t));
+          };
+          setUploadToasts(prev => prev.map(t => t.id === jobId ? { ...t, ...successUpdate } : t));
+          setUploadHistory(prev => prev.map(t => t.id === jobId ? { ...t, ...successUpdate } : t));
           
           setTimeout(() => {
             setUploadToasts(prev => prev.filter(t => t.id !== jobId));
           }, 4000);
         } else {
-          setUploadToasts(prev => prev.map(t => t.id === jobId ? {
-            ...t,
+          const errorUpdate = {
             status: 'error',
             message: result.error || 'เกิดข้อผิดพลาดในการส่งข้อมูล',
             onRetry: () => doBackgroundSubmit(submissionState)
-          } : t));
+          };
+          setUploadToasts(prev => prev.map(t => t.id === jobId ? { ...t, ...errorUpdate } : t));
+          setUploadHistory(prev => prev.map(t => t.id === jobId ? { ...t, ...errorUpdate } : t));
         }
       } catch (error) {
         console.error(error);
-        setUploadToasts(prev => prev.map(t => t.id === jobId ? {
-          ...t,
+        const catchUpdate = {
           status: 'error',
           message: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้',
           onRetry: () => doBackgroundSubmit(submissionState)
-        } : t));
+        };
+        setUploadToasts(prev => prev.map(t => t.id === jobId ? { ...t, ...catchUpdate } : t));
+        setUploadHistory(prev => prev.map(t => t.id === jobId ? { ...t, ...catchUpdate } : t));
       }
     };
 

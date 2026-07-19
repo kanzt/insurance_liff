@@ -78,6 +78,7 @@ export function PolicyForm({
         <BasicInfoSection 
           state={state}
           setters={setters}
+          actions={actions}
           baseApiUrl={baseApiUrl}
           idToken={idToken}
           categories={categories}
@@ -117,7 +118,11 @@ export function PolicyForm({
           </button>
           <button
             type="submit"
-            class="col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5"
+            disabled={state.submissionType === 'new' && state.duplicatePolicy}
+            class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 
+              ${(state.submissionType === 'new' && state.duplicatePolicy) 
+                ? 'bg-gray-400 cursor-not-allowed opacity-50 shadow-none' 
+                : 'active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
           >
             ส่งข้อมูลเช็คเบี้ย
           </button>

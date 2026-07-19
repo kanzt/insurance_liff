@@ -29,6 +29,7 @@ export function usePolicyFormState(setConfirmModal) {
   const [commissionPercent, setCommissionPercent] = useState('');
   const [taxRate, setTaxRate] = useState('10');
   const [policyNotes, setPolicyNotes] = useState('');
+  const [duplicatePolicy, setDuplicatePolicy] = useState(null);
   const [isRedPlate, setIsRedPlate] = useState(false);
   
   const [filesData, setFilesData] = useState({
@@ -160,6 +161,7 @@ export function usePolicyFormState(setConfirmModal) {
       setCategoryId(defaultCategoryId);
       setProductId('');
       setSubmissionType('new');
+      setDuplicatePolicy(null);
       setIsRedPlate(false);
       setReferenceInput('');
       setEndDate('');
@@ -276,6 +278,7 @@ export function usePolicyFormState(setConfirmModal) {
       taxRate,
       policyNotes,
       isRedPlate,
+      duplicatePolicy,
       filesData,
     },
     setters: {
@@ -306,6 +309,7 @@ export function usePolicyFormState(setConfirmModal) {
       setTaxRate,
       setPolicyNotes,
       setIsRedPlate,
+      setDuplicatePolicy,
       setFilesData,
     },
     actions: {

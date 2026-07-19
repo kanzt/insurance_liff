@@ -93,15 +93,39 @@ export function usePolicySubmit({
       }
       const jobTitle = tempCustomerName || 'รายการใหม่';
 
-      const newJob = { 
-        id: jobId, 
-        status: 'loading', 
-        title: jobTitle,
-        message: 'กำลังอัปโหลดเอกสาร... คุณสามารถเพิ่มรายการถัดไปได้เลย',
-        timestamp: Date.now()
-      };
-      setUploadToasts(prev => [...prev, newJob]);
-      setUploadHistory(prev => [...prev, newJob]);
+      setUploadToasts(prev => {
+        const exists = prev.find(t => t.id === jobId);
+        if (exists) {
+          return prev.map(t => t.id === jobId ? { ...t, status: 'loading', message: 'กำลังลองใหม่อีกครั้ง...' } : t);
+        }
+        return [...prev, { 
+          id: jobId, 
+          status: 'loading', 
+          title: jobTitle,
+          message: 'กำลังอัปโหลดเอกสาร... คุณสามารถเพิ่มรายการถัดไปได้เลย',
+          timestamp: Date.now()
+        }];
+      });
+
+      setUploadHistory(prev => {
+        const exists = prev.find(t => t.id === jobId);
+        if (exists) {
+          return prev.map(t => t.id === jobId ? { 
+            ...t, 
+            status: 'loading', 
+            message: 'กำลังลองใหม่อีกครั้ง...',
+            retryCount: (t.retryCount || 0) + 1
+          } : t);
+        }
+        return [...prev, { 
+          id: jobId, 
+          status: 'loading', 
+          title: jobTitle,
+          message: 'กำลังอัปโหลดเอกสาร... คุณสามารถเพิ่มรายการถัดไปได้เลย',
+          timestamp: Date.now(),
+          retryCount: 0
+        }];
+      });
       
       const startTime = Date.now();
 

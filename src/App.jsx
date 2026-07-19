@@ -413,8 +413,15 @@ export function App() {
                     
                     <div class="flex-1 min-w-0">
                       <div class="flex justify-between items-start mb-1">
-                        <div class="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 truncate max-w-[150px]">
-                          {job.title}
+                        <div class="flex items-center gap-2">
+                          <div class="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 truncate max-w-[150px]">
+                            {job.title}
+                          </div>
+                          {job.retryCount > 0 && (
+                            <div class="text-[10px] font-bold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded-full border border-orange-200">
+                              Retry {job.retryCount}
+                            </div>
+                          )}
                         </div>
                         <span class="text-[10px] text-slate-400 whitespace-nowrap">
                           {new Date(job.timestamp).toLocaleTimeString('th-TH')}

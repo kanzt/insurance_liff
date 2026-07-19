@@ -76,6 +76,7 @@ export function PolicyForm({
           baseApiUrl={baseApiUrl}
           idToken={idToken}
           categories={categories}
+          uploadHistory={uploadHistory}
         />
 
         <ReminderSection 

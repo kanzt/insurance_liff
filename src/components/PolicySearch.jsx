@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { searchQuotations } from '../utils/api';
 
-export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..." }) {
+export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', uploadHistory = [], placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..." }) {
   const [policies, setPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -151,18 +151,23 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
                 const createdAt = policy.createdAt || policy.created_at;
                 const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
 
+                const isProcessing = uploadHistory && uploadHistory.some(
+                  job => (job.title === plate || job.title === customer) && job.status === 'loading'
+                );
+
                 return (
                   <div
                     key={policy.id || policy.policy_id}
-                    onClick={() => handleSelect(policy)}
-                    class="p-3 text-sm border-b border-gray-50 last:border-0 cursor-pointer hover:bg-brand-50 transition-colors group"
+                    onClick={() => { if (!isProcessing) handleSelect(policy) }}
+                    class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
                   >
                     <div class="flex justify-between items-start mb-1">
-                      <span class="font-bold text-slate-700 group-hover:text-brand-700">
+                      <span class={`font-bold ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
                         {(catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
                           ? (subCatName || catName)
                           : (plate || 'ไม่ระบุทะเบียน')
                         }
+                        {isProcessing && <span class="ml-2 text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
                       </span>
                       <span class="text-[10px] text-gray-400">
                         📅 {formatThaiDate(createdAt)}

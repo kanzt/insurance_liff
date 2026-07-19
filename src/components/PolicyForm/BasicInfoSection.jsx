@@ -9,7 +9,8 @@ export function BasicInfoSection({
   actions,
   baseApiUrl,
   idToken,
-  categories
+  categories,
+  uploadHistory
 }) {
   const {
     submissionType, informerName, categoryId, referenceInput, isRedPlate, notes, duplicatePolicy
@@ -66,6 +67,7 @@ export function BasicInfoSection({
               onQueryChange={setReferenceInput}
               onResultsFetched={handleResultsFetched}
               initialQuery={referenceInput}
+              uploadHistory={uploadHistory}
               placeholder={categoryId === '1'
                 ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
                 : '🔍 เช่น สมชาย ใจดี'}

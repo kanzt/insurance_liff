@@ -10,10 +10,30 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
   const [hasSearched, setHasSearched] = useState(false);
   const containerRef = useRef(null);
   
+  const [refreshKey, setRefreshKey] = useState(0);
+  const prevUploadHistoryRef = useRef(uploadHistory);
+
   // Sync internal query with prop when it changes (e.g. on reset)
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  // Watch uploadHistory for completed jobs to refresh stale data
+  useEffect(() => {
+    const prevHistory = prevUploadHistoryRef.current || [];
+    const hasCompletedJob = uploadHistory.some(currentJob => {
+      const prevJob = prevHistory.find(j => j.id === currentJob.id);
+      return prevJob && prevJob.status === 'loading' && currentJob.status === 'success';
+    });
+
+    if (hasCompletedJob) {
+      // Clear stale policies and trigger a refetch
+      setPolicies([]);
+      setRefreshKey(k => k + 1);
+    }
+    
+    prevUploadHistoryRef.current = uploadHistory;
+  }, [uploadHistory]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -49,7 +69,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     }
 
     performSearch();
-  }, [baseApiUrl, idToken, debouncedQuery]);
+  }, [baseApiUrl, idToken, debouncedQuery, refreshKey]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

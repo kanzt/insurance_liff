@@ -152,12 +152,12 @@ export function usePolicyFormState(setConfirmModal) {
     }
   };
 
-  const handleReset = (showConfirm = true) => {
+  const handleReset = (showConfirm = true, defaultCategoryId = '') => {
     const performReset = () => {
       localStorage.removeItem(STORAGE_KEY);
       setInformerId(null);
       setInformerName('');
-      setCategoryId('');
+      setCategoryId(defaultCategoryId);
       setProductId('');
       setSubmissionType('new');
       setIsRedPlate(false);

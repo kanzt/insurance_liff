@@ -32,13 +32,18 @@ export function PolicyForm({
     brokerChannels,
   } = useReferenceData(baseApiUrl, setters.setCategoryId);
 
+  // Compute default category ID (Motor / ประกันรถยนต์)
+  const motorCategory = categories?.find(c => c.categoryName === 'ประกันรถยนต์' || c.categoryName.toLowerCase() === 'motor');
+  const defaultCategoryId = motorCategory ? (motorCategory.categoryId || motorCategory.category_id)?.toString() : (categories?.length > 0 ? (categories[0].categoryId || categories[0].category_id)?.toString() : '');
+
   const { handleSubmit } = usePolicySubmit({
     baseApiUrl,
     state,
     actions,
     setUploadToasts,
     setUploadHistory,
-    setErrorMessage
+    setErrorMessage,
+    defaultCategoryId
   });
 
   const formatThaiDate = (dateStr) => {
@@ -105,7 +110,7 @@ export function PolicyForm({
         <div class="grid grid-cols-3 gap-3 mt-6">
           <button
             type="button"
-            onClick={() => actions.handleReset(true)}
+            onClick={() => actions.handleReset(true, defaultCategoryId)}
             class="col-span-1 border-2 border-slate-200 text-slate-500 font-bold py-3 px-2 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98] disabled:opacity-50 text-sm flex items-center justify-center gap-1"
           >
             ♻️&nbsp;ล้างข้อมูล

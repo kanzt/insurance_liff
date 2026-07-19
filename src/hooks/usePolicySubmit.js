@@ -60,7 +60,8 @@ export function usePolicySubmit({
   actions,
   setUploadToasts,
   setUploadHistory,
-  setErrorMessage
+  setErrorMessage,
+  defaultCategoryId
 }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +80,7 @@ export function usePolicySubmit({
     const capturedState = { ...state };
     
     // Clear the form UI instantly for non-blocking experience
-    actions.handleReset(false);
+    actions.handleReset(false, defaultCategoryId);
 
     const jobId = Date.now().toString() + Math.random().toString(36).substring(2);
 

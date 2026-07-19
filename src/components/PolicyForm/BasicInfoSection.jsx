@@ -63,47 +63,7 @@ export function BasicInfoSection({
 
   return (
     <>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span>
-          </label>
-          <AgentSearch
-            baseApiUrl={baseApiUrl}
-            idToken={idToken}
-            disabled={submissionType === 'additional' || submissionType === 'success'}
-            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
-            initialQuery={informerName}
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            หมวดหมู่ <span class="text-red-500">*</span>
-          </label>
-          <select
-            required
-            disabled={submissionType === 'additional' || submissionType === 'success'}
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
-              ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
-          >
-            <option value="" disabled>-- เลือกหมวดหมู่ --</option>
-            {categories.length > 0 ? (
-              categories.map(cat => (
-                <option key={cat.categoryId} value={cat.categoryId}>
-                  {cat.categoryName}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>กำลังโหลด...</option>
-            )}
-          </select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-4">
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">
             {categoryId === '1'
@@ -170,6 +130,46 @@ export function BasicInfoSection({
               </label>
             </div>
           )}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            ตัวแทนผู้แจ้งงาน <span class="text-red-500">*</span>
+          </label>
+          <AgentSearch
+            baseApiUrl={baseApiUrl}
+            idToken={idToken}
+            disabled={submissionType === 'additional' || submissionType === 'success'}
+            onSelectAgent={(id, name) => { setInformerId(id); setInformerName(name); }}
+            initialQuery={informerName}
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            หมวดหมู่ <span class="text-red-500">*</span>
+          </label>
+          <select
+            required
+            disabled={submissionType === 'additional' || submissionType === 'success'}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
+              ${(submissionType === 'additional' || submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
+          >
+            <option value="" disabled>-- เลือกหมวดหมู่ --</option>
+            {categories.length > 0 ? (
+              categories.map(cat => (
+                <option key={cat.categoryId} value={cat.categoryId}>
+                  {cat.categoryName}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>กำลังโหลด...</option>
+            )}
+          </select>
         </div>
       </div>
 

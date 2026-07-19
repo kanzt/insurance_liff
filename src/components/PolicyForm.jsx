@@ -15,6 +15,7 @@ export function PolicyForm({
   baseApiUrl,
   setUploadToasts,
   setUploadHistory,
+  uploadHistory,
   setErrorMessage,
   setConfirmModal,
   onOpenGallery
@@ -109,16 +110,28 @@ export function PolicyForm({
           >
             ♻️&nbsp;ล้างข้อมูล
           </button>
-          <button
-            type="submit"
-            disabled={state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy}
-            class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 
-              ${(state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy) 
-                ? 'bg-gray-400 cursor-not-allowed opacity-50 shadow-none' 
-                : 'active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
-          >
-            ส่งข้อมูลเช็คเบี้ย
-          </button>
+          
+          {(() => {
+            const isProcessing = uploadHistory && uploadHistory.some(
+              job => job.title === state.referenceInput && job.status === 'loading'
+            );
+            const isDuplicate = state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy;
+            const isDisabled = isProcessing || isDuplicate;
+
+            return (
+              <button
+                type="submit"
+                disabled={isDisabled}
+                class={`col-span-2 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 flex flex-col items-center justify-center leading-tight
+                  ${isDisabled
+                    ? 'bg-gray-400 cursor-not-allowed opacity-50 shadow-none' 
+                    : 'active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
+              >
+                <span>ส่งข้อมูลเช็คเบี้ย</span>
+                {isProcessing && <span class="text-[10px] font-normal opacity-90 mt-0.5">ระบบกำลังประมวลผลทะเบียนนี้...</span>}
+              </button>
+            );
+          })()}
         </div>
       </form>
     </div>

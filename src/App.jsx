@@ -180,6 +180,7 @@ export function App() {
             baseApiUrl={baseApiUrl} 
             setUploadToasts={setUploadToasts}
             setUploadHistory={setUploadHistory}
+            uploadHistory={uploadHistory}
             setErrorMessage={setErrorMessage}
             setConfirmModal={setConfirmModal}
             onOpenGallery={(data) => setGalleryData(data)} 

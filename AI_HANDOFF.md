@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V6.1.3: Non-blocking UI & Structural Refactoring)
+# AI Handoff: Insurance LIFF Project Status (V6.1.4: Multiple Files & Append Paste)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
@@ -25,6 +25,8 @@
 - **Concurrent Uploads Stack**: รองรับการอัปโหลดข้อมูลหลายรายการพร้อมกัน (Simultaneous Uploads) โดย Toast จะแสดงซ้อนกันเป็น Stack และระบุชื่อรายการ (Customer Name/Plate Number) ให้เห็นชัดเจน เพื่อป้องกันการสับสน
 - **Retry Mechanism**: หากการอัปโหลดเบื้องหลังผิดพลาด ผู้ใช้สามารถกดปุ่ม "ลองใหม่อีกครั้ง" จาก Toast หรือในหน้าต่างประวัติได้ทันที ระบบจะทำการอัปเดตสถานะของรายการเดิม (แทนที่จะสร้างรายการใหม่ซ้อนในประวัติ) และแสดงจำนวนครั้งที่พยายามอัปโหลดใหม่ด้วยป้ายกำกับ (เช่น "Retry 1") โดยยังคงใช้ข้อมูลชุดเดิมที่แคปเจอร์ไว้
 - **Performance Feedback**: แสดงระยะเวลาที่ใช้ในการประมวลผลการอัปโหลด (`elapsedTime`) ทั้งใน Toast และในประวัติการอัปโหลด (Session นี้)
+- **Multiple File Attachments (New! V6.1.4)**: เปลี่ยนค่าเริ่มต้นของ `Dropzone` ให้รองรับการอัปโหลดหลายไฟล์ (Multiple) ในทุกประเภทเอกสาร เพื่อรองรับกรณีที่ผู้ใช้ต้องการแนบเอกสารหลายหน้า (เช่น สำเนารถ 2 หน้า) เข้าไปในช่องเดียวกัน
+- **Append Paste Feature (New! V6.1.4)**: เมื่อผู้ใช้งานทำการ Ctrl+V เพื่อวางรูปภาพในช่องแนบเอกสาร ระบบจะนำรูปไปต่อท้าย (Append) รูปเดิมที่มีอยู่เสมอ แทนการเขียนทับของเดิม ช่วยเพิ่มความสะดวกในการรวบรวมรูปภาพจากการคัดลอกหลายๆ ครั้ง
 
 ---
 
@@ -119,4 +121,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-07-19 (V6.1.0: Non-blocking UI Upload)*
+*Last Updated: 2026-07-19 (V6.1.4: Multiple Files & Append Paste)*

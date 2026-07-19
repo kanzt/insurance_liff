@@ -9,19 +9,12 @@ export function App() {
   const [idToken, setIdToken] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [uploadToast, setUploadToast] = useState(null);
+  const [uploadToasts, setUploadToasts] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
   const [galleryData, setGalleryData] = useState(null); // { items: [{url, type, name}], index: 0 }
 
-  useEffect(() => {
-    if (uploadToast?.status === 'success') {
-      const timer = setTimeout(() => {
-        setUploadToast(null);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [uploadToast?.status]);
+
 
   const liffId = import.meta.env.VITE_LIFF_ID;
   const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -172,7 +165,7 @@ export function App() {
           <PolicyForm 
             idToken={idToken} 
             baseApiUrl={baseApiUrl} 
-            setUploadToast={setUploadToast}
+            setUploadToasts={setUploadToasts}
             setErrorMessage={setErrorMessage}
             setConfirmModal={setConfirmModal}
             onOpenGallery={(data) => setGalleryData(data)} 
@@ -180,60 +173,69 @@ export function App() {
         )}
       </div>
 
-      {/* Upload Toast Notification */}
-      {uploadToast && (
-        <div class="fixed bottom-4 right-4 z-[10000] animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <div class={`bg-white rounded-xl shadow-xl border-l-4 p-4 min-w-[300px] flex items-start gap-3
-            ${uploadToast.status === 'loading' ? 'border-brand-500' : 
-              uploadToast.status === 'success' ? 'border-green-500' : 'border-red-500'}`}
-          >
-            {uploadToast.status === 'loading' && (
-              <div class="w-6 h-6 border-2 border-slate-200 border-t-brand-500 rounded-full animate-spin shrink-0 mt-0.5"></div>
-            )}
-            {uploadToast.status === 'success' && (
-              <div class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner">✅</div>
-            )}
-            {uploadToast.status === 'error' && (
-              <div class="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner border border-red-100">❌</div>
-            )}
-            
-            <div class="flex-1">
-              <h4 class={`font-bold text-sm ${
-                uploadToast.status === 'loading' ? 'text-brand-700' : 
-                uploadToast.status === 'success' ? 'text-green-700' : 'text-red-700'
-              }`}>
-                {uploadToast.status === 'loading' ? 'กำลังอัปโหลดเอกสาร...' : 
-                 uploadToast.status === 'success' ? 'บันทึกข้อมูลสำเร็จเรียบร้อย' : 'การอัปโหลดขัดข้อง'}
-              </h4>
-              <p class="text-xs text-slate-500 mt-1">{uploadToast.message}</p>
-              
-              {uploadToast.status === 'success' && uploadToast.elapsedTime && (
-                <div class="mt-2">
-                  <span class="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 inline-block">
-                    ⏳ ใช้เวลา {uploadToast.elapsedTime.toFixed(1)} วินาที
-                  </span>
-                </div>
-              )}
-              
-              {uploadToast.status === 'error' && uploadToast.onRetry && (
-                <button 
-                  onClick={uploadToast.onRetry}
-                  class="mt-3 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
-                >
-                  🔄 ลองใหม่อีกครั้ง
-                </button>
-              )}
-            </div>
-            
-            {uploadToast.status !== 'loading' && (
-              <button 
-                onClick={() => setUploadToast(null)}
-                class="text-slate-400 hover:text-slate-600 p-1 shrink-0"
+      {/* Upload Toast Notifications Stack */}
+      {uploadToasts.length > 0 && (
+        <div class="fixed bottom-4 right-4 z-[10000] flex flex-col gap-3">
+          {uploadToasts.map((toast) => (
+            <div key={toast.id} class="animate-in slide-in-from-bottom-5 fade-in duration-300">
+              <div class={`bg-white rounded-xl shadow-xl border-l-4 p-4 min-w-[300px] flex items-start gap-3
+                ${toast.status === 'loading' ? 'border-brand-500' : 
+                  toast.status === 'success' ? 'border-green-500' : 'border-red-500'}`}
               >
-                ✕
-              </button>
-            )}
-          </div>
+                {toast.status === 'loading' && (
+                  <div class="w-6 h-6 border-2 border-slate-200 border-t-brand-500 rounded-full animate-spin shrink-0 mt-0.5"></div>
+                )}
+                {toast.status === 'success' && (
+                  <div class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner">✅</div>
+                )}
+                {toast.status === 'error' && (
+                  <div class="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-inner border border-red-100">❌</div>
+                )}
+                
+                <div class="flex-1">
+                  <h4 class={`font-bold text-sm flex justify-between items-center ${
+                    toast.status === 'loading' ? 'text-brand-700' : 
+                    toast.status === 'success' ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    <span>
+                      {toast.status === 'loading' ? 'กำลังอัปโหลดเอกสาร...' : 
+                       toast.status === 'success' ? 'บันทึกข้อมูลสำเร็จเรียบร้อย' : 'การอัปโหลดขัดข้อง'}
+                    </span>
+                  </h4>
+                  <div class="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded mt-1 inline-block border border-slate-200">
+                    {toast.title}
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1">{toast.message}</p>
+                  
+                  {toast.status === 'success' && toast.elapsedTime && (
+                    <div class="mt-2">
+                      <span class="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 inline-block">
+                        ⏳ ใช้เวลา {toast.elapsedTime.toFixed(1)} วินาที
+                      </span>
+                    </div>
+                  )}
+                  
+                  {toast.status === 'error' && toast.onRetry && (
+                    <button 
+                      onClick={toast.onRetry}
+                      class="mt-3 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                    >
+                      🔄 ลองใหม่อีกครั้ง
+                    </button>
+                  )}
+                </div>
+                
+                {toast.status !== 'loading' && (
+                  <button 
+                    onClick={() => setUploadToasts(prev => prev.filter(t => t.id !== toast.id))}
+                    class="text-slate-400 hover:text-slate-600 p-1 shrink-0"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

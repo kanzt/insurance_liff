@@ -14,7 +14,7 @@ import { AttachmentSection } from './PolicyForm/AttachmentSection';
 export function PolicyForm({
   idToken,
   baseApiUrl,
-  setUploadToast,
+  setUploadToasts,
   setErrorMessage,
   setConfirmModal,
   onOpenGallery
@@ -35,7 +35,7 @@ export function PolicyForm({
     baseApiUrl,
     state,
     actions,
-    setUploadToast,
+    setUploadToasts,
     setErrorMessage
   });
 

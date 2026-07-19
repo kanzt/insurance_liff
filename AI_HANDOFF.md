@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V6.1.0: Non-blocking UI & Structural Refactoring)
+# AI Handoff: Insurance LIFF Project Status (V6.1.1: Non-blocking UI & Structural Refactoring)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
@@ -17,11 +17,12 @@
 
 ---
 
-### 1. Non-blocking UI Upload (New! V6.1.0)
+### 1. Non-blocking UI Upload (New! V6.1.1)
 - **Background Processing**: ย้ายกระบวนการบีบอัดรูปภาพและยิง API อัปโหลดข้อมูล (`doBackgroundSubmit`) ไปรันเบื้องหลัง (Background) เพื่อไม่ให้บล็อคการทำงานของ UI
 - **Instant Form Reset**: เมื่อกดปุ่ม "ยืนยัน" ระบบจะเคลียร์ฟอร์มและรีเซ็ตทันที (`actions.handleReset(false)`) ทำให้ผู้ใช้สามารถเริ่มกรอกรายการถัดไปได้ทันทีโดยไม่ต้องรอโหลด
 - **Upload Toast Notification**: ยกเลิกการใช้ Loading Overlay แบบเต็มจอและ Modal แจ้งเตือนความสำเร็จ เปลี่ยนเป็นระบบ Toast Notification ขนาดเล็กที่มุมขวาล่าง 
-- **Retry Mechanism**: หากการอัปโหลดเบื้องหลังผิดพลาด ผู้ใช้สามารถกดปุ่ม "ลองใหม่อีกครั้ง" จาก Toast ได้ทันที ระบบจะใช้ State ที่ Capture ไว้เพื่อยิง API ใหม่โดยที่ผู้ใช้ไม่ต้องกรอกข้อมูลซ้ำ
+- **Concurrent Uploads Stack**: รองรับการอัปโหลดข้อมูลหลายรายการพร้อมกัน (Simultaneous Uploads) โดย Toast จะแสดงซ้อนกันเป็น Stack และระบุชื่อรายการ (Customer Name/Plate Number) ให้เห็นชัดเจน เพื่อป้องกันการสับสน
+- **Retry Mechanism**: หากการอัปโหลดเบื้องหลังผิดพลาด ผู้ใช้สามารถกดปุ่ม "ลองใหม่อีกครั้ง" จาก Toast ได้ทันที ระบบจะใช้ State ที่ Capture ไว้เพื่อยิง API ใหม่โดยที่ผู้ใช้ไม่ต้องกรอกข้อมูลซ้ำ (แยก State กันแต่ละรายการ)
 - **Performance Feedback**: แสดงระยะเวลาที่ใช้ในการประมวลผลการอัปโหลด (`elapsedTime`) ตรงใน Toast แจ้งงานสำเร็จ
 
 ---

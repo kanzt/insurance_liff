@@ -53,10 +53,11 @@ export const fetchBrokerChannels = (baseUrl) => authenticatedFetch(`${baseUrl}/l
 /**
  * Server-side search for quotations
  */
-export const searchQuotations = (baseUrl, searchTerm = '', limit = 20) => {
+export const searchQuotations = (baseUrl, searchTerm = '', limit = 20, year = '') => {
   const params = new URLSearchParams();
   if (searchTerm) params.append('search', searchTerm);
   params.append('limit', limit.toString());
+  if (year) params.append('year', year.toString());
 
   return authenticatedFetch(`${baseUrl}/load-quotations?${params.toString()}`);
 };

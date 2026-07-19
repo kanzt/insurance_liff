@@ -31,7 +31,8 @@ export function BasicInfoSection({
     const handler = setTimeout(async () => {
       setIsCheckingDuplicate(true);
       try {
-        const response = await searchQuotations(baseApiUrl, referenceInput, 10);
+        const currentYear = new Date().getFullYear().toString();
+        const response = await searchQuotations(baseApiUrl, referenceInput, 10, currentYear);
         const json = await response.json();
         
         if (json.results && json.results.length > 0) {

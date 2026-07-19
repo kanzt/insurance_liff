@@ -28,7 +28,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, initialQuery
 
       setIsLoading(true);
       try {
-        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20);
+        const currentYear = new Date().getFullYear().toString();
+        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear);
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {

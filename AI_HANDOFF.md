@@ -1,4 +1,4 @@
-# AI Handoff: Insurance LIFF Project Status (V6.1.7: Duplicate Prevention)
+# AI Handoff: Insurance LIFF Project Status (V6.1.8: Query Parameter Filter)
 
 ## 📌 Project Overview
 โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
@@ -30,6 +30,7 @@
 - **Accidental Navigation Warning (New! V6.1.5)**: ป้องกันข้อมูลสูญหายระหว่างการกรอกฟอร์ม โดยเพิ่ม `beforeunload` Event Listener เพื่อแสดง Dialog แจ้งเตือนของ Browser เมื่อผู้ใช้งานเผลอกดรีเฟรช ปิดแท็บ หรือปัดหน้าจอย้อนกลับ
 - **Default Category Fallback (New! V6.1.6)**: ปรับปรุงระบบรีเซ็ตฟอร์ม (ทั้งจากการล้างข้อมูลและการส่งข้อมูลสำเร็จ) ให้หมวดหมู่กลับไปเริ่มต้นที่ **"ประกันรถยนต์" (Motor)** อัตโนมัติ เพื่อลดขั้นตอนการเลือกใหม่สำหรับผู้ใช้งานส่วนใหญ่
 - **Duplicate Registration Soft Block (New! V6.1.7)**: ป้องกันการสร้างงาน "เช็คเบี้ยใหม่" สำหรับรถที่มีข้อมูลอยู่แล้วในระบบ โดยเมื่อผู้ใช้พิมพ์ทะเบียนรถ ระบบจะทำ Background Search หากพบข้อมูลตรงกันเป๊ะๆ ระบบจะขึ้นป้ายเตือนและบล็อคปุ่มส่งข้อมูล พร้อมให้ปุ่มสลับเป็นโหมด "ส่งเอกสารเพิ่มเติม" แบบรวดเร็ว
+- **Current Year Filter in Search (New! V6.1.8)**: ปรับปรุงการเรียกใช้ API `searchQuotations` ในระบบค้นหาและระบบตรวจข้อมูลซ้ำเบื้องหลัง ให้ส่งค่าปี ค.ศ. ปัจจุบันผ่าน query parameter `year` ไปยังเซิร์ฟเวอร์ด้วย เพื่อกรองข้อมูลการค้นหาให้เฉพาะเจาะจงเฉพาะปีปัจจุบันเท่านั้น
 
 ---
 
@@ -124,4 +125,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-07-19 (V6.1.7: Duplicate Prevention)*
+*Last Updated: 2026-07-19 (V6.1.8: Query Parameter Filter)*

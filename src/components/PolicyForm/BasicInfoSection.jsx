@@ -2,6 +2,8 @@ import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { AgentSearch } from '../AgentSearch';
 import { PolicySearch } from '../PolicySearch';
+import { SearchableSelect } from '../SearchableSelect';
+import { useVehicleData } from '../../hooks/useVehicleData';
 
 export function BasicInfoSection({
   state,
@@ -13,11 +15,18 @@ export function BasicInfoSection({
   uploadHistory
 }) {
   const {
-    submissionType, informerName, categoryId, referenceInput, isRedPlate, notes, duplicatePolicy
+    submissionType, informerName, categoryId, referenceInput, isRedPlate, notes, duplicatePolicy,
+    vehicleYear, vehicleMake, vehicleModel
   } = state;
   const {
-    setInformerId, setInformerName, setCategoryId, setReferenceInput, setIsRedPlate, setNotes, setDuplicatePolicy, setSubmissionType
+    setInformerId, setInformerName, setCategoryId, setReferenceInput, setIsRedPlate, setNotes, setDuplicatePolicy, setSubmissionType,
+    setVehicleYear, setVehicleMake, setVehicleModel
   } = setters;
+
+  const {
+    years, makes, models,
+    isLoadingYears, isLoadingMakes, isLoadingModels
+  } = useVehicleData(baseApiUrl, vehicleYear, vehicleMake);
 
   const handleResultsFetched = (results) => {
     if (submissionType !== 'quotation' || !referenceInput || referenceInput.length < 2) {
@@ -156,6 +165,54 @@ export function BasicInfoSection({
           </select>
         </div>
       </div>
+
+      {categoryId === '1' && (
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              ปีรถ
+            </label>
+            <SearchableSelect
+              options={years}
+              value={vehicleYear}
+              onSelect={(opt) => {
+                setVehicleYear(opt ? opt.value : '');
+                setVehicleMake('');
+                setVehicleModel('');
+              }}
+              placeholder={isLoadingYears ? "กำลังโหลด..." : "ปีรถ"}
+              disabled={isLoadingYears || submissionType === 'success'}
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              ยี่ห้อ
+            </label>
+            <SearchableSelect
+              options={makes}
+              value={vehicleMake}
+              onSelect={(opt) => {
+                setVehicleMake(opt ? opt.value : '');
+                setVehicleModel('');
+              }}
+              placeholder={isLoadingMakes ? "กำลังโหลด..." : (vehicleYear ? "ยี่ห้อรถ" : "เลือกปีรถก่อน")}
+              disabled={!vehicleYear || isLoadingMakes || submissionType === 'success'}
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              รุ่นรถ
+            </label>
+            <SearchableSelect
+              options={models}
+              value={vehicleModel}
+              onSelect={(opt) => setVehicleModel(opt ? opt.value : '')}
+              placeholder={isLoadingModels ? "กำลังโหลด..." : (vehicleMake ? "รุ่นรถ" : "เลือกยี่ห้อก่อน")}
+              disabled={!vehicleMake || isLoadingModels || submissionType === 'success'}
+            />
+          </div>
+        </div>
+      )}
 
       {submissionType !== 'success' && (
         <div class="mt-4">

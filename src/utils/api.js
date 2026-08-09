@@ -49,6 +49,17 @@ export const fetchCompanies = (baseUrl) => authenticatedFetch(`${baseUrl}/load-i
 export const fetchTemplates = (baseUrl) => authenticatedFetch(`${baseUrl}/load-notification-templates`);
 export const fetchPaymentMethods = (baseUrl) => authenticatedFetch(`${baseUrl}/load-payment-methods`);
 export const fetchBrokerChannels = (baseUrl) => authenticatedFetch(`${baseUrl}/load-broker-channels`);
+export const fetchVehicleYears = (baseUrl) => authenticatedFetch(`${baseUrl}/load-vehicle-years`);
+export const fetchVehicleMakes = (baseUrl, year = '') => {
+  const url = year ? `${baseUrl}/load-vehicle-makes?year=${encodeURIComponent(year)}` : `${baseUrl}/load-vehicle-makes`;
+  return authenticatedFetch(url);
+};
+export const fetchVehicleModels = (baseUrl, make, year = '') => {
+  if (!make) return Promise.reject(new Error("Make is required for fetchVehicleModels"));
+  const params = new URLSearchParams({ make });
+  if (year) params.append('year', year);
+  return authenticatedFetch(`${baseUrl}/load-vehicle-models?${params.toString()}`);
+};
 
 /**
  * Server-side search for quotations

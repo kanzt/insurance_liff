@@ -32,6 +32,10 @@ export function usePolicyFormState(setConfirmModal) {
   const [duplicatePolicy, setDuplicatePolicy] = useState(null);
   const [isRedPlate, setIsRedPlate] = useState(false);
   
+  const [vehicleYear, setVehicleYear] = useState('');
+  const [vehicleMake, setVehicleMake] = useState('');
+  const [vehicleModel, setVehicleModel] = useState('');
+  
   const [filesData, setFilesData] = useState({
     registration: [],
     oldPolicy: [],
@@ -73,6 +77,9 @@ export function usePolicyFormState(setConfirmModal) {
         if (data.commissionPercent) setCommissionPercent(data.commissionPercent);
         if (data.taxRate) setTaxRate(data.taxRate);
         if (data.policyNotes) setPolicyNotes(data.policyNotes);
+        if (data.vehicleYear) setVehicleYear(data.vehicleYear);
+        if (data.vehicleMake) setVehicleMake(data.vehicleMake);
+        if (data.vehicleModel) setVehicleModel(data.vehicleModel);
       } catch (e) {
         console.error("Failed to restore form state:", e);
       }
@@ -106,7 +113,10 @@ export function usePolicyFormState(setConfirmModal) {
       installmentMonths,
       brokerChannelId,
       commissionPercent,
-      taxRate
+      taxRate,
+      vehicleYear,
+      vehicleMake,
+      vehicleModel
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [
@@ -114,7 +124,7 @@ export function usePolicyFormState(setConfirmModal) {
     endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyNotes, 
     policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, 
     premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, 
-    commissionPercent, taxRate
+    commissionPercent, taxRate, vehicleYear, vehicleMake, vehicleModel
   ]);
 
   // Prevent "follow_case" if endDate is removed
@@ -179,6 +189,9 @@ export function usePolicyFormState(setConfirmModal) {
       setCommissionPercent('');
       setTaxRate('10');
       setPolicyNotes('');
+      setVehicleYear('');
+      setVehicleMake('');
+      setVehicleModel('');
       setFilesData({
         registration: [],
         oldPolicy: [],
@@ -280,6 +293,9 @@ export function usePolicyFormState(setConfirmModal) {
       isRedPlate,
       duplicatePolicy,
       filesData,
+      vehicleYear,
+      vehicleMake,
+      vehicleModel,
     },
     setters: {
       setInformerId,
@@ -311,6 +327,9 @@ export function usePolicyFormState(setConfirmModal) {
       setIsRedPlate,
       setDuplicatePolicy,
       setFilesData,
+      setVehicleYear,
+      setVehicleMake,
+      setVehicleModel,
     },
     actions: {
       handleReminderToggle,

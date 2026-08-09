@@ -1,7 +1,15 @@
-# AI Handoff: Insurance LIFF Project Status (V6.1.12: Concurrency & Duplicate Protection)
+# AI Handoff: Insurance LIFF Project Status (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.0.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย เพื่อความง่ายในการดูแลรักษาและรองรับการขยายตัวในอนาคต
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.2.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย พร้อมเพิ่มระบบเลือกข้อมูลรถยนต์แบบ Cascading Dropdown (ปี, ยี่ห้อ, รุ่น) สำหรับประกันรถยนต์
+
+---
+
+### 🌟 0. Vehicle Cascading & Explicit Vehicle Fields (New! V6.2.0)
+- **Cascading Vehicle Select**: เพิ่มระบบเลือกปีรถยนต์ ยี่ห้อ และรุ่นรถยนต์ (`vehicleYear`, `vehicleMake`, `vehicleModel`) เมื่อเลือกหมวดหมู่เป็น **ประกันรถยนต์ (`categoryId === '1'`)**
+- **Custom Hook `useVehicleData`**: สร้าง Hook ใหม่ในการดึงข้อมูลปี ยี่ห้อ และรุ่นแบบต่อเนื่องตามลำดับผ่าน Edge Functions (`/load-vehicle-years`, `/load-vehicle-makes`, `/load-vehicle-models`)
+- **State & Draft Persistence**: บันทึกข้อมูลรถยนต์ลง LocalStorage (`insurance_liff_form_draft`) เพื่อคงสถานะดราฟต์ไว้ และรองรับการเคลียร์ข้อมูลด้วยฟังก์ชัน `handleReset`
+- **Explicit Payload Submission**: ส่งข้อมูล `vehicle_year`, `vehicle_make`, และ `vehicle_model` แยกเป็นฟิลด์อิสระผ่าน `FormData` ใน `usePolicySubmit.js` ไปยัง API `submit-quotation` และ `update-quotation`
 
 ---
 
@@ -109,6 +117,9 @@
 | `reminder_date` | `reminder_date` | วันที่ตั้งแจ้งเตือน |
 | `reminder_type` | `reminder_type` | ประเภทการแจ้งเตือน |
 | `notes` | `notes` | หมายเหตุ / ข้อมูลเพิ่มเติม |
+| `vehicleYear` | `vehicle_year` | ปีรถยนต์ (เฉพาะ Motor `categoryId === '1'`) |
+| `vehicleMake` | `vehicle_make` | ยี่ห้อรถยนต์ (เฉพาะ Motor `categoryId === '1'`) |
+| `vehicleModel` | `vehicle_model` | รุ่นรถยนต์ (เฉพาะ Motor `categoryId === '1'`) |
 | `policy_notes` | `policy_notes` | หมายเหตุสำหรับงานสำเร็จ (เฉพาะ Success) |
 | `submitAgentCode` | `submitted_by` | รหัสผู้แจ้งงาน/ผู้ปิดการขาย (เฉพาะ Success) |
 | `commission_percent` | `commission_percent` | % คอมมิชชันตัวแทน (เฉพาะ Success) |
@@ -131,4 +142,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-07-19 (V6.1.12: Concurrency & Duplicate Protection)*
+*Last Updated: 2026-08-09 (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)*

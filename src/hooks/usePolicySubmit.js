@@ -167,6 +167,12 @@ export function usePolicySubmit({
           if (submissionState.notes) formData.append('notes', submissionState.notes);
         }
 
+        if (submissionState.categoryId === '1') {
+          if (submissionState.vehicleYear) formData.append('vehicle_year', submissionState.vehicleYear);
+          if (submissionState.vehicleMake) formData.append('vehicle_make', submissionState.vehicleMake);
+          if (submissionState.vehicleModel) formData.append('vehicle_model', submissionState.vehicleModel);
+        }
+
         if (submissionState.submissionType === 'success') {
           const qId = submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id;
           if (qId) formData.append('quotation_id', qId);

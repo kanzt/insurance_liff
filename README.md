@@ -8,9 +8,12 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (High-performance CSS framework)
 - **Platform**: [LINE LIFF SDK](https://developers.line.biz/en/docs/liff/overview/)
 - **Backend Service**: Supabase Edge Functions
-*Last Updated: 2026-05-16 (V5.7.0: Tax Withholding & Note Integrity)*
+*Last Updated: 2026-08-09 (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)*
 
 ## ✨ ฟีเจอร์หลัก
+- **Vehicle Cascading Selection**: ระบบเลือกข้อมูลรถยนต์แบบแสดงผลต่อเนื่อง (ปี -> ยี่ห้อ -> รุ่น) เฉพาะหมวดหมู่ประกันรถยนต์
+- **Non-blocking Background Upload**: ย้ายระบบอัปโหลดและบีบอัดรูปภาพไปรันเบื้องหลัง พร้อมรีเซ็ตฟอร์มทันที และแจ้งเตือนผ่าน Toast Notification
+- **Concurrency & Race Condition Protection**: ล็อกปุ่มกดส่งและล็อกรายการค้นหาหากข้อมูลนั้นๆ กำลังประมวลผลการอัปโหลดอยู่เบื้องหลัง
 - **Agent Verification**: ระบบตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
 - **Financial Tracking**: ระบบบันทึกเบี้ยประกันและยอดโอนจริง พร้อมช่องทางการชำระเงิน (เฉพาะแจ้งงานสำเร็จ)
 - **Searchable Agent Selection**: กล่องค้นหาตัวแทนอัจฉริยะ (กรองตามชื่อหรือรหัสตัวแทน)
@@ -68,6 +71,9 @@
 - **V5.5.0: Purpose Switch Refactor**: ล้างข้อมูลในฟอร์มทั้งหมด (Reset) ทุกครั้งที่มีการสลับ "วัตถุประสงค์การแจ้งงาน" เพื่อความถูกต้องของข้อมูลในแต่ละ Workflow
 - **V5.6.0: Success Flow Optimization**: แยก Endpoint งานสำเร็จไปที่ `/submit-policy`, ยกเลิกการส่ง Reminder ในงานสำเร็จ และส่ง `product_id` เพื่อความแม่นยำของข้อมูล
 - **V5.7.0: Tax Withholding & Note Integrity**: เพิ่มฟิลด์ `% หักภาษี (tax_rate)` พร้อมค่าเริ่มต้น 10%, แยก State หมายเหตุกรมธรรม์ (`policy_notes`) และปรับปรุง UI Flow ของงานสำเร็จ
+- **V6.0.0: Structural Component Refactoring**: แยกโครงสร้างโค้ดออกเป็น Hooks (`useReferenceData`, `usePolicyFormState`, `usePolicySubmit`) และ Sub-components เพื่อความยืดหยุ่นในการขยายแอป
+- **V6.1.0 - V6.1.12: Non-blocking Background Upload & Concurrency Protection**: ย้ายการยิง API อัปโหลดไปรันเบื้องหลัง, เพิ่ม Toast Notifications, ดูประวัติ session, ล็อกการส่งซ้ำซ้อน
+- **V6.2.0: Vehicle Cascading & Explicit Vehicle Fields**: เพิ่มระบบเลือกปี ยี่ห้อ และรุ่นรถยนต์แบบ Cascading Dropdown พร้อมส่งข้อมูล `vehicle_year`, `vehicle_make`, `vehicle_model` แยกฟิลด์อิสระ
 
 
 
@@ -87,5 +93,5 @@
 2. ไปที่เมนู **Settings > Pages** และเลือก Build and deployment source เป็น **GitHub Actions**
 
 ---
-*Last Updated: 2026-05-16 (V5.7.0: Tax Withholding & Note Integrity)*
+*Last Updated: 2026-08-09 (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)*
 *จัดทำและพัฒนาโดยทีม Antigravity*

@@ -137,7 +137,10 @@
 ### การจัดการ API ใหม่
 - **GET `/load-categories`**: ต้องส่งกลับข้อมูลในรูปแบบ `{"results": [{ "category_id": "xxx", "categoryName": "xxx" }]}`
 - **GET `/load-quotations`**: ค้นหารายการใบเสนอราคาเดิม
-- **POST `/submit-quotation`**: ส่งข้อมูลขอใบเสนอราคาใหม่
+- **GET `/load-vehicle-years`**: ดึงรายชื่อปีรถยนต์ที่รองรับ
+- **GET `/load-vehicle-makes`**: ดึงรายชื่อยี่ห้อรถยนต์ (รองรับ query `year`)
+- **GET `/load-vehicle-models`**: ดึงรายชื่อรุ่นรถยนต์ตามยี่ห้อ (ต้องระบุ query `make`)
+- **POST `/submit-quotation`**: ส่งข้อมูลขอใบเสนอราคาใหม่ (รองรับ `vehicle_year`, `vehicle_make`, `vehicle_model`)
 - **POST `/update-quotation`**: อัปเดตข้อมูล/ส่งเอกสารเพิ่ม (ต้องมี `quotation_id`)
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 

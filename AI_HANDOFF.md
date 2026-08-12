@@ -1,11 +1,12 @@
-# AI Handoff: Insurance LIFF Project Status (V6.3.0: Master Data String Slug IDs Refactoring)
+# AI Handoff: Insurance LIFF Project Status (V6.3.0: Master Data & Member Level String Slug IDs Refactoring)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.3.0 ปรับปรุงระบบให้รองรับ Master Data String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`) จาก Backend แทนรหัสตัวเลขเดิม
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.3.0 ปรับปรุงระบบให้รองรับ Master Data & Member Level String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`, `'follow_case'`, `'1+'`, `'1'`) จาก Backend แทนรหัสตัวเลขเดิม
 
 ---
 
-### 🌟 0. Master Data & Notification Template String Slug IDs Refactoring (New! V6.3.0)
+### 🌟 0. Master Data & Member Level String Slug IDs Refactoring (New! V6.3.0)
+- **Member Level String Slugs**: ข้อมูลตัวแทนจาก API `GET /load-agents` ส่งคอลัมน์ `level_id` หรือ `levelId` กลับมาเป็นระดับ String Slug สมาชิกโดยตรง (`'1+++'`, `'1++'`, `'1+'`, `'1'`, `'2'`, `'3'`, `'4'`, `'5'`, `'6'`)
 - **LIFF Status String Slugs**: ปรับปรุงระบบตรวจสอบสิทธิ์ตัวแทนใน `App.jsx` ให้รองรับสถานะ `'approved'` และ `'pending'` ควบคู่กับรหัสตัวเลขเดิม (`1, 2`) เพื่อความยืดหยุ่นและความปลอดภัย
 - **Insurance Category String Slugs**: ปรับปรุง State เริ่มต้นของฟอร์ม (`usePolicyFormState.js`), การกรองหมวดหมู่ใน `BasicInfoSection.jsx`, `ReminderSection.jsx`, `PolicySearch.jsx` และ `usePolicySubmit.js` ให้รองรับรหัสหมวดหมู่ `'motor'` และ `'non_motor'`
 - **Payment Method & Bank String Slugs**: ปรับปรุงเงื่อนไขการเช็คประเภทชำระเงินใน `SuccessFlowSection.jsx` ให้รองรับ `'credit_card'`, `'cash'`, และ `'cash_installment'`

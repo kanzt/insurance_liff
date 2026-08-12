@@ -1,21 +1,22 @@
-# AI Handoff: Insurance LIFF Project Status (V6.3.0: Master Data & Member Level String Slug IDs Refactoring)
+# AI Handoff: Insurance LIFF Project Status (V6.4.0: 100% Master Data String/Slug Primary Keys Standardisation)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.3.0 ปรับปรุงระบบให้รองรับ Master Data & Member Level String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`, `'follow_case'`, `'1+'`, `'1'`) จาก Backend แทนรหัสตัวเลขเดิม
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.4.0 มาตรฐานระบบเป็น **100% Semantic String Slug Primary Keys** ครอบคลุม Master Data ทั้งหมด (เช่น `companyId: 'viriyah'`, `productId: 'motor_class1'`, `categoryId: 'motor'`, `paymentMethodId: 'cash'`, `brokerChannelId: 'srikrung'`, `levelId: '1+'`) ไร้การใช้งาน Numeric Auto-increment ID ใน Master Data
 
 ---
 
-### 🌟 0. Master Data & Member Level String Slug IDs Refactoring (New! V6.3.0)
-- **Member Level String Slugs**: ข้อมูลตัวแทนจาก API `GET /load-agents` ส่งคอลัมน์ `level_id` หรือ `levelId` กลับมาเป็นระดับ String Slug สมาชิกโดยตรง (`'1+++'`, `'1++'`, `'1+'`, `'1'`, `'2'`, `'3'`, `'4'`, `'5'`, `'6'`)
-- **LIFF Status String Slugs**: ปรับปรุงระบบตรวจสอบสิทธิ์ตัวแทนใน `App.jsx` ให้รองรับสถานะ `'approved'` และ `'pending'` ควบคู่กับรหัสตัวเลขเดิม (`1, 2`) เพื่อความยืดหยุ่นและความปลอดภัย
-- **Insurance Category String Slugs**: ปรับปรุง State เริ่มต้นของฟอร์ม (`usePolicyFormState.js`), การกรองหมวดหมู่ใน `BasicInfoSection.jsx`, `ReminderSection.jsx`, `PolicySearch.jsx` และ `usePolicySubmit.js` ให้รองรับรหัสหมวดหมู่ `'motor'` และ `'non_motor'`
-- **Payment Method & Bank String Slugs**: ปรับปรุงเงื่อนไขการเช็คประเภทชำระเงินใน `SuccessFlowSection.jsx` ให้รองรับ `'credit_card'`, `'cash'`, และ `'cash_installment'`
-- **Notification Template String Slugs & IDs**: ปรับปรุงการเลือกและพรีวิวเทมเพลตใน `ReminderSection.jsx` ให้รองรับ `templateId` (เช่น `'follow_case'`, `'quotation_confirm'`, `'check_transfer'`) และ `slug`
-- **Full Backward & Forward Compatibility**: ทุกจุดสำคัญถูกออกแบบให้รองรับทั้ง String Slug ID ใหม่และ Numeric ID เดิม เพื่อป้องกันปัญหาความไม่สอดคล้องของข้อมูล
+### 🌟 0. 100% Master Data String/Slug Primary Keys Standardisation (New! V6.4.0)
+- **100% System-Wide String Slug PKs**: ปรับเปลี่ยน Primary Key และ Foreign Key ของ Master Data ทุกตารางในระบบจากตัวเลข (`1, 2, 3`) เป็น String Slug ที่สื่อความหมาย (e.g. `'viriyah'`, `'srikrung'`, `'motor_class1'`, `'motor'`, `'cash'`, `'kbank'`, `'follow_case'`, `'approved'`, `'bangkok'`)
+- **Company & Broker Channel Slugs**: API `/load-insurance-companies` และ `/load-broker-channels` ส่งคีย์ `companyId` และ `channelId` เป็น String Slugs เช่น `'viriyah'`, `'srikrung'` และส่งตรงเข้า `POST /submit-policy`
+- **Product & Category Slugs**: API `/load-insurance-products` คืนค่า `productId` (`'motor_class1'`, `'motor_compulsory'`) และ `categoryId` (`'motor'`, `'non_motor'`)
+- **Payment Method & Bank Slugs**: API `/load-payment-methods` คืนค่า `paymentMethodId` (`'cash'`, `'credit_card'`, `'cash_installment'`)
+- **Notification Template Slugs**: API `/load-notification-templates` คืนค่า `templateId` (`'follow_case'`, `'quotation_confirm'`, `'check_transfer'`)
+- **Member Level Slugs**: API `/load-agents` คืนค่า `level_id` เป็นระดับสมาชิก (`'1+++'`, `'1++'`, `'1+'`, `'1'`, `'2'`, `'3'`, `'4'`, `'5'`, `'6'`)
+- **Full Backward & Forward Compatibility**: รองรับทั้ง String Slug ID และ Numeric Fallback ID เดิมเพื่อความปลอดภัยในการรับส่งข้อมูล
 
 ---
 
-### 🌟 0. Vehicle Cascading & Explicit Vehicle Fields (New! V6.2.0)
+### 🌟 0. Vehicle Cascading & Explicit Vehicle Fields (V6.2.0)
 - **Cascading Vehicle Select**: เพิ่มระบบเลือกปีรถยนต์ ยี่ห้อ และรุ่นรถยนต์ (`vehicleYear`, `vehicleMake`, `vehicleModel`) เมื่อเลือกหมวดหมู่เป็น **ประกันรถยนต์ (`categoryId === 'motor'` หรือ `'1'`)**
 - **Custom Hook `useVehicleData`**: สร้าง Hook ใหม่ในการดึงข้อมูลปี ยี่ห้อ และรุ่นแบบต่อเนื่องตามลำดับผ่าน Edge Functions (`/load-vehicle-years`, `/load-vehicle-makes`, `/load-vehicle-models`)
 - **State & Draft Persistence**: บันทึกข้อมูลรถยนต์ลง LocalStorage (`insurance_liff_form_draft`) เพื่อคงสถานะดราฟต์ไว้ และรองรับการเคลียร์ข้อมูลด้วยฟังก์ชัน `handleReset`
@@ -155,4 +156,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-08-12 (V6.3.0: Master Data String Slug IDs Refactoring)*
+*Last Updated: 2026-08-12 (V6.4.0: 100% Master Data String/Slug Primary Keys Standardisation)*

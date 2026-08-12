@@ -46,10 +46,11 @@ export function ReminderSection({
                 <div class="grid grid-cols-1 gap-2">
                   {templates.length > 0 ? (
                     templates.map((t) => {
-                      const isDisabled = t.slug === 'follow_case' && !endDate;
+                      const tId = t.templateId || t.slug;
+                      const isDisabled = tId === 'follow_case' && !endDate;
                       return (
                         <label
-                          key={t.slug}
+                          key={tId}
                           onClick={(e) => {
                             if (isDisabled) {
                               e.preventDefault();
@@ -58,7 +59,7 @@ export function ReminderSection({
                           }}
                           class={`flex items-center p-2 rounded-xl border-2 transition-all ${isDisabled
                             ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-100'
-                            : reminderType === t.slug
+                            : reminderType === tId
                               ? 'border-brand-500 bg-brand-100/50 shadow-sm cursor-pointer'
                               : 'border-gray-200 bg-white hover:border-brand-200 cursor-pointer'
                             }`}
@@ -66,14 +67,14 @@ export function ReminderSection({
                           <input
                             type="radio"
                             name="reminderType"
-                            value={t.slug}
-                            checked={reminderType === t.slug}
-                            onChange={() => !isDisabled && setReminderType(t.slug)}
+                            value={tId}
+                            checked={reminderType === tId}
+                            onChange={() => !isDisabled && setReminderType(tId)}
                             disabled={isDisabled}
                             class="w-4 h-4 text-brand-600 border-gray-300 focus:ring-brand-500"
                           />
                           <div class="ml-3 flex flex-col">
-                            <span class={`text-sm font-medium ${reminderType === t.slug && !isDisabled ? 'text-brand-800' : 'text-gray-600'}`}>
+                            <span class={`text-sm font-medium ${reminderType === tId && !isDisabled ? 'text-brand-800' : 'text-gray-600'}`}>
                               {t.title}
                             </span>
                             {isDisabled && (
@@ -116,7 +117,7 @@ export function ReminderSection({
                   <div class="ml-2 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-md max-w-[85%]">
                     <p class="text-[13px] text-gray-800 whitespace-pre-wrap leading-relaxed">
                       {(() => {
-                        const template = templates.find(t => t.slug === reminderType);
+                        const template = templates.find(t => (t.templateId || t.slug) === reminderType);
                         if (!template) return 'เลือกประเภทการแจ้งเตือน...';
 
                         const isMotor = categoryId === 'motor' || categoryId === '1';

@@ -29,7 +29,7 @@ export function PurposeSelector({ state, setters, actions }) {
                 handleReset(false);
                 setSubmissionType(nextType);
                 if (nextType === 'quotation') {
-                  setCategoryId('1');
+                  setCategoryId('motor');
                 }
               }}
               class="sr-only"

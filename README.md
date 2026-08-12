@@ -75,7 +75,7 @@
 - **V6.1.0 - V6.1.12: Non-blocking Background Upload & Concurrency Protection**: ย้ายการยิง API อัปโหลดไปรันเบื้องหลัง, เพิ่ม Toast Notifications, ดูประวัติ session, ล็อกการส่งซ้ำซ้อน
 - **V6.2.0: Vehicle Cascading & Explicit Vehicle Fields**: เพิ่มระบบเลือกปี ยี่ห้อ และรุ่นรถยนต์แบบ Cascading Dropdown พร้อมส่งข้อมูล `vehicle_year`, `vehicle_make`, `vehicle_model` แยกฟิลด์อิสระ
 - **V6.3.0: Master Data & Member Level String Slug IDs Refactoring**: รองรับ Semantic String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`, `'follow_case'`, `'1+'`, `'1'`) ทั้งระบบพร้อมระบบ Fallback
-- **V6.4.0: 100% Master Data String/Slug Primary Keys Standardisation**: มาตรฐานระบบเป็น Semantic String Slug Primary Keys 100% ครอบคลุม Master Data ทั้งหมด (`companyId`, `productId`, `categoryId`, `paymentMethodId`, `brokerChannelId`, `levelId`, `templateId`, `province`, `vehicleMake`, `vehicleModel`)
+- **V6.4.0: 100% Master Data String/Slug Primary Keys Standardisation**: มาตรฐานระบบเป็น Semantic String Slug Primary Keys 100% ครอบคลุม Master Data ทั้งหมด (`companyId`, `productId`, `categoryId`, `paymentMethodId`, `brokerChannelId`, `levelId`, `templateId`, `province`, `vehicleMake`, `vehicleModel`) พร้อมระบบเคลียร์ค่าปี ยี่ห้อ รุ่นรถยนต์อัตโนมัติเมื่อสลับหมวดหมู่ประกันภัย
 
 
 

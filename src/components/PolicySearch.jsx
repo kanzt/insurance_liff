@@ -93,7 +93,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     const catId = policy.categoryId || policy.category_id;
     const subCatName = policy.subCategoryName || policy.sub_category_name || '';
     
-    const displayValue = (plate === 'ประกันอื่นๆ' || catId === '2' || catId === 2)
+    const displayValue = (plate === 'ประกันอื่นๆ' || catId === 'non_motor' || catId === '2' || catId === 2)
       ? `${subCatName} ${customer}`.trim()
       : `${plate} ${customer}`.trim();
       
@@ -183,7 +183,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
                   >
                     <div class="flex justify-between items-start mb-1">
                       <span class={`font-bold ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
-                        {(catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
+                        {(catId === 'non_motor' || catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
                           ? (subCatName || catName)
                           : (plate || 'ไม่ระบุทะเบียน')
                         }

@@ -119,8 +119,9 @@ export function ReminderSection({
                         const template = templates.find(t => t.slug === reminderType);
                         if (!template) return 'เลือกประเภทการแจ้งเตือน...';
 
-                        const dPlate = categoryId === '1' ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '')) : '';
-                        const dCustomer = categoryId === '1' ? (isRedPlate ? (referenceInput || '') : '') : (referenceInput || '');
+                        const isMotor = categoryId === 'motor' || categoryId === '1';
+                        const dPlate = isMotor ? (isRedPlate ? 'ป้ายแดง' : (referenceInput || '')) : '';
+                        const dCustomer = isMotor ? (isRedPlate ? (referenceInput || '') : '') : (referenceInput || '');
 
                         let finalPreview = template.body_template
                           .replace(/{{customer}}/g, dCustomer)

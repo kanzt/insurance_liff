@@ -28,6 +28,8 @@ export function BasicInfoSection({
     isLoadingYears, isLoadingMakes, isLoadingModels
   } = useVehicleData(baseApiUrl, vehicleYear, vehicleMake);
 
+  const isMotor = categoryId === 'motor' || categoryId === '1';
+
   const handleResultsFetched = (results) => {
     if (submissionType !== 'quotation' || !referenceInput || referenceInput.length < 2) {
       setDuplicatePolicy(null);
@@ -60,7 +62,7 @@ export function BasicInfoSection({
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-4">
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {categoryId === '1'
+            {isMotor
               ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
               : 'ชื่อผู้เอาประกัน'}
             <span class="text-red-500">*</span>
@@ -77,7 +79,7 @@ export function BasicInfoSection({
               onResultsFetched={handleResultsFetched}
               initialQuery={referenceInput}
               uploadHistory={uploadHistory}
-              placeholder={categoryId === '1'
+              placeholder={isMotor
                 ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
                 : '🔍 เช่น สมชาย ใจดี'}
             />
@@ -110,7 +112,7 @@ export function BasicInfoSection({
             </div>
           )}
 
-          {categoryId === '1' && submissionType !== 'success' && !state.selectedPolicy && (
+          {isMotor && submissionType !== 'success' && !state.selectedPolicy && (
             <div class="mt-2 pl-1">
               <label class="flex items-center cursor-pointer group">
                 <input
@@ -166,7 +168,7 @@ export function BasicInfoSection({
         </div>
       </div>
 
-      {categoryId === '1' && (
+      {isMotor && (
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">

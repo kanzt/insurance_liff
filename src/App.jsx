@@ -139,14 +139,14 @@ export function App() {
     }
 
     if (profile) {
-      if (liffStatus === 1) {
+      if (liffStatus === 'pending' || liffStatus === 1) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
             👤&nbsp;เข้าสู่ระบบด้วย LINE:&nbsp;<b>{profile.displayName}</b> <br />
             <span class="text-orange-600 mt-1 block font-semibold">⏳&nbsp;บัญชีของคุณอยู่ระหว่างรอแอดมินอนุมัติ</span>
           </div>
         );
-      } else if (liffStatus === 2) {
+      } else if (liffStatus === 'approved' || liffStatus === 2) {
         return (
           <div class="text-sm text-brand-600 bg-brand-50 p-3 rounded-lg border border-brand-100 mb-6 text-center shadow-inner">
             👤&nbsp;เข้าสู่ระบบด้วย LINE:&nbsp;<b>{profile.displayName}</b>
@@ -174,7 +174,7 @@ export function App() {
 
         {renderProfileBox()}
 
-        {!isLoading && !error && liffStatus === 2 && (
+        {!isLoading && !error && (liffStatus === 'approved' || liffStatus === 2) && (
           <PolicyForm 
             idToken={idToken} 
             baseApiUrl={baseApiUrl} 

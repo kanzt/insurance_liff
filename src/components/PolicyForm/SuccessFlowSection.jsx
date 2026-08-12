@@ -26,8 +26,8 @@ export function SuccessFlowSection({
 
   if (submissionType !== 'success') return null;
 
-  const isCreditCard = selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
-  const isInstallment = selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
+  const isCreditCard = selectedPaymentMethod?.paymentMethodId === 'credit_card' || selectedPaymentMethod?.paymentMethodName?.includes('ชำระบัตรเครดิต');
+  const isInstallment = selectedPaymentMethod?.paymentMethodId === 'cash_installment' || selectedPaymentMethod?.paymentMethodName?.includes('ผ่อนเงินสด');
 
   return (
     <div class="bg-white p-4 rounded-xl border-2 border-brand-500 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 mt-4 mb-6 ring-4 ring-brand-50">
@@ -83,7 +83,7 @@ export function SuccessFlowSection({
         <option value="">-- เลือกประเภทงานที่ปิดการขายได้ --</option>
         <optgroup label="🚗 งานรถยนต์ (Motor)">
           {products
-            .filter(sub => sub.categoryId?.toString() === '1')
+            .filter(sub => sub.categoryId?.toString() === 'motor' || sub.categoryId?.toString() === '1')
             .map(sub => (
               <option key={sub.productId} value={sub.productId}>{sub.productName}</option>
             ))
@@ -91,7 +91,7 @@ export function SuccessFlowSection({
         </optgroup>
         <optgroup label="🛡️ งานประกันอื่นๆ (Non-Motor)">
           {products
-            .filter(sub => sub.categoryId?.toString() === '2')
+            .filter(sub => sub.categoryId?.toString() === 'non_motor' || sub.categoryId?.toString() === '2')
             .map(sub => (
               <option key={sub.productId} value={sub.productId}>{sub.productName}</option>
             ))

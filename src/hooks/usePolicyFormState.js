@@ -5,7 +5,7 @@ const STORAGE_KEY = 'insurance_liff_form_draft';
 export function usePolicyFormState(setConfirmModal) {
   const [informerId, setInformerId] = useState(null);
   const [informerName, setInformerName] = useState('');
-  const [categoryId, setCategoryId] = useState('1');
+  const [categoryId, setCategoryId] = useState('motor');
   const [productId, setProductId] = useState('');
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [submissionType, setSubmissionType] = useState('quotation');

@@ -87,7 +87,8 @@ export function usePolicySubmit({
     // Background upload function
     const doBackgroundSubmit = async (submissionState) => {
       let tempCustomerName = null;
-      if (submissionState.categoryId === '1') {
+      const isMotor = submissionState.categoryId === 'motor' || submissionState.categoryId === '1';
+      if (isMotor) {
         tempCustomerName = submissionState.isRedPlate ? submissionState.referenceInput : submissionState.referenceInput;
       } else {
         tempCustomerName = submissionState.referenceInput;
@@ -134,7 +135,7 @@ export function usePolicySubmit({
         let plateNumber = null;
         let customerName = null;
 
-        if (submissionState.categoryId === '1') {
+        if (isMotor) {
           if (submissionState.isRedPlate) {
             plateNumber = 'ป้ายแดง';
             customerName = submissionState.referenceInput;
@@ -167,7 +168,7 @@ export function usePolicySubmit({
           if (submissionState.notes) formData.append('notes', submissionState.notes);
         }
 
-        if (submissionState.categoryId === '1') {
+        if (isMotor) {
           if (submissionState.vehicleYear) formData.append('vehicle_year', submissionState.vehicleYear);
           if (submissionState.vehicleMake) formData.append('vehicle_make', submissionState.vehicleMake);
           if (submissionState.vehicleModel) formData.append('vehicle_model', submissionState.vehicleModel);

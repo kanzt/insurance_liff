@@ -1,7 +1,15 @@
-# AI Handoff: Insurance LIFF Project Status (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)
+# AI Handoff: Insurance LIFF Project Status (V6.3.0: Master Data String Slug IDs Refactoring)
 
 ## 📌 Project Overview
-โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.2.0 เน้นการปรับปรุงโครงสร้างโค้ด (Refactoring) โดยแยกส่วน `PolicyForm.jsx` ออกเป็น Hooks และ Components ย่อย พร้อมเพิ่มระบบเลือกข้อมูลรถยนต์แบบ Cascading Dropdown (ปี, ยี่ห้อ, รุ่น) สำหรับประกันรถยนต์
+โปรเจกต์ระบบการยื่นคำขอเช็คเบี้ยประกันภัยผ่านแพลตฟอร์ม LINE LIFF App เวอร์ชัน V6.3.0 ปรับปรุงระบบให้รองรับ Master Data String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`) จาก Backend แทนรหัสตัวเลขเดิม
+
+---
+
+### 🌟 0. Master Data String Slug IDs Refactoring (New! V6.3.0)
+- **LIFF Status String Slugs**: ปรับปรุงระบบตรวจสอบสิทธิ์ตัวแทนใน `App.jsx` ให้รองรับสถานะ `'approved'` และ `'pending'` ควบคู่กับรหัสตัวเลขเดิม (`1, 2`) เพื่อความยืดหยุ่นและความปลอดภัย
+- **Insurance Category String Slugs**: ปรับปรุง State เริ่มต้นของฟอร์ม (`usePolicyFormState.js`), การกรองหมวดหมู่ใน `BasicInfoSection.jsx`, `ReminderSection.jsx`, `PolicySearch.jsx` และ `usePolicySubmit.js` ให้รองรับรหัสหมวดหมู่ `'motor'` และ `'non_motor'`
+- **Payment Method & Bank String Slugs**: ปรับปรุงเงื่อนไขการเช็คประเภทชำระเงินใน `SuccessFlowSection.jsx` ให้รองรับ `'credit_card'`, `'cash'`, และ `'cash_installment'`
+- **Full Backward & Forward Compatibility**: ทุกจุดสำคัญถูกออกแบบให้รองรับทั้ง String Slug ID ใหม่และ Numeric ID เดิม เพื่อป้องกันปัญหาความไม่สอดคล้องของข้อมูล
 
 ---
 
@@ -145,4 +153,4 @@
 - **POST `/submit-policy`**: ส่งข้อมูลแจ้งงานสำเร็จ (Success Job)
 
 ---
-*Last Updated: 2026-08-09 (V6.2.0: Vehicle Cascading & Explicit Vehicle Fields)*
+*Last Updated: 2026-08-12 (V6.3.0: Master Data String Slug IDs Refactoring)*

@@ -12,7 +12,7 @@
 - **Payment Method & Bank Slugs**: API `/load-payment-methods` คืนค่า `paymentMethodId` (`'cash'`, `'credit_card'`, `'cash_installment'`)
 - **Notification Template Slugs**: API `/load-notification-templates` คืนค่า `templateId` (`'follow_case'`, `'quotation_confirm'`, `'check_transfer'`)
 - **Member Level Slugs**: API `/load-agents` คืนค่า `level_id` เป็นระดับสมาชิก (`'1+++'`, `'1++'`, `'1+'`, `'1'`, `'2'`, `'3'`, `'4'`, `'5'`, `'6'`)
-- **Vehicle Fields Auto-Reset on Category Switch**: เคลียร์ค่าปีรถ (`vehicleYear`), ยี่ห้อ (`vehicleMake`), และรุ่นรถ (`vehicleModel`) อัตโนมัติใน `BasicInfoSection.jsx` ทุกครั้งที่มีการเลือกหรือเปลี่ยนหมวดหมู่ประกันภัย
+- **Reference, Policy & Vehicle Auto-Reset on Category Switch**: เคลียร์ค่าทะเบียนรถ/ชื่อผู้เอาประกัน (`referenceInput`), กรมธรรม์เดิมที่เลือก (`selectedPolicy`), สถานะป้ายแดง (`isRedPlate`), แจ้งเตือนรายการซ้ำ (`duplicatePolicy`), และข้อมูลรถยนต์ (`vehicleYear`, `vehicleMake`, `vehicleModel`) อัตโนมัติใน `BasicInfoSection.jsx` ทุกครั้งที่มีการเลือกหรือเปลี่ยนหมวดหมู่ประกันภัย
 - **Full Backward & Forward Compatibility**: รองรับทั้ง String Slug ID และ Numeric Fallback ID เดิมเพื่อความปลอดภัยในการรับส่งข้อมูล
 
 ---

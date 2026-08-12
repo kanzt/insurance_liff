@@ -20,7 +20,7 @@ export function BasicInfoSection({
   } = state;
   const {
     setInformerId, setInformerName, setCategoryId, setReferenceInput, setIsRedPlate, setNotes, setDuplicatePolicy, setSubmissionType,
-    setVehicleYear, setVehicleMake, setVehicleModel
+    setVehicleYear, setVehicleMake, setVehicleModel, setSelectedPolicy
   } = setters;
 
   const {
@@ -153,6 +153,14 @@ export function BasicInfoSection({
             onChange={(e) => {
               const newCat = e.target.value;
               setCategoryId(newCat);
+              setReferenceInput('');
+              setIsRedPlate(false);
+              setDuplicatePolicy(null);
+              if (actions && actions.handleSelectPolicy) {
+                actions.handleSelectPolicy(null);
+              } else if (setSelectedPolicy) {
+                setSelectedPolicy(null);
+              }
               setVehicleYear('');
               setVehicleMake('');
               setVehicleModel('');

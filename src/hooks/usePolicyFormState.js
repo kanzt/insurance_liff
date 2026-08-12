@@ -262,6 +262,46 @@ export function usePolicyFormState(setConfirmModal) {
     }
   };
 
+  const handleCategoryChange = (newCatId) => {
+    setCategoryId(newCatId);
+    setProductId('');
+    setDuplicatePolicy(null);
+    setIsRedPlate(false);
+    setReferenceInput('');
+    setEndDate('');
+    setEnableReminder(false);
+    setReminderDate('');
+    setReminderType('quotation_confirm');
+    setSelectedPolicy(null);
+    setNotes('');
+    setPolicyStartDate('');
+    setPolicyExpiryDate('');
+    setSubmitAgentCode('');
+    setBrokerChannelId('');
+    setCompanyId('');
+    setCompanyName('');
+    setPremiumAmount('');
+    setPaymentMethodId('');
+    setActualPaid('');
+    setInstallmentMonths('');
+    setSelectedPaymentMethod(null);
+    setCommissionPercent('');
+    setTaxRate('10');
+    setPolicyNotes('');
+    setVehicleYear('');
+    setVehicleMake('');
+    setVehicleModel('');
+    setFilesData({
+      registration: [],
+      oldPolicy: [],
+      quotation: [],
+      compQuotation: [],
+      renewalNotice: [],
+      workOrder: [],
+      others: []
+    });
+  };
+
   return {
     state: {
       informerId,
@@ -335,6 +375,7 @@ export function usePolicyFormState(setConfirmModal) {
       handleReminderToggle,
       handleReset,
       handleSelectPolicy,
+      handleCategoryChange,
     }
   };
 }

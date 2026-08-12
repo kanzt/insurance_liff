@@ -83,18 +83,11 @@ export function BasicInfoSection({
             value={categoryId}
             onChange={(e) => {
               const newCat = e.target.value;
-              setCategoryId(newCat);
-              setReferenceInput('');
-              setIsRedPlate(false);
-              setDuplicatePolicy(null);
-              if (actions && actions.handleSelectPolicy) {
-                actions.handleSelectPolicy(null);
-              } else if (setSelectedPolicy) {
-                setSelectedPolicy(null);
+              if (actions && actions.handleCategoryChange) {
+                actions.handleCategoryChange(newCat);
+              } else {
+                setCategoryId(newCat);
               }
-              setVehicleYear('');
-              setVehicleMake('');
-              setVehicleModel('');
             }}
             class={`block w-full appearance-none rounded-xl border-gray-200 shadow-sm p-3 border transition-all text-sm
               ${(submissionType === 'success') ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}

@@ -74,7 +74,7 @@
 - **V6.0.0: Structural Component Refactoring**: แยกโครงสร้างโค้ดออกเป็น Hooks (`useReferenceData`, `usePolicyFormState`, `usePolicySubmit`) และ Sub-components เพื่อความยืดหยุ่นในการขยายแอป
 - **V6.1.0 - V6.1.12: Non-blocking Background Upload & Concurrency Protection**: ย้ายการยิง API อัปโหลดไปรันเบื้องหลัง, เพิ่ม Toast Notifications, ดูประวัติ session, ล็อกการส่งซ้ำซ้อน
 - **V6.2.0: Vehicle Cascading & Explicit Vehicle Fields**: เพิ่มระบบเลือกปี ยี่ห้อ และรุ่นรถยนต์แบบ Cascading Dropdown พร้อมส่งข้อมูล `vehicle_year`, `vehicle_make`, `vehicle_model` แยกฟิลด์อิสระ
-- **V6.3.0: Master Data String Slug IDs Refactoring**: รองรับ Semantic String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`) ทั้งระบบพร้อมระบบ Fallback
+- **V6.3.0: Master Data & Notification Template String Slug IDs Refactoring**: รองรับ Semantic String Slug IDs (เช่น `'motor'`, `'approved'`, `'cash'`, `'credit_card'`, `'cash_installment'`, `'follow_case'`) ทั้งระบบพร้อมระบบ Fallback
 
 
 

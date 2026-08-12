@@ -5,16 +5,17 @@
 
 ---
 
-### 🌟 0. Master Data String Slug IDs Refactoring (New! V6.3.0)
+### 🌟 0. Master Data & Notification Template String Slug IDs Refactoring (New! V6.3.0)
 - **LIFF Status String Slugs**: ปรับปรุงระบบตรวจสอบสิทธิ์ตัวแทนใน `App.jsx` ให้รองรับสถานะ `'approved'` และ `'pending'` ควบคู่กับรหัสตัวเลขเดิม (`1, 2`) เพื่อความยืดหยุ่นและความปลอดภัย
 - **Insurance Category String Slugs**: ปรับปรุง State เริ่มต้นของฟอร์ม (`usePolicyFormState.js`), การกรองหมวดหมู่ใน `BasicInfoSection.jsx`, `ReminderSection.jsx`, `PolicySearch.jsx` และ `usePolicySubmit.js` ให้รองรับรหัสหมวดหมู่ `'motor'` และ `'non_motor'`
 - **Payment Method & Bank String Slugs**: ปรับปรุงเงื่อนไขการเช็คประเภทชำระเงินใน `SuccessFlowSection.jsx` ให้รองรับ `'credit_card'`, `'cash'`, และ `'cash_installment'`
+- **Notification Template String Slugs & IDs**: ปรับปรุงการเลือกและพรีวิวเทมเพลตใน `ReminderSection.jsx` ให้รองรับ `templateId` (เช่น `'follow_case'`, `'quotation_confirm'`, `'check_transfer'`) และ `slug`
 - **Full Backward & Forward Compatibility**: ทุกจุดสำคัญถูกออกแบบให้รองรับทั้ง String Slug ID ใหม่และ Numeric ID เดิม เพื่อป้องกันปัญหาความไม่สอดคล้องของข้อมูล
 
 ---
 
 ### 🌟 0. Vehicle Cascading & Explicit Vehicle Fields (New! V6.2.0)
-- **Cascading Vehicle Select**: เพิ่มระบบเลือกปีรถยนต์ ยี่ห้อ และรุ่นรถยนต์ (`vehicleYear`, `vehicleMake`, `vehicleModel`) เมื่อเลือกหมวดหมู่เป็น **ประกันรถยนต์ (`categoryId === '1'`)**
+- **Cascading Vehicle Select**: เพิ่มระบบเลือกปีรถยนต์ ยี่ห้อ และรุ่นรถยนต์ (`vehicleYear`, `vehicleMake`, `vehicleModel`) เมื่อเลือกหมวดหมู่เป็น **ประกันรถยนต์ (`categoryId === 'motor'` หรือ `'1'`)**
 - **Custom Hook `useVehicleData`**: สร้าง Hook ใหม่ในการดึงข้อมูลปี ยี่ห้อ และรุ่นแบบต่อเนื่องตามลำดับผ่าน Edge Functions (`/load-vehicle-years`, `/load-vehicle-makes`, `/load-vehicle-models`)
 - **State & Draft Persistence**: บันทึกข้อมูลรถยนต์ลง LocalStorage (`insurance_liff_form_draft`) เพื่อคงสถานะดราฟต์ไว้ และรองรับการเคลียร์ข้อมูลด้วยฟังก์ชัน `handleReset`
 - **Explicit Payload Submission**: ส่งข้อมูล `vehicle_year`, `vehicle_make`, และ `vehicle_model` แยกเป็นฟิลด์อิสระผ่าน `FormData` ใน `usePolicySubmit.js` ไปยัง API `submit-quotation` และ `update-quotation`

@@ -9,6 +9,8 @@ export function usePolicyFormState(setConfirmModal) {
   const [productId, setProductId] = useState('');
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [submissionType, setSubmissionType] = useState('quotation');
+  const [quotationSubType, setQuotationSubType] = useState('new'); // 'new' | 'renewal'
+  const [isPlateTransfer, setIsPlateTransfer] = useState(false);
   const [referenceInput, setReferenceInput] = useState('');
   const [endDate, setEndDate] = useState('');
   const [enableReminder, setEnableReminder] = useState(false);
@@ -58,6 +60,8 @@ export function usePolicyFormState(setConfirmModal) {
         else if (data.productId) setCategoryId(data.productId.toString());
         if (data.productId) setProductId(data.productId.toString());
         if (data.submissionType) setSubmissionType(data.submissionType);
+        if (data.quotationSubType) setQuotationSubType(data.quotationSubType);
+        if (data.isPlateTransfer !== undefined) setIsPlateTransfer(data.isPlateTransfer);
         if (data.referenceInput) setReferenceInput(data.referenceInput);
         if (data.endDate) setEndDate(data.endDate);
         if (data.enableReminder) setEnableReminder(data.enableReminder);
@@ -94,6 +98,8 @@ export function usePolicyFormState(setConfirmModal) {
       categoryId,
       productId,
       submissionType,
+      quotationSubType,
+      isPlateTransfer,
       referenceInput,
       endDate,
       enableReminder,
@@ -120,7 +126,7 @@ export function usePolicyFormState(setConfirmModal) {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [
-    informerId, informerName, categoryId, productId, submissionType, referenceInput, 
+    informerId, informerName, categoryId, productId, submissionType, quotationSubType, isPlateTransfer, referenceInput, 
     endDate, enableReminder, reminderDate, reminderType, isRedPlate, notes, policyNotes, 
     policyStartDate, policyExpiryDate, submitAgentCode, companyId, companyName, 
     premiumAmount, paymentMethodId, actualPaid, installmentMonths, brokerChannelId, 
@@ -163,6 +169,15 @@ export function usePolicyFormState(setConfirmModal) {
     }
   };
 
+  const handleSetReminderPreset = (daysBefore) => {
+    if (!endDate) return;
+    const d = new Date(endDate);
+    d.setDate(d.getDate() - daysBefore);
+    setReminderDate(d.toISOString().split('T')[0]);
+    setEnableReminder(true);
+    setReminderType('follow_case');
+  };
+
   const handleReset = (showConfirm = true, defaultCategoryId = '') => {
     const performReset = () => {
       localStorage.removeItem(STORAGE_KEY);
@@ -171,6 +186,8 @@ export function usePolicyFormState(setConfirmModal) {
       setCategoryId(defaultCategoryId);
       setProductId('');
       setSubmissionType('quotation');
+      setQuotationSubType('new');
+      setIsPlateTransfer(false);
       setDuplicatePolicy(null);
       setIsRedPlate(false);
       setReferenceInput('');
@@ -229,6 +246,9 @@ export function usePolicyFormState(setConfirmModal) {
       const reminder = policy.reminderDate || policy.reminder_date;
       const rType = policy.reminderType || policy.reminder_type;
       const notesVal = policy.notes;
+      const vYear = policy.vehicleYear || policy.vehicle_year;
+      const vMake = policy.vehicleMake || policy.vehicle_make;
+      const vModel = policy.vehicleModel || policy.vehicle_model;
 
       if (plate && plate !== 'ป้ายแดง') {
         setIsRedPlate(false);
@@ -243,6 +263,10 @@ export function usePolicyFormState(setConfirmModal) {
       if (catId) setCategoryId(catId.toString());
       if (subCatId) setProductId(subCatId.toString());
       
+      if (vYear) setVehicleYear(vYear.toString());
+      if (vMake) setVehicleMake(vMake.toString());
+      if (vModel) setVehicleModel(vModel.toString());
+
       if (agentCode && agentName) {
         setInformerId(agentCode);
         setInformerName(agentName);
@@ -259,12 +283,37 @@ export function usePolicyFormState(setConfirmModal) {
 
       setEndDate(expiry || '');
       setNotes(notesVal || '');
+      setQuotationSubType('renewal');
+      setIsPlateTransfer(false);
     }
+  };
+
+  const handlePlateTransfer = () => {
+    setIsPlateTransfer(true);
+    setQuotationSubType('new');
+    setVehicleYear('');
+    setVehicleMake('');
+    setVehicleModel('');
+    setDuplicatePolicy(null);
+    setSelectedPolicy(null);
+    setNotes(prev => {
+      const tag = '[หมายเหตุ: สลับป้ายทะเบียนจากคันเดิม]';
+      if (!prev) return tag;
+      if (prev.includes(tag)) return prev;
+      return `${tag}\n${prev}`;
+    });
+  };
+
+  const handleCancelPlateTransfer = () => {
+    setIsPlateTransfer(false);
+    setNotes(prev => (prev || '').replace(/\[หมายเหตุ: สลับป้ายทะเบียนจากคันเดิม\]\n?/g, '').trim());
   };
 
   const handleCategoryChange = (newCatId) => {
     setCategoryId(newCatId);
     setProductId('');
+    setQuotationSubType('new');
+    setIsPlateTransfer(false);
     setDuplicatePolicy(null);
     setIsRedPlate(false);
     setReferenceInput('');
@@ -310,6 +359,8 @@ export function usePolicyFormState(setConfirmModal) {
       productId,
       selectedPolicy,
       submissionType,
+      quotationSubType,
+      isPlateTransfer,
       referenceInput,
       endDate,
       enableReminder,
@@ -344,6 +395,8 @@ export function usePolicyFormState(setConfirmModal) {
       setProductId,
       setSelectedPolicy,
       setSubmissionType,
+      setQuotationSubType,
+      setIsPlateTransfer,
       setReferenceInput,
       setEndDate,
       setEnableReminder,
@@ -373,9 +426,13 @@ export function usePolicyFormState(setConfirmModal) {
     },
     actions: {
       handleReminderToggle,
+      handleSetReminderPreset,
       handleReset,
       handleSelectPolicy,
+      handlePlateTransfer,
+      handleCancelPlateTransfer,
       handleCategoryChange,
     }
   };
 }
+

@@ -1,8 +1,8 @@
 import { h } from 'preact';
 
 export function PurposeSelector({ state, setters, actions }) {
-  const { submissionType } = state;
-  const { setSubmissionType, setCategoryId } = setters;
+  const { submissionType, quotationSubType } = state;
+  const { setSubmissionType, setQuotationSubType, setCategoryId } = setters;
   const { handleReset } = actions;
   return (
     <div class="bg-brand-50/30 p-4 rounded-xl border border-brand-100/50 shadow-sm mb-6">
@@ -30,6 +30,7 @@ export function PurposeSelector({ state, setters, actions }) {
                 setSubmissionType(nextType);
                 if (nextType === 'quotation') {
                   setCategoryId('motor');
+                  setQuotationSubType('new');
                 }
               }}
               class="sr-only"
@@ -39,6 +40,46 @@ export function PurposeSelector({ state, setters, actions }) {
           </label>
         ))}
       </div>
+
+      {submissionType === 'quotation' && (
+        <div class="mt-4 pt-3 border-t border-brand-100/60 animate-in fade-in slide-in-from-top-1 duration-300">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-brand-900 flex items-center gap-1.5">
+              <span>ประเภทงาน</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-100 text-brand-700 font-semibold">
+                {quotationSubType === 'renewal' ? 'โหมดต่ออายุ' : 'โหมดงานใหม่'}
+              </span>
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200/60">
+            <button
+              type="button"
+              onClick={() => setQuotationSubType('new')}
+              class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                quotationSubType === 'new'
+                  ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
+              }`}
+            >
+              <span>✨ งานใหม่ (New)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setQuotationSubType('renewal')}
+              class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                quotationSubType === 'renewal'
+                  ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
+              }`}
+            >
+              <span>🔄 งานต่ออายุ (Renewal)</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

@@ -116,8 +116,15 @@ export function PolicyForm({
             const isProcessing = uploadHistory && uploadHistory.some(
               job => job.title === state.referenceInput && job.status === 'loading'
             );
-            const isDuplicate = state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy;
+            const isDuplicate = state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy && !state.isPlateTransfer;
             const isDisabled = isProcessing || isDuplicate;
+
+            let buttonLabel = 'ส่งข้อมูลเช็คเบี้ย';
+            if (state.submissionType === 'success') {
+              buttonLabel = 'ส่งข้อมูลแจ้งงานสำเร็จ';
+            } else if (state.quotationSubType === 'renewal') {
+              buttonLabel = 'ส่งข้อมูลเช็คเบี้ยต่ออายุ';
+            }
 
             return (
               <button
@@ -128,7 +135,7 @@ export function PolicyForm({
                     ? 'bg-gray-400 cursor-not-allowed opacity-50 shadow-none' 
                     : 'active:scale-[0.98] bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-brand-500/30 hover:-translate-y-0.5'}`}
               >
-                <span>ส่งข้อมูลเช็คเบี้ย</span>
+                <span>{buttonLabel}</span>
                 {isProcessing && <span class="text-[10px] font-normal opacity-90 mt-0.5">ระบบกำลังประมวลผลทะเบียนนี้...</span>}
               </button>
             );
@@ -138,3 +145,4 @@ export function PolicyForm({
     </div>
   );
 }
+

@@ -8,16 +8,27 @@ export function ReminderSection({
   formatThaiDate
 }) {
   const {
-    submissionType, endDate, enableReminder, reminderType, reminderDate, categoryId, isRedPlate, referenceInput
+    submissionType, quotationSubType, endDate, enableReminder, reminderType, reminderDate, categoryId, isRedPlate, referenceInput
   } = state;
   const {
     setEndDate, setReminderType, setReminderDate
   } = setters;
-  const { handleReminderToggle } = actions;
+  const { handleReminderToggle, handleSetReminderPreset } = actions;
 
   return (
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-sm font-medium text-gray-700">วันที่ประกันเดิมหมดอายุ (ถ้าทราบ)</label>
+        {quotationSubType === 'renewal' && endDate && !enableReminder && (
+          <button
+            type="button"
+            onClick={() => handleSetReminderPreset && handleSetReminderPreset(45)}
+            class="text-[11px] text-brand-600 hover:text-brand-800 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
+          >
+            <span>⏰ ตั้งเตือนล่วงหน้า 45 วัน</span>
+          </button>
+        )}
+      </div>
       <input
         type="date"
         value={endDate}
@@ -96,7 +107,12 @@ export function ReminderSection({
 
               {/* วันที่แจ้งเตือน */}
               <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wider">แจ้งเตือนกลับในวันที่</label>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">แจ้งเตือนกลับในวันที่</label>
+                  {endDate && (
+                    <span class="text-[10px] text-brand-600 font-medium">วันหมดอายุ: {formatThaiDate(endDate)}</span>
+                  )}
+                </div>
                 <input
                   type="date"
                   value={reminderDate}
@@ -105,6 +121,31 @@ export function ReminderSection({
                   required
                   class="block w-full rounded-xl border-gray-200 shadow-sm p-3 text-sm border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
                 />
+
+                {endDate && (
+                  <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] text-gray-500 font-medium">ตั้งเตือนล่วงหน้า:</span>
+                    {[
+                      { days: 60, label: '60 วัน' },
+                      { days: 45, label: '45 วัน (แนะนำ)', highlight: true },
+                      { days: 30, label: '30 วัน' },
+                      { days: 15, label: '15 วัน' }
+                    ].map((preset) => (
+                      <button
+                        key={preset.days}
+                        type="button"
+                        onClick={() => handleSetReminderPreset && handleSetReminderPreset(preset.days)}
+                        class={`text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition-all shadow-2xs ${
+                          preset.highlight
+                            ? 'bg-brand-50 hover:bg-brand-100 text-brand-700 border-brand-300'
+                            : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* พรีวิวข้อความ */}
@@ -144,3 +185,4 @@ export function ReminderSection({
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 ระบบแจ้งเช็คเบี้ยประกันภัย ส่งเอกสารเพิ่มเติม และแจ้งงานสำเร็จผ่าน LINE LIFF พัฒนาด้วยเทคโนโลยี Modern Web สำหรับตัวแทนประกันภัย
 
-[![Version](https://img.shields.io/badge/version-v1.0.0-teal.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.1.0-teal.svg)](CHANGELOG.md)
 [![Preact](https://img.shields.io/badge/Preact-10.29.1-673ab8.svg)](https://preactjs.com/)
 [![Tailwind CSS v4](https://img.shields.io/badge/TailwindCSS-v4.2-38bdf8.svg)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.4-646cff.svg)](https://vitejs.dev/)
@@ -22,13 +22,16 @@
 ## ✨ ฟีเจอร์หลัก (Key Features)
 
 - **100% Semantic String Slug PKs**: โครงสร้าง Master Data ใช้ Semantic Slug ทั้งระบบ (`companyId`, `productId`, `categoryId`, `paymentMethodId`, `brokerChannelId`, `levelId`)
+- **Quotation Sub-Type Switcher**: สลับโหมดการเช็คเบี้ยได้อย่างรวดเร็วระหว่าง `✨ งานใหม่` และ `🔄 งานต่ออายุ`
+- **Smart Plate Transfer Resolution**: รองรับกรณีลูกค้าสลับป้ายทะเบียนเดิมมาใส่รถคันใหม่ด้วยปุ่มกด 1-Click `🚗✨ สลับป้ายใส่คันใหม่` ล้างข้อมูลรถเดิมและข้ามระบบล็อกเช็คเบี้ยซ้ำ
+- **Dynamic Renewal Dropzone Priority**: จัดลำดับช่องแนบไฟล์ตามความสำคัญของงานต่ออายุ (ดัน `ใบเตือนต่ออายุ` และ `กรมธรรม์เดิม` ขึ้นบนสุด)
+- **1-Click Renewal Reminder Presets**: คำนวณวันแจ้งเตือนล่วงหน้าได้ทันที (15, 30, 45, 60 วันก่อนหมดอายุ)
 - **Vehicle Cascading Selection**: ระบบเลือกข้อมูลรถยนต์แบบต่อเนื่อง (ปี $\rightarrow$ ยี่ห้อ $\rightarrow$ รุ่น) สำหรับประกันรถยนต์
 - **Non-blocking Background Upload**: บีบอัดและอัปโหลดข้อมูลเบื้องหลัง พร้อมรีเซ็ตฟอร์มทันที และแสดงผลผ่าน Toast Stack Notification
 - **Concurrency & Race Condition Protection**: ล็อกปุ่มกดส่งและล็อกรายการค้นหาเมื่อทะเบียนรถนั้นๆ อยู่ระหว่างประมวลผล
 - **Smart Plate Search & Workflow Switching**: ค้นหาทะเบียนรถเดิมอัตโนมัติ พร้อมสลับโหมดส่งเอกสารเพิ่มให้อัตโนมัติ
 - **Agent Verification**: ตรวจสอบสิทธิ์ตัวแทนอัตโนมัติก่อนเข้าใช้งาน
 - **Financial & Commission Tracking**: บันทึกเบี้ยประกัน, ยอดโอนจริง / จำนวนงวดผ่อน, หักภาษี ณ ที่จ่าย และค่าคอมมิชชันตัวแทน
-- **Automatic Renewal Reminder**: คำนวณวันแจ้งเตือนล่วงหน้า 60 วันอัตโนมัติ
 - **Draft Persistence**: บันทึกข้อมูลร่างอัตโนมัติลง LocalStorage ป้องกันข้อมูลสูญหาย
 - **Full-Screen Document Gallery**: ระบบดูตัวอย่างเอกสารแบบเต็มหน้าจอพร้อม Keyboard Navigation
 - **Clipboard & Multiple Attachments**: รองรับการ Drag & Drop และการกด `Ctrl+V` วางรูปภาพแบบต่อท้าย (Append)

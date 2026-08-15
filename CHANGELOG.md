@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-08-15
+
+### Added
+- **Quotation Sub-Type Switcher**: Added sub-intent pill switcher (`✨ งานใหม่ (New)` vs `🔄 งานต่ออายุ (Renewal)`) under the Quotation workflow in `PurposeSelector.jsx`.
+- **License Plate Transfer Resolution (สลับป้ายทะเบียนใส่คันใหม่)**:
+  - Enabled 1-click `🚗✨ สลับป้ายใส่คันใหม่` resolution when searching an existing plate that has been transferred to a different vehicle.
+  - Automatically resets old vehicle cascade data, bypasses duplicate quotation locking, and appends a `[หมายเหตุ: สลับป้ายทะเบียนจากคันเดิม]` tag.
+  - Provides a 1-click cancel button to revert plate transfer mode if needed.
+- **Dynamic Renewal Dropzone Prioritization**:
+  - Automatically re-orders and visually highlights **"เบี้ยต่ออายุ / ใบเตือนต่ออายุ"** and **"กรมธรรม์เดิม"** dropzones with `แนะนำสำหรับงานต่ออายุ` badges when in Renewal mode.
+- **1-Click Renewal Reminder Presets**:
+  - Added quick reminder calculation chips (`60 วัน`, `45 วัน (แนะนำ)`, `30 วัน`, `15 วัน` before expiry) in `ReminderSection.jsx`.
+  - Added subtle 1-click reminder prompt when an expiration date is provided in renewal mode.
+- **Dynamic Action Button Labels**:
+  - Submit button dynamically indicates intent (`ส่งข้อมูลเช็คเบี้ย`, `ส่งข้อมูลเช็คเบี้ยต่ออายุ`, or `ส่งข้อมูลแจ้งงานสำเร็จ`).
+
 ## [1.0.0] - 2026-08-15
 
 ### Added

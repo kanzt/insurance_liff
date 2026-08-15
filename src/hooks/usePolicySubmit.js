@@ -149,6 +149,10 @@ export function usePolicySubmit({
         const safeRef = submissionState.referenceInput.replace(/[\/\\:*?"<>|]/g, '_').replace(/\s+/g, '_');
         const formData = new FormData();
         
+        const isUpdatingQuotation = submissionState.submissionType === 'quotation' &&
+          submissionState.quotationSubType !== 'renewal' &&
+          !!(submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id);
+
         if (submissionState.submissionType !== 'success') {
           formData.append('quoted_by', submissionState.informerId);
           formData.append('category_id', submissionState.categoryId);
@@ -156,11 +160,16 @@ export function usePolicySubmit({
           const qType = submissionState.quotationSubType || 'new';
           formData.append('quotation_type_id', qType);
 
+          if (isUpdatingQuotation) {
+            const qId = submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id;
+            if (qId) formData.append('quotation_id', qId.toString());
+          }
+
           const prevPolicyId = submissionState.selectedPolicy?.previousPolicyId || 
                                 submissionState.selectedPolicy?.previous_policy_id || 
                                 submissionState.selectedPolicy?.policyId || 
                                 submissionState.selectedPolicy?.policy_id || 
-                                submissionState.selectedPolicy?.id;
+                                (!isUpdatingQuotation ? submissionState.selectedPolicy?.id : null);
 
           if (prevPolicyId) {
             formData.append('previous_policy_id', prevPolicyId.toString());
@@ -238,7 +247,10 @@ export function usePolicySubmit({
 
         const response = submissionState.submissionType === 'success'
           ? await submitPolicy(baseApiUrl, formData)
-          : await submitQuotation(baseApiUrl, formData);
+          : isUpdatingQuotation
+            ? await updateQuotation(baseApiUrl, formData)
+            : await submitQuotation(baseApiUrl, formData);
+
 
 
         const result = await response.json();

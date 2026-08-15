@@ -284,10 +284,10 @@ export function usePolicyFormState(setConfirmModal) {
 
       setEndDate(expiry || '');
       setNotes(notesVal || '');
-      setQuotationSubType('renewal');
       setIsPlateTransfer(false);
     }
   };
+
 
   const handlePlateTransfer = () => {
     setIsPlateTransfer(true);

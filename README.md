@@ -2,7 +2,7 @@
 
 ระบบแจ้งเช็คเบี้ยประกันภัย ส่งเอกสารเพิ่มเติม และแจ้งงานสำเร็จผ่าน LINE LIFF พัฒนาด้วยเทคโนโลยี Modern Web สำหรับตัวแทนประกันภัย
 
-[![Version](https://img.shields.io/badge/version-v1.2.0-teal.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.1.0-teal.svg)](CHANGELOG.md)
 [![Preact](https://img.shields.io/badge/Preact-10.29.1-673ab8.svg)](https://preactjs.com/)
 [![Tailwind CSS v4](https://img.shields.io/badge/TailwindCSS-v4.2-38bdf8.svg)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.4-646cff.svg)](https://vitejs.dev/)

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2026-08-15
+## [1.1.0] - 2026-08-15
 
 ### Added
 - **Issued Policies Endpoint Integration (`GET /load-policies`)**:
@@ -17,10 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Linked selected policy record in `BasicInfoSection.jsx` with badge indicator (`🛡️ P202608001`) and auto-populated previous expiry date (`policyExpiryDate`).
   - Extracted and forwarded `previous_policy_id` (`policyId`) in `usePolicySubmit.js` to `POST /submit-quotation` establishing clear renewal lineage.
 
-## [1.1.0] - 2026-08-15
-
-
-### Added
 - **Quotation Sub-Type Switcher**: Added sub-intent pill switcher (`✨ งานใหม่ (New)` vs `🔄 งานต่ออายุ (Renewal)`) under the Quotation workflow in `PurposeSelector.jsx`.
 - **License Plate Transfer Resolution (สลับป้ายทะเบียนใส่คันใหม่)**:
   - Enabled 1-click `🚗✨ สลับป้ายใส่คันใหม่` resolution when searching an existing plate that has been transferred to a different vehicle.

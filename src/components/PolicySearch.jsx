@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { searchQuotations } from '../utils/api';
 
-export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', uploadHistory = [], placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า..." }) {
+export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', uploadHistory = [], placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า...", year = '' }) {
   const [policies, setPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -48,8 +48,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
 
       setIsLoading(true);
       try {
-        const currentYear = new Date().getFullYear().toString();
-        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear);
+        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {
@@ -69,7 +68,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     }
 
     performSearch();
-  }, [baseApiUrl, idToken, debouncedQuery, refreshKey]);
+  }, [baseApiUrl, idToken, debouncedQuery, refreshKey, year]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

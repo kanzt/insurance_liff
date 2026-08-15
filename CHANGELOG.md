@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **1-Click Renewal Reminder Presets**:
   - Added quick reminder calculation chips (`60 วัน`, `45 วัน (แนะนำ)`, `30 วัน`, `15 วัน` before expiry) in `ReminderSection.jsx`.
   - Added subtle 1-click reminder prompt when an expiration date is provided in renewal mode.
+- **Cross-Year Historical Policy Search**:
+  - Enhanced `PolicySearch.jsx` and `BasicInfoSection.jsx` to perform unrestricted cross-year searches for renewals while preserving current-year duplicate filtering for new quotations.
 - **Dynamic Action Button Labels**:
   - Submit button dynamically indicates intent (`ส่งข้อมูลเช็คเบี้ย`, `ส่งข้อมูลเช็คเบี้ยต่ออายุ`, or `ส่งข้อมูลแจ้งงานสำเร็จ`).
 

@@ -29,6 +29,7 @@ export function BasicInfoSection({
   } = useVehicleData(baseApiUrl, vehicleYear, vehicleMake);
 
   const isMotor = categoryId === 'motor' || categoryId === '1';
+  const isRenewal = submissionType === 'quotation' && quotationSubType === 'renewal';
 
   const handleResultsFetched = (results) => {
     if (submissionType !== 'quotation' || !referenceInput || referenceInput.length < 2 || isPlateTransfer) {
@@ -44,10 +45,18 @@ export function BasicInfoSection({
       });
 
       if (exactMatch) {
-        setDuplicatePolicy(exactMatch);
-        // Auto-select if it's an exact match and user hasn't selected it yet and not in plate transfer mode
-        if (!isPlateTransfer && actions && actions.handleSelectPolicy && (!state.selectedPolicy || (state.selectedPolicy.id !== exactMatch.id && state.selectedPolicy.policy_id !== exactMatch.policy_id))) {
-          actions.handleSelectPolicy(exactMatch);
+        if (isRenewal) {
+          // In renewal mode, exact match is the desired target policy
+          setDuplicatePolicy(null);
+          if (actions && actions.handleSelectPolicy && (!state.selectedPolicy || (state.selectedPolicy.id !== exactMatch.id && state.selectedPolicy.policy_id !== exactMatch.policy_id))) {
+            actions.handleSelectPolicy(exactMatch);
+          }
+        } else {
+          // In new quotation mode, flag as duplicate unless plate transfer is chosen
+          setDuplicatePolicy(exactMatch);
+          if (actions && actions.handleSelectPolicy && (!state.selectedPolicy || (state.selectedPolicy.id !== exactMatch.id && state.selectedPolicy.policy_id !== exactMatch.policy_id))) {
+            actions.handleSelectPolicy(exactMatch);
+          }
         }
       } else {
         setDuplicatePolicy(null);
@@ -109,14 +118,17 @@ export function BasicInfoSection({
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-4">
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {isMotor
-              ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
-              : 'ชื่อผู้เอาประกัน'}
+            {isRenewal
+              ? (isMotor ? 'ค้นหาทะเบียนรถที่ต้องการต่ออายุ' : 'ค้นหาชื่อผู้เอาประกันที่ต้องการต่ออายุ')
+              : (isMotor
+                ? (isRedPlate ? 'ชื่อผู้เอาประกัน (กรณีป้ายแดง)' : 'ทะเบียนรถ')
+                : 'ชื่อผู้เอาประกัน')}
             <span class="text-red-500">*</span>
           </label>
           <PolicySearch
             baseApiUrl={baseApiUrl}
             idToken={idToken}
+            year={isRenewal ? '' : new Date().getFullYear().toString()}
             onSelectPolicy={(policy) => {
               if (actions && actions.handleSelectPolicy) {
                 actions.handleSelectPolicy(policy);
@@ -126,10 +138,19 @@ export function BasicInfoSection({
             onResultsFetched={handleResultsFetched}
             initialQuery={referenceInput}
             uploadHistory={uploadHistory}
-            placeholder={isMotor
-              ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
-              : '🔍 เช่น สมชาย ใจดี'}
+            placeholder={isRenewal
+              ? (isMotor ? '🔍 ค้นหากรมธรรม์เดิมเพื่อต่ออายุ (เช่น 1กข-1234 กทม)' : '🔍 ค้นหากรมธรรม์เดิม (เช่น สมชาย ใจดี)')
+              : (isMotor
+                ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
+                : '🔍 เช่น สมชาย ใจดี')}
           />
+
+          {isRenewal && !state.selectedPolicy && referenceInput && referenceInput.length >= 2 && (
+            <div class="mt-2.5 p-2.5 bg-brand-50/70 border border-brand-200/60 rounded-xl text-xs text-brand-800 flex items-center gap-2 animate-in fade-in duration-200">
+              <span class="text-base">💡</span>
+              <span>หากเป็นงานต่ออายุจากบริษัทอื่นหรือไม่พบข้อมูลเดิม สามารถระบุข้อมูลรถและแนบใบเตือนต่ออายุเพื่อส่งเช็คเบี้ยได้ทันที</span>
+            </div>
+          )}
 
           {isPlateTransfer && (
             <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between animate-in fade-in duration-300">
@@ -160,27 +181,39 @@ export function BasicInfoSection({
                     </svg>
                   </div>
                   <div>
-                    <div class="text-xs font-bold text-brand-900">พบข้อมูลเดิมในระบบ ({state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name})</div>
+                    <div class="text-xs font-bold text-brand-900">
+                      {isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมสำหรับต่ออายุ' : 'พบข้อมูลเดิมในระบบ'} ({state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name})
+                    </div>
                     <div class="text-[11px] text-brand-700">
                       {state.selectedPolicy.vehicleMake || state.selectedPolicy.vehicle_make ? `${state.selectedPolicy.vehicleMake || state.selectedPolicy.vehicle_make} ${state.selectedPolicy.vehicleModel || state.selectedPolicy.vehicle_model || ''}` : 'ดึงข้อมูลกรมธรรม์เดิมแล้ว'}
                     </div>
                   </div>
                 </div>
 
-                {(state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
-                  <a
-                    href={state.selectedPolicy.documentLink || state.selectedPolicy.document_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-bold shadow-xs hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-1 shrink-0"
+                <div class="flex items-center gap-1.5 shrink-0">
+                  {(state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
+                    <a
+                      href={state.selectedPolicy.documentLink || state.selectedPolicy.document_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-bold shadow-xs hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-1"
+                    >
+                      <span>📂 ดูไฟล์เดิม</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                      </svg>
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPolicy(null)}
+                    class="px-2 py-1.5 bg-white hover:bg-gray-100 text-gray-600 border border-gray-200 rounded-lg text-xs font-medium transition-colors"
+                    title="ล้างการเชื่อมโยงกรมธรรม์เดิม"
                   >
-                    <span>📂 ดูไฟล์เดิม</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                    </svg>
-                  </a>
-                )}
+                    ✕
+                  </button>
+                </div>
               </div>
 
               {submissionType === 'quotation' && (
@@ -197,6 +230,7 @@ export function BasicInfoSection({
               )}
             </div>
           )}
+
 
           {isMotor && submissionType !== 'success' && !state.selectedPolicy && !isPlateTransfer && (
             <div class="mt-2 pl-1">

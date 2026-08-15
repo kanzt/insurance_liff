@@ -242,13 +242,14 @@ export function usePolicyFormState(setConfirmModal) {
       const subCatId = policy.productId || policy.product_id;
       const agentCode = policy.agentCode || policy.agent_code;
       const agentName = policy.agentName || policy.agent_name;
-      const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
+      const expiry = policy.policyExpiryDate || policy.policy_expiry_date || policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
       const reminder = policy.reminderDate || policy.reminder_date;
       const rType = policy.reminderType || policy.reminder_type;
       const notesVal = policy.notes;
       const vYear = policy.vehicleYear || policy.vehicle_year;
       const vMake = policy.vehicleMake || policy.vehicle_make;
       const vModel = policy.vehicleModel || policy.vehicle_model;
+
 
       if (plate && plate !== 'ป้ายแดง') {
         setIsRedPlate(false);

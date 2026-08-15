@@ -128,6 +128,7 @@ export function BasicInfoSection({
           <PolicySearch
             baseApiUrl={baseApiUrl}
             idToken={idToken}
+            searchMode={isRenewal ? 'policies' : 'quotations'}
             year={isRenewal ? '' : new Date().getFullYear().toString()}
             onSelectPolicy={(policy) => {
               if (actions && actions.handleSelectPolicy) {
@@ -139,7 +140,7 @@ export function BasicInfoSection({
             initialQuery={referenceInput}
             uploadHistory={uploadHistory}
             placeholder={isRenewal
-              ? (isMotor ? '🔍 ค้นหากรมธรรม์เดิมเพื่อต่ออายุ (เช่น 1กข-1234 กทม)' : '🔍 ค้นหากรมธรรม์เดิม (เช่น สมชาย ใจดี)')
+              ? (isMotor ? '🔍 ค้นหากรมธรรม์เดิมเพื่อต่ออายุ (เช่น 1กข-1234 กทม หรือ สมชาย)' : '🔍 ค้นหากรมธรรม์เดิม (เช่น สมชาย ใจดี)')
               : (isMotor
                 ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
                 : '🔍 เช่น สมชาย ใจดี')}
@@ -181,11 +182,18 @@ export function BasicInfoSection({
                     </svg>
                   </div>
                   <div>
-                    <div class="text-xs font-bold text-brand-900">
-                      {isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมสำหรับต่ออายุ' : 'พบข้อมูลเดิมในระบบ'} ({state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name})
+                    <div class="text-xs font-bold text-brand-900 flex items-center gap-1.5">
+                      <span>{isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมสำหรับต่ออายุ' : 'พบข้อมูลเดิมในระบบ'}</span>
+                      {state.selectedPolicy.policyId && (
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 font-semibold border border-teal-200">
+                          🛡️ {state.selectedPolicy.policyId}
+                        </span>
+                      )}
                     </div>
-                    <div class="text-[11px] text-brand-700">
-                      {state.selectedPolicy.vehicleMake || state.selectedPolicy.vehicle_make ? `${state.selectedPolicy.vehicleMake || state.selectedPolicy.vehicle_make} ${state.selectedPolicy.vehicleModel || state.selectedPolicy.vehicle_model || ''}` : 'ดึงข้อมูลกรมธรรม์เดิมแล้ว'}
+                    <div class="text-[11px] text-brand-700 font-medium">
+                      {state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name}
+                      {state.selectedPolicy.companyName ? ` • 🏢 ${state.selectedPolicy.companyName}` : ''}
+                      {state.selectedPolicy.productName ? ` (${state.selectedPolicy.productName})` : ''}
                     </div>
                   </div>
                 </div>
@@ -205,6 +213,7 @@ export function BasicInfoSection({
                       </svg>
                     </a>
                   )}
+
                   <button
                     type="button"
                     onClick={() => setSelectedPolicy(null)}

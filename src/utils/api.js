@@ -74,6 +74,18 @@ export const searchQuotations = (baseUrl, searchTerm = '', limit = 20, year = ''
   return authenticatedFetch(`${baseUrl}/load-quotations?${params.toString()}`);
 };
 
+/**
+ * Server-side search for issued policies (for renewals)
+ */
+export const searchPolicies = (baseUrl, searchTerm = '', limit = 20) => {
+  const params = new URLSearchParams();
+  if (searchTerm) params.append('search', searchTerm);
+  params.append('limit', limit.toString());
+
+  return authenticatedFetch(`${baseUrl}/load-policies?${params.toString()}`);
+};
+
+
 export const submitQuotation = (baseUrl, formData) => authenticatedFetch(`${baseUrl}/submit-quotation`, {
   method: 'POST',
   body: formData

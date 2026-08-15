@@ -1,7 +1,18 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { searchQuotations } from '../utils/api';
+import { searchQuotations, searchPolicies } from '../utils/api';
 
-export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChange, onResultsFetched, initialQuery = '', uploadHistory = [], placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า...", year = '' }) {
+export function PolicySearch({
+  baseApiUrl,
+  idToken,
+  onSelectPolicy,
+  onQueryChange,
+  onResultsFetched,
+  initialQuery = '',
+  uploadHistory = [],
+  placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า...",
+  year = '',
+  searchMode = 'quotations' // 'quotations' | 'policies'
+}) {
   const [policies, setPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -48,7 +59,10 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
 
       setIsLoading(true);
       try {
-        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
+        const response = (searchMode === 'policies')
+          ? await searchPolicies(baseApiUrl, debouncedQuery, 20)
+          : await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
+
         const json = await response.json();
 
         if (json.results && Array.isArray(json.results)) {
@@ -68,8 +82,7 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     }
 
     performSearch();
-  }, [baseApiUrl, idToken, debouncedQuery, refreshKey, year]);
-
+  }, [baseApiUrl, idToken, debouncedQuery, refreshKey, year, searchMode]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -91,11 +104,11 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     const plate = policy.plateNumber || policy.plate_number || '';
     const customer = policy.customerName || policy.customer_name || '';
     const catId = policy.categoryId || policy.category_id;
-    const subCatName = policy.subCategoryName || policy.sub_category_name || '';
+    const subCatName = policy.subCategoryName || policy.sub_category_name || policy.productName || policy.product_name || '';
     
     const displayValue = (plate === 'ประกันอื่นๆ' || catId === 'non_motor' || catId === '2' || catId === 2)
       ? `${subCatName} ${customer}`.trim()
-      : `${plate} ${customer}`.trim();
+      : (plate ? `${plate} ${customer}`.trim() : customer.trim());
       
     setQuery(displayValue);
     if (onQueryChange) onQueryChange(displayValue);
@@ -155,21 +168,23 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
             </div>
           ) : policies.length === 0 ? (
             <div class="p-8 text-center text-gray-500 text-sm">
-              {query.length < 2 ? '⚠️ กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร' : '❌ ไม่พบรายการที่ตรงกับคำค้นหา'}
+              {query.length < 2 ? '⚠️ กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร' : (searchMode === 'policies' ? '❌ ไม่พบกรมธรรม์เดิมในระบบ' : '❌ ไม่พบรายการที่ตรงกับคำค้นหา')}
             </div>
           ) : (
             <div class="py-1">
               <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
-                <span>{debouncedQuery ? 'ผลการค้นหา' : 'รายการล่าสุด (20 อันดับแรก)'}</span>
+                <span>{debouncedQuery ? (searchMode === 'policies' ? 'ผลการค้นหากรมธรรม์เดิม' : 'ผลการค้นหา') : (searchMode === 'policies' ? 'กรมธรรม์ล่าสุด' : 'รายการล่าสุด')}</span>
               </div>
-              {policies.map(policy => {
-                const plate = policy.plateNumber || policy.plate_number;
-                const customer = policy.customerName || policy.customer_name;
-                const catId = policy.categoryId || policy.category_id;
-                const catName = policy.categoryName || policy.category_name;
-                const subCatName = policy.subCategoryName || policy.sub_category_name;
-                const createdAt = policy.createdAt || policy.created_at;
-                const expiry = policy.expiryDate || policy.expiry_date || policy.previous_policy_expiry_date;
+              {policies.map(item => {
+                const isPolicyItem = searchMode === 'policies' || item.policyId;
+                const plate = item.plateNumber || item.plate_number;
+                const customer = item.customerName || item.customer_name;
+                const catId = item.categoryId || item.category_id;
+                const catName = item.categoryName || item.category_name;
+                const subCatName = item.subCategoryName || item.sub_category_name || item.productName || item.product_name;
+                const companyName = item.companyName || item.company_name;
+                const createdAt = item.createdAt || item.created_at;
+                const expiry = item.policyExpiryDate || item.expiryDate || item.expiry_date || item.previous_policy_expiry_date;
 
                 const isProcessing = uploadHistory && uploadHistory.some(
                   job => (job.title === plate || job.title === customer) && job.status === 'loading'
@@ -177,8 +192,8 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
 
                 return (
                   <div
-                    key={policy.id || policy.policy_id}
-                    onClick={() => { if (!isProcessing) handleSelect(policy) }}
+                    key={item.policyId || item.id || item.policy_id || item.quotationId}
+                    onClick={() => { if (!isProcessing) handleSelect(item) }}
                     class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
                   >
                     <div class="flex justify-between items-start mb-1">
@@ -189,13 +204,18 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
                             : (plate || 'ไม่ระบุทะเบียน')
                           }
                         </span>
-                        {policy.quotationTypeName && (
+                        {isPolicyItem && item.policyId && (
+                          <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200">
+                            🛡️ {item.policyId}
+                          </span>
+                        )}
+                        {!isPolicyItem && item.quotationTypeName && (
                           <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${
-                            policy.quotationTypeId === 'renewal'
+                            item.quotationTypeId === 'renewal'
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                               : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           }`}>
-                            {policy.quotationTypeName}
+                            {item.quotationTypeName}
                           </span>
                         )}
                         {isProcessing && <span class="text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
@@ -211,9 +231,9 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
                       </div>
                       <div class="flex justify-between items-center mt-1">
                         <div class="text-[10px] text-brand-600 font-medium">
-                          📦 {catName || 'ประกันภัย'} {subCatName ? `(${subCatName})` : ''}
+                          {companyName ? `🏢 ${companyName}` : ''} {subCatName ? `(${subCatName})` : (catName ? `(${catName})` : '')}
                         </div>
-                        <div class="text-[9px] text-red-400 font-bold bg-red-50 px-1.5 rounded border border-red-50">
+                        <div class="text-[9px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded border border-red-100">
                           ⏳ หมดอายุ: {formatThaiDate(expiry)}
                         </div>
                       </div>
@@ -228,3 +248,4 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
     </div>
   );
 }
+

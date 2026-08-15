@@ -30,6 +30,7 @@ export function PolicyForm({
     companies,
     paymentMethods,
     brokerChannels,
+    quotationTypes,
   } = useReferenceData(baseApiUrl, setters.setCategoryId);
 
   // Compute default category ID (Motor / ประกันรถยนต์)
@@ -66,7 +67,9 @@ export function PolicyForm({
           state={state}
           setters={setters}
           actions={actions}
+          quotationTypes={quotationTypes}
         />
+
 
 
         <BasicInfoSection 

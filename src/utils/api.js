@@ -49,6 +49,7 @@ export const fetchCompanies = (baseUrl) => authenticatedFetch(`${baseUrl}/load-i
 export const fetchTemplates = (baseUrl) => authenticatedFetch(`${baseUrl}/load-notification-templates`);
 export const fetchPaymentMethods = (baseUrl) => authenticatedFetch(`${baseUrl}/load-payment-methods`);
 export const fetchBrokerChannels = (baseUrl) => authenticatedFetch(`${baseUrl}/load-broker-channels`);
+export const fetchQuotationTypes = (baseUrl) => authenticatedFetch(`${baseUrl}/load-quotation-types`);
 export const fetchVehicleYears = (baseUrl) => authenticatedFetch(`${baseUrl}/load-vehicle-years`);
 export const fetchVehicleMakes = (baseUrl, year = '') => {
   const url = year ? `${baseUrl}/load-vehicle-makes?year=${encodeURIComponent(year)}` : `${baseUrl}/load-vehicle-makes`;

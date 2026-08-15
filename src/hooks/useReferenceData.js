@@ -7,6 +7,7 @@ import {
   fetchTemplates,
   fetchPaymentMethods,
   fetchBrokerChannels,
+  fetchQuotationTypes,
 } from '../utils/api';
 
 const STORAGE_KEY = 'insurance_liff_form_draft';
@@ -19,6 +20,10 @@ export function useReferenceData(baseApiUrl, setCategoryId) {
   const [companies, setCompanies] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [brokerChannels, setBrokerChannels] = useState([]);
+  const [quotationTypes, setQuotationTypes] = useState([
+    { quotationTypeId: 'new', quotationTypeName: 'งานใหม่' },
+    { quotationTypeId: 'renewal', quotationTypeName: 'งานต่ออายุ' }
+  ]);
 
   useEffect(() => {
     async function loadCategories() {
@@ -136,6 +141,19 @@ export function useReferenceData(baseApiUrl, setCategoryId) {
       }
     }
     loadBrokerChannels();
+
+    async function loadQuotationTypes() {
+      try {
+        const response = await fetchQuotationTypes(baseApiUrl);
+        const json = await response.json();
+        if (json.results && json.results.length > 0) {
+          setQuotationTypes(json.results);
+        }
+      } catch (err) {
+        console.error("Failed to load quotation types:", err);
+      }
+    }
+    loadQuotationTypes();
   }, [baseApiUrl, setCategoryId]);
 
   return {
@@ -146,5 +164,7 @@ export function useReferenceData(baseApiUrl, setCategoryId) {
     companies,
     paymentMethods,
     brokerChannels,
+    quotationTypes,
   };
 }
+

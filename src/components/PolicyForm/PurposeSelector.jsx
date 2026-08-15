@@ -1,9 +1,22 @@
 import { h } from 'preact';
 
-export function PurposeSelector({ state, setters, actions }) {
+export function PurposeSelector({ state, setters, actions, quotationTypes = [] }) {
   const { submissionType, quotationSubType } = state;
   const { setSubmissionType, setQuotationSubType, setCategoryId } = setters;
   const { handleReset } = actions;
+
+  const defaultTypes = [
+    { quotationTypeId: 'new', quotationTypeName: 'งานใหม่', icon: '✨' },
+    { quotationTypeId: 'renewal', quotationTypeName: 'งานต่ออายุ', icon: '🔄' }
+  ];
+
+  const typesToRender = (quotationTypes && quotationTypes.length > 0)
+    ? quotationTypes.map(t => ({
+        ...t,
+        icon: t.quotationTypeId === 'renewal' ? '🔄' : '✨'
+      }))
+    : defaultTypes;
+
   return (
     <div class="bg-brand-50/30 p-4 rounded-xl border border-brand-100/50 shadow-sm mb-6">
       <label class="block text-sm font-bold text-brand-800 mb-2">วัตถุประสงค์การแจ้งงาน <span class="text-red-500">*</span></label>
@@ -53,33 +66,25 @@ export function PurposeSelector({ state, setters, actions }) {
           </div>
 
           <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200/60">
-            <button
-              type="button"
-              onClick={() => setQuotationSubType('new')}
-              class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
-                quotationSubType === 'new'
-                  ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
-                  : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
-              }`}
-            >
-              <span>✨ งานใหม่ (New)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setQuotationSubType('renewal')}
-              class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
-                quotationSubType === 'renewal'
-                  ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
-                  : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
-              }`}
-            >
-              <span>🔄 งานต่ออายุ (Renewal)</span>
-            </button>
+            {typesToRender.map((type) => (
+              <button
+                key={type.quotationTypeId}
+                type="button"
+                onClick={() => setQuotationSubType(type.quotationTypeId)}
+                class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                  quotationSubType === type.quotationTypeId
+                    ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
+                    : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
+                }`}
+              >
+                <span>{type.icon} {type.quotationTypeName}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}
     </div>
   );
 }
+
 

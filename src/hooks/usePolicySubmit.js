@@ -152,20 +152,27 @@ export function usePolicySubmit({
         if (submissionState.submissionType !== 'success') {
           formData.append('quoted_by', submissionState.informerId);
           formData.append('category_id', submissionState.categoryId);
+
+          const qType = submissionState.quotationSubType || 'new';
+          formData.append('quotation_type_id', qType);
+
+          const prevPolicyId = submissionState.selectedPolicy?.previousPolicyId || 
+                                submissionState.selectedPolicy?.previous_policy_id || 
+                                submissionState.selectedPolicy?.policyId || 
+                                submissionState.selectedPolicy?.policy_id || 
+                                submissionState.selectedPolicy?.id;
+
+          if (prevPolicyId) {
+            formData.append('previous_policy_id', prevPolicyId.toString());
+          }
           
           if (plateNumber) formData.append('plate_number', plateNumber);
           if (customerName) formData.append('customer_name', customerName);
           if (submissionState.endDate) formData.append('previous_policy_expiry_date', submissionState.endDate);
         }
         
-        if (submissionState.submissionType === 'quotation' && !submissionState.selectedPolicy && submissionState.notes) {
+        if (submissionState.submissionType === 'quotation' && submissionState.notes) {
           formData.append('notes', submissionState.notes);
-        }
-        
-        if (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy) {
-          const qId = submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id;
-          if (qId) formData.append('quotation_id', qId);
-          if (submissionState.notes) formData.append('notes', submissionState.notes);
         }
 
         if (isMotor) {
@@ -218,9 +225,6 @@ export function usePolicySubmit({
               const ext = file.name.split('.').pop() || 'pdf';
               let newFileName = `${safeRef}_${map.docType}`;
 
-              if (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy) {
-                newFileName += `_เพิ่มเติม_${Date.now()}`;
-              }
               if (fileArr.length > 1) {
                 newFileName += `_${index + 1}`;
               }
@@ -232,11 +236,10 @@ export function usePolicySubmit({
           }
         }
 
-        const response = (submissionState.submissionType === 'quotation' && submissionState.selectedPolicy)
-          ? await updateQuotation(baseApiUrl, formData)
-          : submissionState.submissionType === 'success'
-            ? await submitPolicy(baseApiUrl, formData)
-            : await submitQuotation(baseApiUrl, formData);
+        const response = submissionState.submissionType === 'success'
+          ? await submitPolicy(baseApiUrl, formData)
+          : await submitQuotation(baseApiUrl, formData);
+
 
         const result = await response.json();
         const elapsedTime = (Date.now() - startTime) / 1000;

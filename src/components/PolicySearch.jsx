@@ -182,17 +182,29 @@ export function PolicySearch({ baseApiUrl, idToken, onSelectPolicy, onQueryChang
                     class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
                   >
                     <div class="flex justify-between items-start mb-1">
-                      <span class={`font-bold ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
-                        {(catId === 'non_motor' || catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
-                          ? (subCatName || catName)
-                          : (plate || 'ไม่ระบุทะเบียน')
-                        }
-                        {isProcessing && <span class="ml-2 text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
+                      <span class={`font-bold flex items-center gap-1.5 ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
+                        <span>
+                          {(catId === 'non_motor' || catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
+                            ? (subCatName || catName)
+                            : (plate || 'ไม่ระบุทะเบียน')
+                          }
+                        </span>
+                        {policy.quotationTypeName && (
+                          <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${
+                            policy.quotationTypeId === 'renewal'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}>
+                            {policy.quotationTypeName}
+                          </span>
+                        )}
+                        {isProcessing && <span class="text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
                       </span>
                       <span class="text-[10px] text-gray-400">
                         📅 {formatThaiDate(createdAt)}
                       </span>
                     </div>
+
                     <div class="flex flex-col gap-0.5 text-xs text-slate-500">
                       <div class="flex items-center gap-1">
                         <span>👤 {customer || '-'}</span>

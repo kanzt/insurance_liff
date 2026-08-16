@@ -62,7 +62,7 @@ export function PolicySearch({
         if (searchMode === 'policies') {
           const [policiesRes, quotationsRes] = await Promise.allSettled([
             searchPolicies(baseApiUrl, debouncedQuery, 20),
-            searchQuotations(baseApiUrl, debouncedQuery, 20, '')
+            searchQuotations(baseApiUrl, debouncedQuery, 20, '', 'renewal')
           ]);
 
           const combinedResults = [];
@@ -92,8 +92,9 @@ export function PolicySearch({
           setPolicies(combinedResults);
           if (onResultsFetched) onResultsFetched(combinedResults);
         } else {
-          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
+          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, 'new');
           const json = await response.json();
+
 
           if (json.results && Array.isArray(json.results)) {
             const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));

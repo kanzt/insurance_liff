@@ -63,16 +63,18 @@ export const fetchVehicleModels = (baseUrl, make, year = '') => {
 };
 
 /**
- * Server-side search for quotations
+ * Server-side search for quotations (supports quotation_type_id filter)
  */
-export const searchQuotations = (baseUrl, searchTerm = '', limit = 20, year = '') => {
+export const searchQuotations = (baseUrl, searchTerm = '', limit = 20, year = '', quotationTypeId = '') => {
   const params = new URLSearchParams();
   if (searchTerm) params.append('search', searchTerm);
   params.append('limit', limit.toString());
   if (year) params.append('year', year.toString());
+  if (quotationTypeId) params.append('quotation_type_id', quotationTypeId);
 
   return authenticatedFetch(`${baseUrl}/load-quotations?${params.toString()}`);
 };
+
 
 /**
  * Server-side search for issued policies (for renewals)

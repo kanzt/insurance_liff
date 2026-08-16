@@ -129,6 +129,7 @@ export function BasicInfoSection({
             baseApiUrl={baseApiUrl}
             idToken={idToken}
             searchMode={isRenewal ? 'policies' : 'quotations'}
+            quotationTypeId={quotationSubType || 'new'}
             year={isRenewal ? '' : new Date().getFullYear().toString()}
             onSelectPolicy={(policy) => {
               if (actions && actions.handleSelectPolicy) {
@@ -145,6 +146,7 @@ export function BasicInfoSection({
                 ? (isRedPlate ? '🔍 ระบุชื่อลูกค้า' : '🔍 เช่น 1กข-1234 กทม')
                 : '🔍 เช่น สมชาย ใจดี')}
           />
+
 
           {isRenewal && !state.selectedPolicy && referenceInput && referenceInput.length >= 2 && (
             <div class="mt-2.5 p-2.5 bg-brand-50/70 border border-brand-200/60 rounded-xl text-xs text-brand-800 flex items-center gap-2 animate-in fade-in duration-200">

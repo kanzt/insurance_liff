@@ -11,7 +11,8 @@ export function PolicySearch({
   uploadHistory = [],
   placeholder = "🔍 ค้นหา ทะเบียนรถ หรือ ชื่อลูกค้า...",
   year = '',
-  searchMode = 'quotations' // 'quotations' | 'policies'
+  searchMode = 'quotations', // 'quotations' | 'policies'
+  quotationTypeId = ''
 }) {
   const [policies, setPolicies] = useState([]);
   const [query, setQuery] = useState(initialQuery);
@@ -57,12 +58,14 @@ export function PolicySearch({
     async function performSearch() {
       if (debouncedQuery && debouncedQuery.length < 2) return;
 
+      const effectiveTypeId = quotationTypeId || (searchMode === 'policies' ? 'renewal' : 'new');
+
       setIsLoading(true);
       try {
         if (searchMode === 'policies') {
           const [policiesRes, quotationsRes] = await Promise.allSettled([
             searchPolicies(baseApiUrl, debouncedQuery, 20),
-            searchQuotations(baseApiUrl, debouncedQuery, 20, '', 'renewal')
+            searchQuotations(baseApiUrl, debouncedQuery, 20, '', effectiveTypeId)
           ]);
 
           const combinedResults = [];
@@ -92,9 +95,8 @@ export function PolicySearch({
           setPolicies(combinedResults);
           if (onResultsFetched) onResultsFetched(combinedResults);
         } else {
-          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, 'new');
+          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, effectiveTypeId);
           const json = await response.json();
-
 
           if (json.results && Array.isArray(json.results)) {
             const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));
@@ -115,7 +117,8 @@ export function PolicySearch({
     }
 
     performSearch();
-  }, [baseApiUrl, idToken, debouncedQuery, refreshKey, year, searchMode]);
+  }, [baseApiUrl, idToken, debouncedQuery, refreshKey, year, searchMode, quotationTypeId]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

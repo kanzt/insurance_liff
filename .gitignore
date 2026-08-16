@@ -25,3 +25,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Handover documents
+BACKEND_HANDOVER*.md
+

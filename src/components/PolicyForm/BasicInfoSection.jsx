@@ -252,7 +252,7 @@ export function BasicInfoSection({
                 </div>
               </div>
 
-              {submissionType === 'quotation' && (
+              {isRenewal && (
                 <div class="pt-2 border-t border-brand-200/60 flex flex-wrap items-center justify-between gap-2">
                   <span class="text-[11px] text-slate-600">หากลูกค้าสลับป้ายทะเบียนนี้ไปใส่รถคันอื่น:</span>
                   <button
@@ -266,6 +266,7 @@ export function BasicInfoSection({
               )}
             </div>
           ); })()}
+
 
 
 

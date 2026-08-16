@@ -10,12 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-08-15
 
 ### Added
+- **Smart Record-Type Detection & Renewal Quotation Updates**:
+  - Implemented parallel dual-search in Renewal mode (`PolicySearch.jsx`) querying both `GET /load-policies` (issued policies) and `GET /load-quotations` (in-flight quotation cases).
+  - Differentiated search results with explicit badges (`🛡️ กรมธรรม์ P001 - เปิดต่ออายุ` vs `📄 เคส #Q105 - ส่งเอกสารเพิ่ม`).
+  - Intelligent API routing in `usePolicySubmit.js`: Automatically invokes `POST /submit-quotation` when an issued policy is selected (new renewal), and `POST /update-quotation` when an existing quotation case is selected (additional docs / quote updates).
+  - Enhanced selected record banner in `BasicInfoSection.jsx` to dynamically reflect whether the agent is creating a new renewal quote or updating an existing quotation.
 - **Issued Policies Endpoint Integration (`GET /load-policies`)**:
   - Added `searchPolicies` in `src/utils/api.js` to query closed/issued insurance policies for renewals.
-  - Enhanced `PolicySearch.jsx` with `searchMode="policies"` to search issued policies for renewals and `searchMode="quotations"` for new quotes and additional document uploads.
   - Rendered rich policy card items in search results showing policy ID (`policyId`, e.g. `P202608001`), insurer company, product, and policy expiry date.
   - Linked selected policy record in `BasicInfoSection.jsx` with badge indicator (`🛡️ P202608001`) and auto-populated previous expiry date (`policyExpiryDate`).
   - Extracted and forwarded `previous_policy_id` (`policyId`) in `usePolicySubmit.js` to `POST /submit-quotation` establishing clear renewal lineage.
+
 
 - **Quotation Sub-Type Switcher**: Added sub-intent pill switcher (`✨ งานใหม่ (New)` vs `🔄 งานต่ออายุ (Renewal)`) under the Quotation workflow in `PurposeSelector.jsx`.
 - **License Plate Transfer Resolution (สลับป้ายทะเบียนใส่คันใหม่)**:

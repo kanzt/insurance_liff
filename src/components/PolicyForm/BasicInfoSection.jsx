@@ -172,31 +172,56 @@ export function BasicInfoSection({
             </div>
           )}
 
-          {state.selectedPolicy && !isPlateTransfer && (
-            <div class="mt-3 p-3.5 bg-brand-50/90 border border-brand-200/80 rounded-xl space-y-3 animate-in fade-in zoom-in-95 duration-300">
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex items-center gap-2">
-                  <div class="p-2 bg-white rounded-full text-brand-600 shadow-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="text-xs font-bold text-brand-900 flex items-center gap-1.5">
-                      <span>{isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมสำหรับต่ออายุ' : 'พบข้อมูลเดิมในระบบ'}</span>
-                      {state.selectedPolicy.policyId && (
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 font-semibold border border-teal-200">
-                          🛡️ {state.selectedPolicy.policyId}
-                        </span>
+          {state.selectedPolicy && !isPlateTransfer && (() => {
+            const isQuotationRecord = state.selectedPolicy._recordType === 'quotation' || (Boolean(state.selectedPolicy.quotationId || state.selectedPolicy.quotation_id) && !state.selectedPolicy.policyId);
+            const policyId = state.selectedPolicy.policyId;
+            const quotationId = state.selectedPolicy.quotationId || state.selectedPolicy.quotation_id;
+
+            return (
+              <div class={`mt-3 p-3.5 border rounded-xl space-y-3 animate-in fade-in zoom-in-95 duration-300 ${
+                isQuotationRecord 
+                  ? 'bg-amber-50/90 border-amber-200/80' 
+                  : 'bg-brand-50/90 border-brand-200/80'
+              }`}>
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <div class={`p-2 bg-white rounded-full shadow-xs ${isQuotationRecord ? 'text-amber-600' : 'text-brand-600'}`}>
+                      {isQuotationRecord ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd" />
+                        </svg>
                       )}
                     </div>
-                    <div class="text-[11px] text-brand-700 font-medium">
-                      {state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name}
-                      {state.selectedPolicy.companyName ? ` • 🏢 ${state.selectedPolicy.companyName}` : ''}
-                      {state.selectedPolicy.productName ? ` (${state.selectedPolicy.productName})` : ''}
+                    <div>
+                      <div class={`text-xs font-bold flex items-center gap-1.5 ${isQuotationRecord ? 'text-amber-900' : 'text-brand-900'}`}>
+                        <span>
+                          {isQuotationRecord
+                            ? `📎 ส่งเอกสารเพิ่ม / แก้ไขเคสเช็คเบี้ยเดิม`
+                            : (isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมเพื่อเปิดเคสต่ออายุ' : 'พบข้อมูลเดิมในระบบ')}
+                        </span>
+                        {policyId && (
+                          <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 font-semibold border border-teal-200">
+                            🛡️ {policyId}
+                          </span>
+                        )}
+                        {isQuotationRecord && quotationId && (
+                          <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold border border-amber-200">
+                            📄 #{quotationId}
+                          </span>
+                        )}
+                      </div>
+                      <div class={`text-[11px] font-medium ${isQuotationRecord ? 'text-amber-700' : 'text-brand-700'}`}>
+                        {state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name}
+                        {state.selectedPolicy.companyName ? ` • 🏢 ${state.selectedPolicy.companyName}` : ''}
+                        {state.selectedPolicy.productName ? ` (${state.selectedPolicy.productName})` : ''}
+                      </div>
                     </div>
                   </div>
-                </div>
+
 
                 <div class="flex items-center gap-1.5 shrink-0">
                   {(state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
@@ -238,7 +263,8 @@ export function BasicInfoSection({
                 </div>
               )}
             </div>
-          )}
+          ); })()}
+
 
 
           {isMotor && submissionType !== 'success' && !state.selectedPolicy && !isPlateTransfer && (

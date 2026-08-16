@@ -150,8 +150,9 @@ export function usePolicySubmit({
         const formData = new FormData();
         
         const isUpdatingQuotation = submissionState.submissionType === 'quotation' &&
-          submissionState.quotationSubType !== 'renewal' &&
-          !!(submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id);
+          Boolean(submissionState.selectedPolicy?.quotationId || submissionState.selectedPolicy?.quotation_id) &&
+          !submissionState.selectedPolicy?.policyId;
+
 
         if (submissionState.submissionType !== 'success') {
           formData.append('quoted_by', submissionState.informerId);

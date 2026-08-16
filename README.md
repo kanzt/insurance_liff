@@ -21,9 +21,10 @@
 
 ## ✨ ฟีเจอร์หลัก (Key Features)
 
-- **100% Semantic String Slug PKs**: โครงสร้าง Master Data ใช้ Semantic Slug ทั้งระบบ (`companyId`, `productId`, `categoryId`, `paymentMethodId`, `brokerChannelId`, `levelId`)
+- **Smart Record-Type Detection**: ระบบค้นหาคู่ขนานอัจฉริยะในโหมดต่ออายุ แยกแยะระหว่าง **กรมธรรม์เดิม (`policyId`)** สำหรับเปิดเคสต่ออายุรอบใหม่ (`POST /submit-quotation`) กับ **เคสเช็คเบี้ยเดิม (`quotationId`)** สำหรับส่งเอกสารเพิ่ม/แก้ไข (`POST /update-quotation`) พร้อมติด Badge แสดงผลชัดเจน
 - **Issued Policies Renewal Integration (`GET /load-policies`)**: เชื่อมต่อการค้นหากรมธรรม์เดิมที่ปิดการขายแล้วในระบบ แสดงเลข `policyId` (เช่น `P202608001`), บริษัทประกันเดิม, วันหมดอายุเดิม และผูก `previous_policy_id` ส่งไปใน `POST /submit-quotation`
 - **Quotation Sub-Type Switcher**: สลับโหมดการเช็คเบี้ยได้อย่างรวดเร็วระหว่าง `✨ งานใหม่` และ `🔄 งานต่ออายุ`
+
 - **Smart Plate Transfer Resolution**: รองรับกรณีลูกค้าสลับป้ายทะเบียนเดิมมาใส่รถคันใหม่ด้วยปุ่มกด 1-Click `🚗✨ สลับป้ายใส่คันใหม่` ล้างข้อมูลรถเดิมและข้ามระบบล็อกเช็คเบี้ยซ้ำ
 - **Dynamic Renewal Dropzone Priority**: จัดลำดับช่องแนบไฟล์ตามความสำคัญของงานต่ออายุ (ดัน `ใบเตือนต่ออายุ` และ `กรมธรรม์เดิม` ขึ้นบนสุด)
 - **1-Click Renewal Reminder Presets**: คำนวณวันแจ้งเตือนล่วงหน้าได้ทันที (15, 30, 45, 60 วันก่อนหมดอายุ)

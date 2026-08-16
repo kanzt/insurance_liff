@@ -59,18 +59,50 @@ export function PolicySearch({
 
       setIsLoading(true);
       try {
-        const response = (searchMode === 'policies')
-          ? await searchPolicies(baseApiUrl, debouncedQuery, 20)
-          : await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
+        if (searchMode === 'policies') {
+          const [policiesRes, quotationsRes] = await Promise.allSettled([
+            searchPolicies(baseApiUrl, debouncedQuery, 20),
+            searchQuotations(baseApiUrl, debouncedQuery, 20, '')
+          ]);
 
-        const json = await response.json();
+          const combinedResults = [];
 
-        if (json.results && Array.isArray(json.results)) {
-          setPolicies(json.results);
-          if (onResultsFetched) onResultsFetched(json.results);
+          if (policiesRes.status === 'fulfilled') {
+            try {
+              const json = await policiesRes.value.json();
+              if (json.results && Array.isArray(json.results)) {
+                json.results.forEach(p => combinedResults.push({ ...p, _recordType: 'policy' }));
+              }
+            } catch (e) {
+              console.error("Error parsing policies:", e);
+            }
+          }
+
+          if (quotationsRes.status === 'fulfilled') {
+            try {
+              const json = await quotationsRes.value.json();
+              if (json.results && Array.isArray(json.results)) {
+                json.results.forEach(q => combinedResults.push({ ...q, _recordType: 'quotation' }));
+              }
+            } catch (e) {
+              console.error("Error parsing quotations:", e);
+            }
+          }
+
+          setPolicies(combinedResults);
+          if (onResultsFetched) onResultsFetched(combinedResults);
         } else {
-          setPolicies([]);
-          if (onResultsFetched) onResultsFetched([]);
+          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year);
+          const json = await response.json();
+
+          if (json.results && Array.isArray(json.results)) {
+            const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));
+            setPolicies(tagged);
+            if (onResultsFetched) onResultsFetched(tagged);
+          } else {
+            setPolicies([]);
+            if (onResultsFetched) onResultsFetched([]);
+          }
         }
       } catch (error) {
         console.error("Search error:", error);
@@ -168,15 +200,15 @@ export function PolicySearch({
             </div>
           ) : policies.length === 0 ? (
             <div class="p-8 text-center text-gray-500 text-sm">
-              {query.length < 2 ? '⚠️ กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร' : (searchMode === 'policies' ? '❌ ไม่พบกรมธรรม์เดิมในระบบ' : '❌ ไม่พบรายการที่ตรงกับคำค้นหา')}
+              {query.length < 2 ? '⚠️ กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร' : '❌ ไม่พบรายการที่ตรงกับคำค้นหา'}
             </div>
           ) : (
             <div class="py-1">
               <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
-                <span>{debouncedQuery ? (searchMode === 'policies' ? 'ผลการค้นหากรมธรรม์เดิม' : 'ผลการค้นหา') : (searchMode === 'policies' ? 'กรมธรรม์ล่าสุด' : 'รายการล่าสุด')}</span>
+                <span>{debouncedQuery ? (searchMode === 'policies' ? 'ผลการค้นหากรมธรรม์เดิม & เคสเช็คเบี้ย' : 'ผลการค้นหา') : (searchMode === 'policies' ? 'กรมธรรม์และเคสล่าสุด' : 'รายการล่าสุด')}</span>
               </div>
               {policies.map(item => {
-                const isPolicyItem = searchMode === 'policies' || item.policyId;
+                const isPolicyRecord = item._recordType === 'policy' || (item.policyId && !item._recordType);
                 const plate = item.plateNumber || item.plate_number;
                 const customer = item.customerName || item.customer_name;
                 const catId = item.categoryId || item.category_id;
@@ -192,7 +224,7 @@ export function PolicySearch({
 
                 return (
                   <div
-                    key={item.policyId || item.id || item.policy_id || item.quotationId}
+                    key={`${isPolicyRecord ? 'pol' : 'quo'}_${item.policyId || item.id || item.policy_id || item.quotationId}`}
                     onClick={() => { if (!isProcessing) handleSelect(item) }}
                     class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
                   >
@@ -204,18 +236,19 @@ export function PolicySearch({
                             : (plate || 'ไม่ระบุทะเบียน')
                           }
                         </span>
-                        {isPolicyItem && item.policyId && (
-                          <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200">
-                            🛡️ {item.policyId}
+                        {isPolicyRecord ? (
+                          <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200 flex items-center gap-1">
+                            <span>🛡️ กรมธรรม์ {item.policyId}</span>
+                            <span class="text-[8px] bg-teal-100 text-teal-800 px-1 rounded">เปิดต่ออายุ</span>
                           </span>
-                        )}
-                        {!isPolicyItem && item.quotationTypeName && (
-                          <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${
+                        ) : (
+                          <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border flex items-center gap-1 ${
                             item.quotationTypeId === 'renewal'
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-blue-50 text-blue-700 border-blue-200'
                           }`}>
-                            {item.quotationTypeName}
+                            <span>📄 เคส #{item.quotationId} ({item.quotationTypeName || (item.quotationTypeId === 'renewal' ? 'งานต่ออายุ' : 'งานใหม่')})</span>
+                            <span class="text-[8px] bg-amber-100 text-amber-800 px-1 rounded">ส่งเอกสารเพิ่ม</span>
                           </span>
                         )}
                         {isProcessing && <span class="text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
@@ -248,4 +281,5 @@ export function PolicySearch({
     </div>
   );
 }
+
 

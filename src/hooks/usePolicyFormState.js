@@ -352,6 +352,35 @@ export function usePolicyFormState(setConfirmModal) {
     });
   };
 
+  const handleQuotationSubTypeChange = (newSubType) => {
+    if (newSubType === quotationSubType) return;
+    setQuotationSubType(newSubType);
+    setIsPlateTransfer(false);
+    setDuplicatePolicy(null);
+    setIsRedPlate(false);
+    setReferenceInput('');
+    setEndDate('');
+    setEnableReminder(false);
+    setReminderDate('');
+    setReminderType('quotation_confirm');
+    setSelectedPolicy(null);
+    setNotes('');
+    setVehicleYear('');
+    setVehicleMake('');
+    setVehicleModel('');
+    setProductId('');
+    setFilesData({
+      registration: [],
+      oldPolicy: [],
+      quotation: [],
+      compQuotation: [],
+      renewalNotice: [],
+      workOrder: [],
+      others: []
+    });
+  };
+
+
   return {
     state: {
       informerId,
@@ -433,7 +462,9 @@ export function usePolicyFormState(setConfirmModal) {
       handlePlateTransfer,
       handleCancelPlateTransfer,
       handleCategoryChange,
+      handleQuotationSubTypeChange,
     }
   };
 }
+
 

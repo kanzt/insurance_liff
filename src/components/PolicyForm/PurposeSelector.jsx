@@ -70,7 +70,13 @@ export function PurposeSelector({ state, setters, actions, quotationTypes = [] }
               <button
                 key={type.quotationTypeId}
                 type="button"
-                onClick={() => setQuotationSubType(type.quotationTypeId)}
+                onClick={() => {
+                  if (actions && actions.handleQuotationSubTypeChange) {
+                    actions.handleQuotationSubTypeChange(type.quotationTypeId);
+                  } else {
+                    setQuotationSubType(type.quotationTypeId);
+                  }
+                }}
                 class={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
                   quotationSubType === type.quotationTypeId
                     ? 'bg-white text-brand-700 shadow-sm border border-brand-200/80 scale-[1.01]'
@@ -79,6 +85,7 @@ export function PurposeSelector({ state, setters, actions, quotationTypes = [] }
               >
                 <span>{type.icon} {type.quotationTypeName}</span>
               </button>
+
             ))}
           </div>
         </div>

@@ -119,8 +119,14 @@ export function PolicyForm({
             const isProcessing = uploadHistory && uploadHistory.some(
               job => job.title === state.referenceInput && job.status === 'loading'
             );
+            const isRenewalLocked = state.submissionType === 'quotation' && state.quotationSubType === 'new' && !state.isPlateTransfer && (
+              Boolean(state.selectedPolicy?.policyId) ||
+              state.selectedPolicy?._recordType === 'policy' ||
+              state.selectedPolicy?.quotationTypeId === 'renewal' ||
+              state.selectedPolicy?.quotation_type_id === 'renewal'
+            );
             const isDuplicate = state.submissionType === 'quotation' && !state.selectedPolicy && state.duplicatePolicy && !state.isPlateTransfer;
-            const isDisabled = isProcessing || isDuplicate;
+            const isDisabled = isProcessing || isDuplicate || isRenewalLocked;
 
             let buttonLabel = 'ส่งข้อมูลเช็คเบี้ย';
             if (state.submissionType === 'success') {
@@ -140,9 +146,11 @@ export function PolicyForm({
               >
                 <span>{buttonLabel}</span>
                 {isProcessing && <span class="text-[10px] font-normal opacity-90 mt-0.5">ระบบกำลังประมวลผลทะเบียนนี้...</span>}
+                {isRenewalLocked && <span class="text-[10px] font-normal opacity-90 mt-0.5">⚠️ กรุณากดสลับเป็นงานต่ออายุ หรือสลับป้ายทะเบียน</span>}
               </button>
             );
           })()}
+
         </div>
       </form>
     </div>

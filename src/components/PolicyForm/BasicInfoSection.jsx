@@ -178,17 +178,38 @@ export function BasicInfoSection({
             const isQuotationRecord = state.selectedPolicy._recordType === 'quotation' || (Boolean(state.selectedPolicy.quotationId || state.selectedPolicy.quotation_id) && !state.selectedPolicy.policyId);
             const policyId = state.selectedPolicy.policyId;
             const quotationId = state.selectedPolicy.quotationId || state.selectedPolicy.quotation_id;
+            const qTypeId = state.selectedPolicy.quotationTypeId || state.selectedPolicy.quotation_type_id;
+            const isRenewalQuotation = isQuotationRecord && qTypeId === 'renewal';
+
+            const isState3InNewMode = !isRenewal && isRenewalQuotation;
+            const isState2InNewMode = !isRenewal && (Boolean(policyId) || state.selectedPolicy._recordType === 'policy');
 
             return (
               <div class={`mt-3 p-3.5 border rounded-xl space-y-3 animate-in fade-in zoom-in-95 duration-300 ${
-                isQuotationRecord 
-                  ? 'bg-amber-50/90 border-amber-200/80' 
-                  : 'bg-brand-50/90 border-brand-200/80'
+                isState3InNewMode
+                  ? 'bg-amber-50/95 border-amber-300 shadow-sm'
+                  : isState2InNewMode
+                    ? 'bg-teal-50/95 border-teal-300 shadow-sm'
+                    : isQuotationRecord 
+                      ? 'bg-amber-50/90 border-amber-200/80' 
+                      : 'bg-brand-50/90 border-brand-200/80'
               }`}>
                 <div class="flex items-start justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <div class={`p-2 bg-white rounded-full shadow-xs ${isQuotationRecord ? 'text-amber-600' : 'text-brand-600'}`}>
-                      {isQuotationRecord ? (
+                  <div class="flex items-start gap-2.5">
+                    <div class={`p-2 bg-white rounded-full shadow-xs shrink-0 mt-0.5 ${
+                      isState3InNewMode
+                        ? 'text-amber-600'
+                        : isState2InNewMode
+                          ? 'text-teal-600'
+                          : isQuotationRecord
+                            ? 'text-amber-600'
+                            : 'text-brand-600'
+                    }`}>
+                      {isState3InNewMode ? (
+                        <span class="text-base">⚠️</span>
+                      ) : isState2InNewMode ? (
+                        <span class="text-base">💡</span>
+                      ) : isQuotationRecord ? (
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                         </svg>
@@ -199,73 +220,149 @@ export function BasicInfoSection({
                       )}
                     </div>
                     <div>
-                      <div class={`text-xs font-bold flex items-center gap-1.5 ${isQuotationRecord ? 'text-amber-900' : 'text-brand-900'}`}>
+                      <div class={`text-xs font-bold flex items-center gap-1.5 flex-wrap ${
+                        isState3InNewMode
+                          ? 'text-amber-950'
+                          : isState2InNewMode
+                            ? 'text-teal-950'
+                            : isQuotationRecord
+                              ? 'text-amber-900'
+                              : 'text-brand-900'
+                      }`}>
                         <span>
-                          {isQuotationRecord
-                            ? `📎 ส่งเอกสารเพิ่ม / แก้ไขเคสเช็คเบี้ยเดิม`
-                            : (isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมเพื่อเปิดเคสต่ออายุ' : 'พบข้อมูลเดิมในระบบ')}
+                          {isState3InNewMode
+                            ? `⚠️ พบเคสเช็คเบี้ยต่ออายุเดิมในระบบแล้ว (#${quotationId})`
+                            : isState2InNewMode
+                              ? `💡 พบข้อมูลกรมธรรม์เดิมในระบบ (ควรเป็นงานต่ออายุ)`
+                              : isQuotationRecord
+                                ? `📎 ส่งเอกสารเพิ่ม / แก้ไขเคสเช็คเบี้ยเดิม`
+                                : (isRenewal ? '🔄 เชื่อมโยงกรมธรรม์เดิมเพื่อเปิดเคสต่ออายุ' : 'พบข้อมูลเดิมในระบบ')}
                         </span>
                         {policyId && (
                           <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 font-semibold border border-teal-200">
                             🛡️ {policyId}
                           </span>
                         )}
-                        {isQuotationRecord && quotationId && (
+                        {quotationId && (
                           <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold border border-amber-200">
-                            📄 #{quotationId}
+                            📄 #{quotationId} {isRenewalQuotation ? '(งานต่ออายุ)' : ''}
                           </span>
                         )}
                       </div>
-                      <div class={`text-[11px] font-medium ${isQuotationRecord ? 'text-amber-700' : 'text-brand-700'}`}>
+                      <div class={`text-[11px] mt-0.5 ${
+                        isState3InNewMode
+                          ? 'text-amber-800 font-medium'
+                          : isState2InNewMode
+                            ? 'text-teal-800 font-medium'
+                            : isQuotationRecord
+                              ? 'text-amber-700'
+                              : 'text-brand-700'
+                      }`}>
                         {state.selectedPolicy.plateNumber || state.selectedPolicy.plate_number || state.selectedPolicy.customerName || state.selectedPolicy.customer_name}
                         {state.selectedPolicy.companyName ? ` • 🏢 ${state.selectedPolicy.companyName}` : ''}
                         {state.selectedPolicy.productName ? ` (${state.selectedPolicy.productName})` : ''}
                       </div>
+
+                      {isState3InNewMode && (
+                        <p class="text-[11px] text-amber-700 mt-1 font-normal">
+                          ทะเบียนนี้มีการเปิดขอใบเสนอราคาต่ออายุของปีนี้แล้ว กรุณาสลับไปโหมดส่งเอกสารเพิ่มเพื่ออัปเดตเคสเดิม
+                        </p>
+                      )}
+                      {isState2InNewMode && (
+                        <p class="text-[11px] text-teal-700 mt-1 font-normal">
+                          ทะเบียนนี้มีประวัติกรมธรรม์เดิม แนะนำให้ยื่นเป็นงานต่ออายุเพื่อดึงข้อมูลเดิมและคำนวณเบี้ยต่อเนื่อง
+                        </p>
+                      )}
                     </div>
                   </div>
 
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    {(state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
+                      <a
+                        href={state.selectedPolicy.documentLink || state.selectedPolicy.document_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="px-2.5 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-bold shadow-xs hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-1"
+                      >
+                        <span>📂 ดูไฟล์เดิม</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                      </a>
+                    )}
 
-                <div class="flex items-center gap-1.5 shrink-0">
-                  {(state.selectedPolicy.documentLink || state.selectedPolicy.document_link) && (
-                    <a
-                      href={state.selectedPolicy.documentLink || state.selectedPolicy.document_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-bold shadow-xs hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-1"
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPolicy(null)}
+                      class="px-2 py-1.5 bg-white hover:bg-gray-100 text-gray-600 border border-gray-200 rounded-lg text-xs font-medium transition-colors"
+                      title="ล้างรายการที่เลือก"
                     >
-                      <span>📂 ดูไฟล์เดิม</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                      </svg>
-                    </a>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPolicy(null)}
-                    class="px-2 py-1.5 bg-white hover:bg-gray-100 text-gray-600 border border-gray-200 rounded-lg text-xs font-medium transition-colors"
-                    title="ล้างการเชื่อมโยงกรมธรรม์เดิม"
-                  >
-                    ✕
-                  </button>
+                      ✕
+                    </button>
+                  </div>
                 </div>
+
+                {/* Action buttons inside banner */}
+                {isState3InNewMode && (
+                  <div class="pt-2 border-t border-amber-200/80 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[11px] text-amber-900 font-medium">การดำเนินการที่แนะนำ:</span>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => actions.handleSwitchToRenewal && actions.handleSwitchToRenewal(state.selectedPolicy)}
+                        class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                      >
+                        <span>📎 สลับไปโหมดส่งเอกสารเพิ่ม</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={actions.handlePlateTransfer}
+                        class="px-2.5 py-1.5 bg-white hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold transition-all shadow-xs"
+                      >
+                        <span>🚗✨ สลับป้ายใส่คันใหม่</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isState2InNewMode && (
+                  <div class="pt-2 border-t border-teal-200/80 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[11px] text-teal-900 font-medium">การดำเนินการที่แนะนำ:</span>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => actions.handleSwitchToRenewal && actions.handleSwitchToRenewal(state.selectedPolicy)}
+                        class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                      >
+                        <span>🔄 สลับเป็นงานต่ออายุรอบใหม่</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={actions.handlePlateTransfer}
+                        class="px-2.5 py-1.5 bg-white hover:bg-teal-100 text-teal-800 border border-teal-300 rounded-lg text-xs font-bold transition-all shadow-xs"
+                      >
+                        <span>🚗✨ สลับป้ายใส่คันใหม่</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isRenewal && (
+                  <div class="pt-2 border-t border-brand-200/60 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[11px] text-slate-600">หากลูกค้าสลับป้ายทะเบียนนี้ไปใส่รถคันอื่น:</span>
+                    <button
+                      type="button"
+                      onClick={actions.handlePlateTransfer}
+                      class="px-3 py-1.5 bg-white hover:bg-amber-50 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+                    >
+                      <span>🚗✨ สลับป้ายใส่คันใหม่</span>
+                    </button>
+                  </div>
+                )}
               </div>
+            ); })()}
 
-              {isRenewal && (
-                <div class="pt-2 border-t border-brand-200/60 flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-[11px] text-slate-600">หากลูกค้าสลับป้ายทะเบียนนี้ไปใส่รถคันอื่น:</span>
-                  <button
-                    type="button"
-                    onClick={actions.handlePlateTransfer}
-                    class="px-3 py-1.5 bg-white hover:bg-amber-50 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
-                  >
-                    <span>🚗✨ สลับป้ายใส่คันใหม่</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ); })()}
 
 
 

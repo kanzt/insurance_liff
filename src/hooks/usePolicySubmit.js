@@ -272,9 +272,10 @@ export function usePolicySubmit({
         } else {
           const errorUpdate = {
             status: 'error',
-            message: result.error || 'เกิดข้อผิดพลาดในการส่งข้อมูล',
+            message: result.message || result.error || 'เกิดข้อผิดพลาดในการส่งข้อมูล',
             onRetry: () => doBackgroundSubmit(submissionState)
           };
+
           setUploadToasts(prev => prev.map(t => t.id === jobId ? { ...t, ...errorUpdate } : t));
           setUploadHistory(prev => prev.map(t => t.id === jobId ? { ...t, ...errorUpdate } : t));
         }

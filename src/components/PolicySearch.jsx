@@ -99,18 +99,42 @@ export function PolicySearch({
           if (onResultsFetched) onResultsFetched([]);
         }
       } else {
-        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, effectiveTypeId);
-        const json = await response.json();
+        const currentYear = new Date().getFullYear().toString();
+        // Step 1: Check existing quotations for this search term (detects State 3: Active renewal quote or existing new quote)
+        try {
+          const quotRes = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear);
+          const quotJson = await quotRes.json();
 
-        if (json.results && Array.isArray(json.results)) {
-          const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));
-          setPolicies(tagged);
-          if (onResultsFetched) onResultsFetched(tagged);
-        } else {
+          if (quotJson.results && Array.isArray(quotJson.results) && quotJson.results.length > 0) {
+            const tagged = quotJson.results.map(q => ({ ...q, _recordType: 'quotation' }));
+            setPolicies(tagged);
+            if (onResultsFetched) onResultsFetched(tagged);
+            return;
+          }
+        } catch (e) {
+          console.error("Error searching quotations in new mode:", e);
+        }
+
+        // Step 2: If no quotation found, check if it's an issued policy in our system (State 2: Renewal candidate)
+        try {
+          const policyRes = await searchPolicies(baseApiUrl, debouncedQuery, 20);
+          const policyJson = await policyRes.json();
+
+          if (policyJson.results && Array.isArray(policyJson.results) && policyJson.results.length > 0) {
+            const tagged = policyJson.results.map(p => ({ ...p, _recordType: 'policy' }));
+            setPolicies(tagged);
+            if (onResultsFetched) onResultsFetched(tagged);
+          } else {
+            setPolicies([]);
+            if (onResultsFetched) onResultsFetched([]);
+          }
+        } catch (e) {
+          console.error("Error searching issued policies in new mode:", e);
           setPolicies([]);
           if (onResultsFetched) onResultsFetched([]);
         }
       }
+
 
       } catch (error) {
         console.error("Search error:", error);

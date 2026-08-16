@@ -380,6 +380,16 @@ export function usePolicyFormState(setConfirmModal) {
     });
   };
 
+  const handleSwitchToRenewal = (policy) => {
+    setQuotationSubType('renewal');
+    setIsPlateTransfer(false);
+    setDuplicatePolicy(null);
+    if (policy) {
+      handleSelectPolicy(policy);
+    }
+  };
+
+
 
   return {
     state: {
@@ -463,8 +473,10 @@ export function usePolicyFormState(setConfirmModal) {
       handleCancelPlateTransfer,
       handleCategoryChange,
       handleQuotationSubTypeChange,
+      handleSwitchToRenewal,
     }
   };
 }
+
 
 

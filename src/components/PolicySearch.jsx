@@ -62,51 +62,56 @@ export function PolicySearch({
 
       setIsLoading(true);
       try {
-        if (searchMode === 'policies') {
-          const [policiesRes, quotationsRes] = await Promise.allSettled([
-            searchPolicies(baseApiUrl, debouncedQuery, 20),
-            searchQuotations(baseApiUrl, debouncedQuery, 20, '', effectiveTypeId)
-          ]);
+      if (searchMode === 'policies') {
+        const currentYear = new Date().getFullYear().toString();
+        // Step 1: Check if a renewal quotation case is already open this year
+        try {
+          const quotRes = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear, 'renewal');
+          const quotJson = await quotRes.json();
 
-          const combinedResults = [];
-
-          if (policiesRes.status === 'fulfilled') {
-            try {
-              const json = await policiesRes.value.json();
-              if (json.results && Array.isArray(json.results)) {
-                json.results.forEach(p => combinedResults.push({ ...p, _recordType: 'policy' }));
-              }
-            } catch (e) {
-              console.error("Error parsing policies:", e);
-            }
+          if (quotJson.results && Array.isArray(quotJson.results) && quotJson.results.length > 0) {
+            // Found existing renewal quotation -> display it for additional docs/update mode, no need to query searchPolicies
+            const tagged = quotJson.results.map(q => ({ ...q, _recordType: 'quotation' }));
+            setPolicies(tagged);
+            if (onResultsFetched) onResultsFetched(tagged);
+            return;
           }
+        } catch (e) {
+          console.error("Error searching renewal quotations:", e);
+        }
 
-          if (quotationsRes.status === 'fulfilled') {
-            try {
-              const json = await quotationsRes.value.json();
-              if (json.results && Array.isArray(json.results)) {
-                json.results.forEach(q => combinedResults.push({ ...q, _recordType: 'quotation' }));
-              }
-            } catch (e) {
-              console.error("Error parsing quotations:", e);
-            }
-          }
+        // Step 2: If no renewal quote exists for this year, search issued policies to start a new renewal quote
+        try {
+          const policyRes = await searchPolicies(baseApiUrl, debouncedQuery, 20);
+          const policyJson = await policyRes.json();
 
-          setPolicies(combinedResults);
-          if (onResultsFetched) onResultsFetched(combinedResults);
-        } else {
-          const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, effectiveTypeId);
-          const json = await response.json();
-
-          if (json.results && Array.isArray(json.results)) {
-            const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));
+          if (policyJson.results && Array.isArray(policyJson.results) && policyJson.results.length > 0) {
+            const tagged = policyJson.results.map(p => ({ ...p, _recordType: 'policy' }));
             setPolicies(tagged);
             if (onResultsFetched) onResultsFetched(tagged);
           } else {
             setPolicies([]);
             if (onResultsFetched) onResultsFetched([]);
           }
+        } catch (e) {
+          console.error("Error searching issued policies:", e);
+          setPolicies([]);
+          if (onResultsFetched) onResultsFetched([]);
         }
+      } else {
+        const response = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, effectiveTypeId);
+        const json = await response.json();
+
+        if (json.results && Array.isArray(json.results)) {
+          const tagged = json.results.map(q => ({ ...q, _recordType: 'quotation' }));
+          setPolicies(tagged);
+          if (onResultsFetched) onResultsFetched(tagged);
+        } else {
+          setPolicies([]);
+          if (onResultsFetched) onResultsFetched([]);
+        }
+      }
+
       } catch (error) {
         console.error("Search error:", error);
         setPolicies([]);

@@ -122,7 +122,7 @@ export function ReminderSection({
                   class="block w-full rounded-xl border-gray-200 shadow-sm p-3 text-sm border focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer bg-white"
                 />
 
-                {endDate && (
+                {quotationSubType === 'renewal' && endDate && (
                   <div class="mt-2 flex flex-wrap items-center gap-1.5">
                     <span class="text-[10px] text-gray-500 font-medium">ตั้งเตือนล่วงหน้า:</span>
                     {[
@@ -146,6 +146,7 @@ export function ReminderSection({
                     ))}
                   </div>
                 )}
+
               </div>
 
               {/* พรีวิวข้อความ */}

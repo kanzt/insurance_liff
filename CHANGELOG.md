@@ -7,20 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2026-08-17
-
-### Added
-- **Parallel Dual-Search & Grouped Multi-Section UI in Renewal Mode**:
-  - Replaced sequential waterfall search in `PolicySearch.jsx` with non-blocking parallel `Promise.allSettled` queries to both `GET /load-policies` (issued policies) and `GET /load-quotations` (active renewal quotes).
-  - Designed clean grouped multi-section Dropdown view clearly separating:
-    - 🛡️ **Issued Policies (`GET /load-policies`)**: Labeled *"กรมธรรม์เดิมที่ปิดงานแล้ว (คลิกเพื่อเปิดต่ออายุ)"* with policy badges and expiry dates to start new renewal quotation cases.
-    - 📄 **Active Renewal Quotations (`GET /load-quotations`)**: Labeled *"เคสเช็คเบี้ยต่ออายุเดิม (คลิกเพื่อส่งเอกสารเพิ่ม)"* with quote badges to attach supplemental documents or update cases.
-  - Enhanced error resiliency with defensive JSON key parsing supporting `results`, `data`, `policies`, `quotations`, and raw arrays.
-
 ## [1.1.0] - 2026-08-15
 
 ### Added
+- **Parallel Dual-Search & Grouped Multi-Section UI in Renewal Mode**:
+  - Implemented non-blocking parallel `Promise.allSettled` queries in `PolicySearch.jsx` to both `GET /load-policies` (issued policies) and `GET /load-quotations` (active renewal quotes).
+  - Designed clean grouped multi-section Dropdown view clearly separating:
+    - 🛡️ **Issued Policies (`GET /load-policies`)**: Labeled *"กรมธรรม์เดิมที่ปิดงานแล้ว (คลิกเพื่อเปิดต่ออายุ)"* with policy badges (`🛡️ กรมธรรม์ P001 - เปิดต่ออายุ`) and expiry dates to start new renewal quotation cases (`POST /submit-quotation`).
+    - 📄 **Active Renewal Quotations (`GET /load-quotations`)**: Labeled *"เคสเช็คเบี้ยต่ออายุเดิม (คลิกเพื่อส่งเอกสารเพิ่ม)"* with quote badges (`📄 เคส #Q105 - ส่งเอกสารเพิ่ม`) to attach supplemental documents or update cases (`POST /update-quotation`).
+  - Enhanced error resiliency with defensive JSON key parsing supporting `results`, `data`, `policies`, `quotations`, and raw arrays.
 - **Smart Record-Type Detection & Renewal Quotation Updates**:
+
   - Implemented parallel dual-search in Renewal mode (`PolicySearch.jsx`) querying both `GET /load-policies` (issued policies) and `GET /load-quotations` (in-flight quotation cases).
   - Differentiated search results with explicit badges (`🛡️ กรมธรรม์ P001 - เปิดต่ออายุ` vs `📄 เคส #Q105 - ส่งเอกสารเพิ่ม`).
   - Intelligent API routing in `usePolicySubmit.js`: Automatically invokes `POST /submit-quotation` when an issued policy is selected (new renewal), and `POST /update-quotation` when an existing quotation case is selected (additional docs / quote updates).

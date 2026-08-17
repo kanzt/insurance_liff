@@ -63,79 +63,63 @@ export function PolicySearch({
       setIsLoading(true);
       try {
       if (searchMode === 'policies') {
-        const currentYear = new Date().getFullYear().toString();
-        // Step 1: Check if a renewal quotation case is already open this year
-        try {
-          const quotRes = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear, 'renewal');
-          const quotJson = await quotRes.json();
+        const [policiesRes, quotationsRes] = await Promise.allSettled([
+          searchPolicies(baseApiUrl, debouncedQuery, 20),
+          searchQuotations(baseApiUrl, debouncedQuery, 20, '', 'renewal')
+        ]);
 
-          if (quotJson.results && Array.isArray(quotJson.results) && quotJson.results.length > 0) {
-            // Found existing renewal quotation -> display it for additional docs/update mode, no need to query searchPolicies
-            const tagged = quotJson.results.map(q => ({ ...q, _recordType: 'quotation' }));
-            setPolicies(tagged);
-            if (onResultsFetched) onResultsFetched(tagged);
-            return;
+        const combinedResults = [];
+
+        if (policiesRes.status === 'fulfilled' && policiesRes.value.ok) {
+          try {
+            const json = await policiesRes.value.json();
+            const rawList = json?.results || json?.data || json?.policies || (Array.isArray(json) ? json : []);
+            if (Array.isArray(rawList)) {
+              rawList.forEach(p => combinedResults.push({ ...p, _recordType: 'policy' }));
+            }
+          } catch (e) {
+            console.error("Error parsing policies:", e);
           }
-        } catch (e) {
-          console.error("Error searching renewal quotations:", e);
         }
 
-        // Step 2: If no renewal quote exists for this year, search issued policies to start a new renewal quote
-        try {
-          const policyRes = await searchPolicies(baseApiUrl, debouncedQuery, 20);
-          const policyJson = await policyRes.json();
-
-          if (policyJson.results && Array.isArray(policyJson.results) && policyJson.results.length > 0) {
-            const tagged = policyJson.results.map(p => ({ ...p, _recordType: 'policy' }));
-            setPolicies(tagged);
-            if (onResultsFetched) onResultsFetched(tagged);
-          } else {
-            setPolicies([]);
-            if (onResultsFetched) onResultsFetched([]);
+        if (quotationsRes.status === 'fulfilled' && quotationsRes.value.ok) {
+          try {
+            const json = await quotationsRes.value.json();
+            const rawList = json?.results || json?.data || json?.quotations || (Array.isArray(json) ? json : []);
+            if (Array.isArray(rawList)) {
+              rawList.forEach(q => combinedResults.push({ ...q, _recordType: 'quotation' }));
+            }
+          } catch (e) {
+            console.error("Error parsing renewal quotations:", e);
           }
-        } catch (e) {
-          console.error("Error searching issued policies:", e);
-          setPolicies([]);
-          if (onResultsFetched) onResultsFetched([]);
         }
+
+        setPolicies(combinedResults);
+        if (onResultsFetched) onResultsFetched(combinedResults);
       } else {
-        const currentYear = new Date().getFullYear().toString();
-        // Step 1: Check existing quotations for this search term (detects State 3: Active renewal quote or existing new quote)
         try {
-          const quotRes = await searchQuotations(baseApiUrl, debouncedQuery, 20, currentYear);
-          const quotJson = await quotRes.json();
-
-          if (quotJson.results && Array.isArray(quotJson.results) && quotJson.results.length > 0) {
-            const tagged = quotJson.results.map(q => ({ ...q, _recordType: 'quotation' }));
-            setPolicies(tagged);
-            if (onResultsFetched) onResultsFetched(tagged);
-            return;
-          }
-        } catch (e) {
-          console.error("Error searching quotations in new mode:", e);
-        }
-
-        // Step 2: If no quotation found, check if it's an issued policy in our system (State 2: Renewal candidate)
-        try {
-          const policyRes = await searchPolicies(baseApiUrl, debouncedQuery, 20);
-          const policyJson = await policyRes.json();
-
-          if (policyJson.results && Array.isArray(policyJson.results) && policyJson.results.length > 0) {
-            const tagged = policyJson.results.map(p => ({ ...p, _recordType: 'policy' }));
-            setPolicies(tagged);
-            if (onResultsFetched) onResultsFetched(tagged);
+          const quotRes = await searchQuotations(baseApiUrl, debouncedQuery, 20, year, 'new');
+          if (quotRes.ok) {
+            const json = await quotRes.json();
+            const rawList = json?.results || json?.data || json?.quotations || (Array.isArray(json) ? json : []);
+            if (Array.isArray(rawList)) {
+              const tagged = rawList.map(q => ({ ...q, _recordType: 'quotation' }));
+              setPolicies(tagged);
+              if (onResultsFetched) onResultsFetched(tagged);
+            } else {
+              setPolicies([]);
+              if (onResultsFetched) onResultsFetched([]);
+            }
           } else {
             setPolicies([]);
             if (onResultsFetched) onResultsFetched([]);
           }
         } catch (e) {
-          console.error("Error searching issued policies in new mode:", e);
+          console.error("Error searching quotations:", e);
           setPolicies([]);
           if (onResultsFetched) onResultsFetched([]);
         }
       }
-
-
       } catch (error) {
         console.error("Search error:", error);
         setPolicies([]);
@@ -198,6 +182,79 @@ export function PolicySearch({
     } catch (e) { return dateStr; }
   };
 
+  const renderDropdownItem = (item) => {
+    const isPolicyRecord = item._recordType === 'policy' || (item.policyId && !item._recordType);
+    const plate = item.plateNumber || item.plate_number;
+    const customer = item.customerName || item.customer_name;
+    const catId = item.categoryId || item.category_id;
+    const catName = item.categoryName || item.category_name;
+    const subCatName = item.subCategoryName || item.sub_category_name || item.productName || item.product_name;
+    const companyName = item.companyName || item.company_name;
+    const createdAt = item.createdAt || item.created_at;
+    const expiry = item.policyExpiryDate || item.expiryDate || item.expiry_date || item.previous_policy_expiry_date;
+
+    const isProcessing = uploadHistory && uploadHistory.some(
+      job => (job.title === plate || job.title === customer) && job.status === 'loading'
+    );
+
+    return (
+      <div
+        key={`${isPolicyRecord ? 'pol' : 'quo'}_${item.policyId || item.id || item.policy_id || item.quotationId}`}
+        onClick={() => { if (!isProcessing) handleSelect(item); }}
+        class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
+      >
+        <div class="flex justify-between items-start mb-1">
+          <span class={`font-bold flex items-center gap-1.5 ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
+            <span>
+              {(catId === 'non_motor' || catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
+                ? (subCatName || catName)
+                : (plate || 'ไม่ระบุทะเบียน')
+              }
+            </span>
+            {isPolicyRecord ? (
+              <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200 flex items-center gap-1">
+                <span>🛡️ กรมธรรม์ {item.policyId}</span>
+                <span class="text-[8px] bg-teal-100 text-teal-800 px-1 rounded">เปิดต่ออายุ</span>
+              </span>
+            ) : (
+              <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border flex items-center gap-1 ${
+                item.quotationTypeId === 'renewal'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : 'bg-blue-50 text-blue-700 border-blue-200'
+              }`}>
+                <span>📄 เคส #{item.quotationId} ({item.quotationTypeName || (item.quotationTypeId === 'renewal' ? 'งานต่ออายุ' : 'งานใหม่')})</span>
+                <span class="text-[8px] bg-amber-100 text-amber-800 px-1 rounded">ส่งเอกสารเพิ่ม</span>
+              </span>
+            )}
+            {isProcessing && <span class="text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
+          </span>
+          <span class="text-[10px] text-gray-400">
+            📅 {formatThaiDate(createdAt)}
+          </span>
+        </div>
+
+        <div class="flex flex-col gap-0.5 text-xs text-slate-500">
+          <div class="flex items-center gap-1">
+            <span>👤 {customer || '-'}</span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <div class="text-[10px] text-brand-600 font-medium">
+              {companyName ? `🏢 ${companyName}` : ''} {subCatName ? `(${subCatName})` : (catName ? `(${catName})` : '')}
+            </div>
+            {expiry && (
+              <div class="text-[9px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded border border-red-100">
+                ⏳ หมดอายุ: {formatThaiDate(expiry)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const issuedPolicies = policies.filter(p => p._recordType === 'policy');
+  const renewalQuotations = policies.filter(p => p._recordType === 'quotation');
+
   return (
     <div class="relative" ref={containerRef}>
       <div class="relative">
@@ -225,7 +282,7 @@ export function PolicySearch({
       </div>
 
       {showDropdown && (
-        <div class="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-2xl max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div class="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-2xl max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
           {isLoading && policies.length === 0 ? (
             <div class="p-8 text-center text-gray-500 text-sm flex flex-col items-center gap-2">
               <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2"></div>
@@ -237,76 +294,36 @@ export function PolicySearch({
             </div>
           ) : (
             <div class="py-1">
-              <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
-                <span>{debouncedQuery ? (searchMode === 'policies' ? 'ผลการค้นหากรมธรรม์เดิม & เคสเช็คเบี้ย' : 'ผลการค้นหา') : (searchMode === 'policies' ? 'กรมธรรม์และเคสล่าสุด' : 'รายการล่าสุด')}</span>
-              </div>
-              {policies.map(item => {
-                const isPolicyRecord = item._recordType === 'policy' || (item.policyId && !item._recordType);
-                const plate = item.plateNumber || item.plate_number;
-                const customer = item.customerName || item.customer_name;
-                const catId = item.categoryId || item.category_id;
-                const catName = item.categoryName || item.category_name;
-                const subCatName = item.subCategoryName || item.sub_category_name || item.productName || item.product_name;
-                const companyName = item.companyName || item.company_name;
-                const createdAt = item.createdAt || item.created_at;
-                const expiry = item.policyExpiryDate || item.expiryDate || item.expiry_date || item.previous_policy_expiry_date;
-
-                const isProcessing = uploadHistory && uploadHistory.some(
-                  job => (job.title === plate || job.title === customer) && job.status === 'loading'
-                );
-
-                return (
-                  <div
-                    key={`${isPolicyRecord ? 'pol' : 'quo'}_${item.policyId || item.id || item.policy_id || item.quotationId}`}
-                    onClick={() => { if (!isProcessing) handleSelect(item) }}
-                    class={`p-3 text-sm border-b border-gray-50 last:border-0 ${isProcessing ? 'cursor-not-allowed opacity-60 bg-gray-50' : 'cursor-pointer hover:bg-brand-50 transition-colors group'}`}
-                  >
-                    <div class="flex justify-between items-start mb-1">
-                      <span class={`font-bold flex items-center gap-1.5 ${isProcessing ? 'text-gray-500' : 'text-slate-700 group-hover:text-brand-700'}`}>
-                        <span>
-                          {(catId === 'non_motor' || catId === '2' || catId === 2 || plate === 'ประกันอื่นๆ') 
-                            ? (subCatName || catName)
-                            : (plate || 'ไม่ระบุทะเบียน')
-                          }
-                        </span>
-                        {isPolicyRecord ? (
-                          <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200 flex items-center gap-1">
-                            <span>🛡️ กรมธรรม์ {item.policyId}</span>
-                            <span class="text-[8px] bg-teal-100 text-teal-800 px-1 rounded">เปิดต่ออายุ</span>
-                          </span>
-                        ) : (
-                          <span class={`text-[9px] font-semibold px-1.5 py-0.5 rounded border flex items-center gap-1 ${
-                            item.quotationTypeId === 'renewal'
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-blue-50 text-blue-700 border-blue-200'
-                          }`}>
-                            <span>📄 เคส #{item.quotationId} ({item.quotationTypeName || (item.quotationTypeId === 'renewal' ? 'งานต่ออายุ' : 'งานใหม่')})</span>
-                            <span class="text-[8px] bg-amber-100 text-amber-800 px-1 rounded">ส่งเอกสารเพิ่ม</span>
-                          </span>
-                        )}
-                        {isProcessing && <span class="text-[10px] text-orange-600 font-normal bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">⏳ กำลังประมวลผล</span>}
-                      </span>
-                      <span class="text-[10px] text-gray-400">
-                        📅 {formatThaiDate(createdAt)}
-                      </span>
-                    </div>
-
-                    <div class="flex flex-col gap-0.5 text-xs text-slate-500">
-                      <div class="flex items-center gap-1">
-                        <span>👤 {customer || '-'}</span>
+              {searchMode === 'policies' ? (
+                <>
+                  {issuedPolicies.length > 0 && (
+                    <div>
+                      <div class="px-3 py-1.5 text-[10px] font-bold text-teal-800 bg-teal-50/90 border-y border-teal-100 uppercase tracking-wider flex items-center justify-between">
+                        <span>🛡️ กรมธรรม์เดิมที่ปิดงานแล้ว ({issuedPolicies.length})</span>
+                        <span class="text-[9px] font-semibold text-teal-600">คลิกเพื่อเปิดต่ออายุ</span>
                       </div>
-                      <div class="flex justify-between items-center mt-1">
-                        <div class="text-[10px] text-brand-600 font-medium">
-                          {companyName ? `🏢 ${companyName}` : ''} {subCatName ? `(${subCatName})` : (catName ? `(${catName})` : '')}
-                        </div>
-                        <div class="text-[9px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded border border-red-100">
-                          ⏳ หมดอายุ: {formatThaiDate(expiry)}
-                        </div>
-                      </div>
+                      {issuedPolicies.map(renderDropdownItem)}
                     </div>
+                  )}
+
+                  {renewalQuotations.length > 0 && (
+                    <div>
+                      <div class="px-3 py-1.5 text-[10px] font-bold text-amber-800 bg-amber-50/90 border-y border-amber-100 uppercase tracking-wider flex items-center justify-between">
+                        <span>📄 เคสเช็คเบี้ยต่ออายุเดิม ({renewalQuotations.length})</span>
+                        <span class="text-[9px] font-semibold text-amber-600">คลิกเพื่อส่งเอกสารเพิ่ม</span>
+                      </div>
+                      {renewalQuotations.map(renderDropdownItem)}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div class="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 flex justify-between items-center">
+                    <span>{debouncedQuery ? 'ผลการค้นหาเคสเช็คเบี้ย' : 'รายการล่าสุด'}</span>
                   </div>
-                );
-              })}
+                  {policies.map(renderDropdownItem)}
+                </>
+              )}
             </div>
           )}
         </div>
@@ -314,5 +331,6 @@ export function PolicySearch({
     </div>
   );
 }
+
 
 

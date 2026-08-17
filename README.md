@@ -2,7 +2,7 @@
 
 ระบบแจ้งเช็คเบี้ยประกันภัย ส่งเอกสารเพิ่มเติม และแจ้งงานสำเร็จผ่าน LINE LIFF พัฒนาด้วยเทคโนโลยี Modern Web สำหรับตัวแทนประกันภัย
 
-[![Version](https://img.shields.io/badge/version-v1.1.0-teal.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.2.0-teal.svg)](CHANGELOG.md)
 [![Preact](https://img.shields.io/badge/Preact-10.29.1-673ab8.svg)](https://preactjs.com/)
 [![Tailwind CSS v4](https://img.shields.io/badge/TailwindCSS-v4.2-38bdf8.svg)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.4-646cff.svg)](https://vitejs.dev/)
@@ -21,7 +21,9 @@
 
 ## ✨ ฟีเจอร์หลัก (Key Features)
 
-- **Smart Record-Type Detection**: ระบบค้นหาคู่ขนานอัจฉริยะในโหมดต่ออายุ แยกแยะระหว่าง **กรมธรรม์เดิม (`policyId`)** สำหรับเปิดเคสต่ออายุรอบใหม่ (`POST /submit-quotation`) กับ **เคสเช็คเบี้ยเดิม (`quotationId`)** สำหรับส่งเอกสารเพิ่ม/แก้ไข (`POST /update-quotation`) พร้อมติด Badge แสดงผลชัดเจน
+- **Parallel Dual-Search & Grouped Multi-Section UI (โหมดงานต่ออายุ)**: ค้นหาข้อมูลแบบคู่ขนานทั้ง `GET /load-policies` (กรมธรรม์เดิม) และ `GET /load-quotations` (เคสต่ออายุเดิม) พร้อมจัดกลุ่มแสดงผลใน Dropdown อย่างชัดเจน:
+  - 🛡️ **กรมธรรม์เดิมที่ปิดงานแล้ว**: คลิกเพื่อดึงข้อมูลรถเดิมและเปิดเคสต่ออายุรอบใหม่ (`POST /submit-quotation`)
+  - 📄 **เคสเช็คเบี้ยต่ออายุเดิม**: คลิกเพื่อส่งเอกสารเพิ่มเติมหรือแก้ไขเคสเดิม (`POST /update-quotation`)
 - **Issued Policies Renewal Integration (`GET /load-policies`)**: เชื่อมต่อการค้นหากรมธรรม์เดิมที่ปิดการขายแล้วในระบบ แสดงเลข `policyId` (เช่น `P202608001`), บริษัทประกันเดิม, วันหมดอายุเดิม และผูก `previous_policy_id` ส่งไปใน `POST /submit-quotation`
 - **Quotation Sub-Type Switcher**: สลับโหมดการเช็คเบี้ยได้อย่างรวดเร็วระหว่าง `✨ งานใหม่` และ `🔄 งานต่ออายุ`
 

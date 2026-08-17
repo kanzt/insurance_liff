@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-08-17
+
+### Added
+- **Parallel Dual-Search & Grouped Multi-Section UI in Renewal Mode**:
+  - Replaced sequential waterfall search in `PolicySearch.jsx` with non-blocking parallel `Promise.allSettled` queries to both `GET /load-policies` (issued policies) and `GET /load-quotations` (active renewal quotes).
+  - Designed clean grouped multi-section Dropdown view clearly separating:
+    - 🛡️ **Issued Policies (`GET /load-policies`)**: Labeled *"กรมธรรม์เดิมที่ปิดงานแล้ว (คลิกเพื่อเปิดต่ออายุ)"* with policy badges and expiry dates to start new renewal quotation cases.
+    - 📄 **Active Renewal Quotations (`GET /load-quotations`)**: Labeled *"เคสเช็คเบี้ยต่ออายุเดิม (คลิกเพื่อส่งเอกสารเพิ่ม)"* with quote badges to attach supplemental documents or update cases.
+  - Enhanced error resiliency with defensive JSON key parsing supporting `results`, `data`, `policies`, `quotations`, and raw arrays.
+
 ## [1.1.0] - 2026-08-15
 
 ### Added
